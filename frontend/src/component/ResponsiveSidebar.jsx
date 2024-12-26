@@ -39,7 +39,7 @@ export default function ResponsiveSidebar() {
       >
         <div className="flex h-16 items-center justify-between border-b px-3">
           <h2 className={cn("text-lg font-semibold", !expanded && "hidden")}>
-            EVcharger
+            VoltHub
           </h2>
           <button
             onClick={() => setExpanded(!expanded)}
