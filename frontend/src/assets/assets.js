@@ -1,0 +1,5 @@
+export const home = require("../assets/img/home.svg") 
+export const dashboard = require("../assets/img/dashboard.svg") 
+export const locationicon = require("../assets/img/locationicon.svg") 
+export const map = require("../assets/img/map.svg") 
+export const user = require("../assets/img/user.svg") 
