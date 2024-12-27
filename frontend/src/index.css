@@ -13,3 +13,10 @@ body {
 .navbar{
     width: 100%;
 }
+
+.grid-auto-auto{
+  grid-template-columns: auto auto;
+}
+.grid-auto-auto-auto{
+  grid-template-columns: auto auto auto;
+}
