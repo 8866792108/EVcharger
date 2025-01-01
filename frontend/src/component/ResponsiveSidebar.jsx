@@ -48,7 +48,7 @@ export default function ResponsiveSidebar() {
             <Icons.chevronDown
               className={cn(
                 "h-5 w-5 transform transition-transform",
-                expanded ? "-rotate-90" : "rotate-90"
+                expanded ? "rotate-90" : "-rotate-90"
               )}
             />
           </button>
