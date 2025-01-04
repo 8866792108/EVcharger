@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { handleerror, handlesuccess } from "../assets/utility"
+import { Upload, User } from "lucide-react";
+import axois from 'axios'
 const SignUp = () => {
 
   const [signupinfo, setsignupinfo] = useState({
@@ -11,6 +13,30 @@ const SignUp = () => {
     password: ''
   })
 
+  const [Image, setImage] = useState({
+    previewurl: null,
+    file: null
+  })
+
+  const handlePhotoChange = e => {
+    if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
+      //preview show
+      const reader = new FileReader()
+      reader.onload = (r) => {
+        setImage({
+          previewurl: r.target.result,
+          file: e.target.files[0]
+        })
+        console.log(r.target.result);
+        console.log(e.target.files[0])
+      }
+      reader.readAsDataURL(e.target.files[0])
+    } else {
+      handleerror("Invalid File !!")
+      Image.file = null
+    }
+
+  }
   const Navigate = useNavigate()
 
   const hadlechange = (e) => {
@@ -27,28 +53,34 @@ const SignUp = () => {
     if (!name || !email || !password) {
       return handleerror("name or email or password are required")
     }
+    console.log("Your name is: ", signupinfo.name);
+    const formdata = new FormData();
+    formdata.append("image", Image.file)
+    formdata.append("name", signupinfo.name)
+    formdata.append("email", signupinfo.email)
+    formdata.append("password", signupinfo.password)
 
     try {
       const url = "http://localhost:8080/user/signup"
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(signupinfo)
-      })
 
+      const response = await axois.post(url, formdata, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      })
+      console.log(response)
       const result = await response.json()
-      const { message, success,error } = result
+      const { message, success, error } = result
       if (success) {
         handlesuccess(message)
-        setTimeout(()=>{
+        setTimeout(() => {
           Navigate('/login')
-        },1000)
-      }else if(error){
-        const details= error?.details[0].message
+        }, 1000)
+      } else if (error) {
+        console.log(error)
+        const details = error?.details[0].message
         handleerror(details)
-      }else if(!success){
+      } else if (!success) {
         handleerror(message)
       }
       console.log(result);
@@ -61,11 +93,41 @@ const SignUp = () => {
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-pink-500">
       <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 mx-auto mb-4"></div>
+          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 mx-auto mb-4">
+
+          </div>
           <h1 className="text-3xl font-bold text-blue-500 mb-6">Sign Up</h1>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className=" text-black">
+          <div className="flex justify-center">
+            <div className="relative mb-10">
+              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                {Image.previewurl ? (
+                  <img
+                    src={Image.previewurl}
+                    alt="Profile Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="h-12 w-12 text-gray-400" />
+                )}
+              </div>
+              <label
+                htmlFor="photo-upload"
+                className="absolute bottom-0 right-0 bg-green-600 rounded-full p-2 cursor-pointer"
+              >
+                <Upload className="h-4 w-4 text-white" />
+              </label>
+              <input
+                id="photo-upload"
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handlePhotoChange}
+              />
+            </div>
+          </div>
           {/* Username Field */}
           <div className="mb-4">
             <input

@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import ResponsiveSidebar from './ResponsiveSidebar'
 // import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet"
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
 import { stations } from '../assets/utility'
+import { marker,icon } from 'leaflet'
+// import map from "https://cdn-icons-png.flaticon.com/512/684/684908.png"
 
 const Maps = () => {
   const [selectedMarker, setSelectedMarker] = useState(null);
-  const [current, setcurrent] = useState({
-    lat: "",
-    long: ""
-  })
+  const [current, setcurrent] = useState()
   const navigateToMarker = (markerPosition) => {
     const { lat, lng } = markerPosition;
     console.log(markerPosition);
@@ -21,15 +20,17 @@ const Maps = () => {
   };
 
   useEffect(() => {
-    navigator.geolocation.getCurrentPosition((data) => {
-      const crd = data.coords;
-      console.log(crd.latitude);
-      console.log(crd.longitude);
-      setcurrent({
-        lat: crd.latitude,
-        long : crd.longitude
+    setTimeout(() => {
+      navigator.geolocation.getCurrentPosition((data) => {
+        const crd = data.coords;
+        console.log(crd.latitude);
+        console.log(crd.longitude);
+        setcurrent({
+          lat: crd.latitude,
+          long: crd.longitude
+        })
       })
-    })
+    }, 1000);
   }, [])
 
 
@@ -39,9 +40,11 @@ const Maps = () => {
     <div className='home'>
       <ResponsiveSidebar />
       <main className="md:pl-16 md:transition-all md:duration-300 md:data-[expanded=true]:pl-64">
+        {current && (
+
         <div className="h-[calc(100vh-4rem)]">
           <MapContainer
-            center={[21.1771924, 72.8683066]}
+            center={[current.lat, current.long]}
             zoom={25}
             className="h-[100%] w-[100%]"
           >
@@ -53,6 +56,7 @@ const Maps = () => {
               <Marker
                 key={station.id}
                 position={[station.location.lat, station.location.lng]}
+                
               >
                 <Popup>
                   <div className="p-2">
@@ -62,7 +66,7 @@ const Maps = () => {
                     </p>
                     <p>Power: {station.powerOutput}</p>
                     <p>Price: ${station.price}/kWh</p>
-                    <button onClick={()=>navigateToMarker(station.location)} className="mt-2 bg-green-500 text-white px-4 py-1 rounded-full text-sm">
+                    <button onClick={() => navigateToMarker(station.location)} className="mt-2 bg-green-500 text-white px-4 py-1 rounded-full text-sm">
                       Navigate
                     </button>
                   </div>
@@ -71,6 +75,7 @@ const Maps = () => {
             ))}
           </MapContainer>
         </div>
+        )}
       </main>
     </div>
   )

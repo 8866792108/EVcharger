@@ -1,5 +1,6 @@
 import React from 'react'
 import ResponsiveSidebar from './ResponsiveSidebar'
+import Modal from './Modal'
 
 const DashboardTasks = () => {
   return (

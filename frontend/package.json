@@ -12,8 +12,10 @@
   "dependencies": {
     "@fontsource/inter": "^5.1.0",
     "@fontsource/roboto": "^5.1.0",
+    "@headlessui/react": "^2.2.0",
     "@heroicons/react": "^2.2.0",
     "@react-google-maps/api": "^2.20.5",
+    "axios": "^1.7.9",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
     "rc-util": "^5.44.2",
