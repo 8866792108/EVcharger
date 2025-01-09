@@ -34,18 +34,14 @@ const signup = async (req, res) => {
             email: email,
             password: hashedPassword
         });
-        console.log("New users: ",newUser)
+        console.log("New users: ", newUser)
+
         // Save the user to the database
         await newUser.save()
         return res.status(201).json({
             message: "Signup successful",
             success: true,
         });
-        // console.log(result)
-        // res.status(201).json({
-        //     message: "Signup successful",
-        //     success: true,
-        // });
     } catch (error) {
         res.status(500).json({
             message: "Server error: " + error.message,
@@ -61,24 +57,23 @@ const login = async (req, res) => {
 
         if (!user) {
             return res.status(403)
-                .json({ message: "Auth failed email or password is wrong", success: false })
+                .json({ message: "Auth failed user is not exist", success: false })
         }
 
         const result = await bcrypt.compare(password, user.password)
         if (!result) {
             return res.status(403)
-                .json({ message: "Auth failed email or password is wrong", success: false })
+                .json({ message: "Auth failed password is wrong", success: false })
         }
 
         const jwttoken = jwt.sign(
             { email: user.email, _id: user._id },
-            process.env.JWT_TOKEN,
-            { expiresIn: '24h' }
+            process.env.JWT_TOKEN
         )
 
 
         res.status(201)
-            .json({ message: "login successfully", success: true, jwttoken, email, name: user.name })
+            .json({ message: "login successfully", success: true, jwttoken, email, image: user.image, name: user.name })
 
 
     } catch (error) {

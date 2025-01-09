@@ -6,17 +6,16 @@ const signupValidation = (req, res, next) => {
 
     console.log(req.body)
     const Schema = Joi.object({
-        name: Joi.string().min(4).max(20).required(),
+        name: Joi.string().min(4).max(20).required().messages({'string.empty': 'Name is required'}),
         email: Joi.string().email().required(),
         password: Joi.string().min(7).max(50).required()
     })
-    console.log(schema);
     
 
     const { error } = Schema.validate(req.body)
 
     if (error) {
-        return res.status(400)
+        return res.status(200)
             .json({ message: "ERROR FOUND", error })
     }
 
@@ -34,7 +33,7 @@ const loginValidation = (req, res, next) => {
     const { error } = Schema.validate(req.body)
 
     if (error) {
-        return res.status(400)
+        return res.status(200)
             .json({ message: "ERROR FOUND", error })
     }
 

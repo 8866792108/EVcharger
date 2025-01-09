@@ -60,7 +60,7 @@ const Home = () => {
 
     return (
 
-        <div className='home'>
+        <div className='home md:grid grid-cols-header'>
             <ResponsiveSidebar />
             <main className="md:pl-16 md:transition-all md:duration-300 md:data-[expanded=true]:pl-64">
                 home

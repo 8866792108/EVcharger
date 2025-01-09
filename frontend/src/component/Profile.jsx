@@ -100,6 +100,7 @@ import React, { useState } from "react"
 import { MapPin, Settings, LogOut, ListOrdered, LayoutDashboard, LogIn } from "lucide-react"
 import { BluetoothDevices } from "./BluetoothDevices"
 import ResponsiveSidebar from "./ResponsiveSidebar"
+import { NavLink } from "react-router-dom"
 
 const Profile = () => {
   const [islogin, setislogin] = useState(false)
@@ -114,7 +115,7 @@ const Profile = () => {
   })
 
   return (
-    <div className="profile">
+    <div className="profile md:grid grid-cols-header">
       <ResponsiveSidebar />
       <main className="md:pl-16 md:transition-all md:duration-300 md:data-[expanded=true]:pl-64">
         <div className=" max-w-screen-2xl mx-auto p-6">
@@ -123,11 +124,19 @@ const Profile = () => {
             <div className="relative h-32 bg-gradient-to-r from-green-400 to-green-600">
               <div className="absolute -bottom-16 left-6">
                 <div className="w-32 h-32 rounded-full border-4 border-white bg-white">
-                  <img
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                    alt="Profile"
-                    className="w-full h-full rounded-full object-cover"
-                  />
+
+                  {localStorage.getItem("image")
+                    ? <img
+                      src={"http://localhost:8080/" + localStorage.getItem("image")}
+                      alt="Profile"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                    : <img
+                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                      alt="Profile"
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  }
                 </div>
               </div>
             </div>
@@ -137,7 +146,7 @@ const Profile = () => {
               <div className="flex justify-between items-center">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-800 dark:bg-black dark:text-white">{localStorage.getItem('loggeduser') || "Guest"}</h2>
-                  <p className="text-gray-400 dark:bg-black dark:text-white">sanjaychilgani119@gmail.com</p>
+                  <p className="text-gray-400 dark:bg-black dark:text-white">{localStorage.getItem("user_email")}</p>
                 </div>
                 {islogin
                   && <button
@@ -200,10 +209,10 @@ const Profile = () => {
                         <LogOut className="h-5 w-5" />
                         Logout
                       </button>
-                      : <button className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
+                      : <NavLink to={"/login"} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                         <LogIn className="h-5 w-5" />
                         Login
-                      </button>
+                      </NavLink>
                     }
                   </div>
                 </div>

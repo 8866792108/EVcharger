@@ -38,9 +38,12 @@ const Login = () => {
       })
 
       const result = await response.json()
-      const { message, success, jwttoken, name, error } = result
+      const { message, success, jwttoken, image, name, error } = result
+      console.log(result)
       if (success) {
         handlesuccess(message)
+        localStorage.setItem('user_email', email)
+        localStorage.setItem('image', image)
         localStorage.setItem('token', jwttoken)
         localStorage.setItem('loggeduser', name)
         setTimeout(() => {
@@ -59,7 +62,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r white from-purple-500 to-blue-500">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r text-black white from-purple-500 to-blue-500">
       <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center">
           <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-400 to-pink-400 mx-auto mb-4"></div>
@@ -89,7 +92,7 @@ const Login = () => {
               value={logininfo.password}
               className="w-full py-3 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-purple-400"
             />
-            
+
           </div>
 
           <div className="flex justify-between items-center mb-4 text-sm">

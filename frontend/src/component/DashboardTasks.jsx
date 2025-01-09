@@ -4,7 +4,7 @@ import Modal from './Modal'
 
 const DashboardTasks = () => {
   return (
-    <div className='home'>
+    <div className='dashboard md:grid grid-cols-header'>
       <ResponsiveSidebar />
       <main className="md:pl-16 md:transition-all md:duration-300 md:data-[expanded=true]:pl-64">
         Dashboard

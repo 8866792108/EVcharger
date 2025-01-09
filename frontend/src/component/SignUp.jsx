@@ -50,9 +50,9 @@ const SignUp = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { name, email, password } = signupinfo
-    if (!name || !email || !password) {
-      return handleerror("name or email or password are required")
-    }
+    // if (!name || !email || !password) {
+    //   return handleerror("name or email or password are required")
+    // }
     console.log("Your name is: ", signupinfo.name);
     const formdata = new FormData();
     formdata.append("image", Image.file)
@@ -68,9 +68,10 @@ const SignUp = () => {
           "Content-Type": "multipart/form-data"
         }
       })
-      console.log(response)
-      const result = await response.json()
-      const { message, success, error } = result
+      console.log("this is the response data::: " + response.data)
+      const { message, success, error } = await response.data
+      console.log(message, success, error);
+
       if (success) {
         handlesuccess(message)
         setTimeout(() => {
