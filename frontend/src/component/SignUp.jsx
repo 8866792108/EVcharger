@@ -101,6 +101,7 @@ const SignUp = () => {
         </div>
 
         <form onSubmit={handleSubmit} className=" text-black">
+          {/* preview uploaded image */}
           <div className="flex justify-center">
             <div className="relative mb-10">
               <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">

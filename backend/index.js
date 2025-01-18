@@ -4,10 +4,10 @@ const cors = require("cors");
 const Authroute = require("./Routes/Authroute");
 const Evlocation = require("./Routes/Evlocation")
 const ProductRouter = require('./Routes/ProductRouter')
-const multer = require("multer")
-const path = require("path");
+
 const { signupValidation } = require("./Middlewares/AuthValidate");
 const { signup } = require("./Controllers/userController");
+const upload = require("./Middlewares/upload");
 
 require("dotenv").config()
 require("./Models/db")
@@ -27,16 +27,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors(corsOptions))
 app.use(express.static("./public/images"))
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './public/images')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
-    }
-})
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         cb(null, './public/images')
+//     },
+//     filename: function (req, file, cb) {
+//         cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
+//     }
+// })
 
-const upload = multer({ storage: storage })
+// const upload = multer({ storage: storage })
 
 app.use("/user", Authroute)
 app.use("/products", ProductRouter)
