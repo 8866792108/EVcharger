@@ -105,14 +105,14 @@ import { NavLink } from "react-router-dom"
 const Profile = () => {
   const [islogin, setislogin] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [userData, setUserData] = useState({
-    username: "John Doe",
-    email: "john@example.com",
-    savedLocations: [
-      { id: 1, name: "Home Charger", address: "123 Main St" },
-      { id: 2, name: "Office Station", address: "456 Work Ave" }
-    ]
-  })
+  // const [userData, setUserData] = useState({
+  //   username: "John Doe",
+  //   email: "john@example.com",
+  //   savedLocations: [
+  //     { id: 1, name: "Home Charger", address: "123 Main St" },
+  //     { id: 2, name: "Office Station", address: "456 Work Ave" }
+  //   ]
+  // })
 
   return (
     <div className="profile md:grid grid-cols-header">

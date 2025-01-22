@@ -8,6 +8,8 @@ const ProductRouter = require('./Routes/ProductRouter')
 const { signupValidation } = require("./Middlewares/AuthValidate");
 const { signup } = require("./Controllers/userController");
 const upload = require("./Middlewares/upload");
+const evupload = require("./Middlewares/evupload");
+const { setitems } = require("./Controllers/EvController");
 
 require("dotenv").config()
 require("./Models/db")
@@ -24,7 +26,8 @@ const corsOptions = {
 app.use(bodyparser.json())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
+app.use(cors())
 app.use(express.static("./public/images"))
 
 // const storage = multer.diskStorage({
@@ -47,6 +50,8 @@ app.get("/", (req, res) => {
 })
 
 app.post("/user/signup", upload.single("image"), signupValidation, signup)
+app.post("/slots/setitems",evupload.single("image"), setitems)
+
 
 app.listen(PORT, () => {
     console.log(`Server is Started in  http://localhost:${PORT}`);
