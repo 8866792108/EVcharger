@@ -21,7 +21,7 @@ const Displaymap = () => {
 
   return (
     <div className='Displaymap m-5'>
-      <div className='flex justify-around'>
+      <div className='justify-around grid grid-cols-list gap-3 p-4 items-center'>
         <div className="Sr.No">
           Sr.no
         </div>
@@ -40,7 +40,7 @@ const Displaymap = () => {
       </div>
       {map.length > 0 && map.map((data,index)=>{
         return(
-        <div className='flex justify-around' key={index}>
+        <div className='grid grid-cols-list justify-around gap-3 p-3 items-center' key={index}>
         <div className="Sr.No">
           {index+1}
         </div>

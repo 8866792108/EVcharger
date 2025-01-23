@@ -97,7 +97,7 @@
 
 
 import React, { useState } from "react"
-import { MapPin, Settings, LogOut, ListOrdered, LayoutDashboard, LogIn } from "lucide-react"
+import { MapPin, Settings, LogOut, ListOrdered, LayoutDashboard, LogIn, User } from "lucide-react"
 import { BluetoothDevices } from "./BluetoothDevices"
 import ResponsiveSidebar from "./ResponsiveSidebar"
 import { NavLink } from "react-router-dom"
@@ -105,14 +105,14 @@ import { NavLink } from "react-router-dom"
 const Profile = () => {
   const [islogin, setislogin] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  // const [userData, setUserData] = useState({
-  //   username: "John Doe",
-  //   email: "john@example.com",
-  //   savedLocations: [
-  //     { id: 1, name: "Home Charger", address: "123 Main St" },
-  //     { id: 2, name: "Office Station", address: "456 Work Ave" }
-  //   ]
-  // })
+  const [userData, setUserData] = useState({
+    username: "John Doe",
+    email: "john@example.com",
+    savedLocations: [
+      { id: 1, name: "Home Charger", address: "123 Main St" },
+      { id: 2, name: "Office Station", address: "456 Work Ave" }
+    ]
+  })
 
   return (
     <div className="profile md:grid grid-cols-header">
@@ -131,11 +131,7 @@ const Profile = () => {
                       alt="Profile"
                       className="w-full h-full rounded-full object-cover"
                     />
-                    : <img
-                      src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                      alt="Profile"
-                      className="w-full h-full rounded-full object-cover"
-                    />
+                    : <User className="w-full h-full text-black"/>
                   }
                 </div>
               </div>
@@ -209,7 +205,7 @@ const Profile = () => {
                         <LogOut className="h-5 w-5" />
                         Logout
                       </button>
-                      : <NavLink to={"/login"} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
+                      : <NavLink to={"/login"}  className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                         <LogIn className="h-5 w-5" />
                         Login
                       </NavLink>
