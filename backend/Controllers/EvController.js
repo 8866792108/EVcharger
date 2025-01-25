@@ -1,4 +1,5 @@
 const slotmodel = require("../Models/slots");
+const fs = require("fs")
 
 const getitems = async (req, res) => {
     try {
@@ -52,7 +53,27 @@ const setitems = async (req, res) => {
 
 }
 
+
+
+const removeitems = async (req, res) => {
+    try {
+        console.log("the data is :: " + req.body);
+        const slot = await slotmodel.findById(req.body.id);
+        console.log("the find id is :: " + slot);
+        fs.unlink(`public/images/${slot.image}`, () => { })
+
+        await slotmodel.findByIdAndDelete(req.body.id);
+        res.status(200)
+            .json({ success: true, message: "slot removed successfully" })
+    } catch (error) {
+        console.log(error);
+        res.status(201)
+            .json({ success: false, message: "Some Thing Went Wrong" })
+    }
+}
+
 module.exports = {
     getitems,
-    setitems
+    setitems,
+    removeitems
 }

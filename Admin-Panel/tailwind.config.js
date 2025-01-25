@@ -8,7 +8,7 @@ export default {
     extend: {
       gridTemplateColumns: {
         'header': '350px auto',
-        'list': '0.5fr 2fr 1fr 1fr 0.5fr'
+        'list': '0.5fr 1fr 1fr 1fr 0.3fr 0.3fr'
       }
     },
   },

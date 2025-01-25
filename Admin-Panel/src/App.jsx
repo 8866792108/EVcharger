@@ -12,9 +12,10 @@ import {
   Map,
   MapPinCheck
 } from "lucide-react"
-import { NavLink, Route, Router, Routes } from 'react-router-dom'
+import { Navigate, NavLink, Route, Router, Routes } from 'react-router-dom'
 import MapAdd from "./components/maps/MapAdd"
 import Displaymap from "./components/maps/Displaymap"
+import Updatemap from "./components/maps/Updatemap"
 
 function App() {
 
@@ -270,8 +271,10 @@ function App() {
         {/* Main content */}
         <div className="flex flex-col flex-1">
           <Routes>
+            <Route path="/" element={<Navigate to={'/addmap'} />} />
             <Route path='/addmap' element={<MapAdd />} />
             <Route path='/Managemaps' element={<Displaymap />} />
+            <Route path='/updatemaps' element={<Updatemap />} />
           </Routes>
         </div>
 

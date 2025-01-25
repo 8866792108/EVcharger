@@ -188,18 +188,14 @@ const Profile = () => {
                       <Settings className="h-5 w-5" />
                       Account Settings
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
+                    <NavLink to={'/ordermanage'} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                       <MapPin className="h-5 w-5" />
-                      Manage Locations
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
+                      Order Locations
+                    </NavLink>
+                    <NavLink to={'/currentuser'} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                       <LayoutDashboard className="h-5 w-5" />
                       Manage Locations
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                      <ListOrdered />
-                      Manage Locations
-                    </button>
+                    </NavLink>
                     {islogin
                       ? <button onClick={() => { localStorage.removeItem("token") }} className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                         <LogOut className="h-5 w-5" />

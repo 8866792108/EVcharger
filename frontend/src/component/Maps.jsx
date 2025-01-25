@@ -3,18 +3,32 @@ import ResponsiveSidebar from './ResponsiveSidebar'
 // import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet"
 import "leaflet/dist/leaflet.css"
-import { stations } from '../assets/utility'
-import { marker, icon } from 'leaflet'
 import axios from 'axios'
+import { Icon } from 'leaflet'
 // import map from "https://cdn-icons-png.flaticon.com/512/684/684908.png"
 
 
 const Maps = () => {
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [current, setcurrent] = useState()
-  // const [slots, setslots] = useState([])
   const [stops, setStops] = useState([]);
 
+  const legalIcons = new Icon ({
+    iconUrl : 'https://img.icons8.com/external-icongeek26-linear-colour-icongeek26/64/external-legal-business-and-finance-icongeek26-linear-colour-icongeek26.png',
+    iconSize : [35,35], // size of the icon
+    iconAnchor : [22,94], // point of the icon which will correspond to marker's location
+    popupAnchor : [-3, -76] // point from which the popup should open relative to the iconAnchor
+
+  })
+  const legalIcon = new Icon ({
+    iconUrl : 'https://cdn1.iconfinder.com/data/icons/location-pointer-1/64/Electricity-512.png',
+    iconSize : [35,35], // size of the icon
+    iconAnchor : [22,94], // point of the icon which will correspond to marker's location
+    popupAnchor : [-3, -76] // point from which the popup should open relative to the iconAnchor
+
+  })
+
+  
   const fetchStops = async () => {
     try {
       const response = await axios.get("http://localhost:8080/slots/getitems")
@@ -90,12 +104,13 @@ const Maps = () => {
               {stops.map(stops => (
                 <Marker
                   key={stops._id}
-                  position={[stops.latitude,stops.longitude]}
+                  position={[stops.latitude, stops.longitude]}
+                  icon={legalIcon}
 
                 >
                   <Popup>
                     <div className="w-[300px] flex flex-col justify-center items-center">
-                      <img src={"http://localhost:8080/"+stops.image} alt="" className=' mb-7' />
+                      <img src={"http://localhost:8080/" + stops.image} alt="" className=' mb-7' />
                       <h3 className="font-semibold">{stops.name}</h3>
                       <p>
                         Address: {stops.address}
