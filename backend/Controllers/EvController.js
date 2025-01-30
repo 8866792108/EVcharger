@@ -57,12 +57,13 @@ const setitems = async (req, res) => {
 
 const removeitems = async (req, res) => {
     try {
-        console.log("the data is :: " + req.body);
-        const slot = await slotmodel.findById(req.body.id);
+        console.log("the data is :: " + req.params);
+        const {slotid} = req.params
+        const slot = await slotmodel.findById(slotid);
         console.log("the find id is :: " + slot);
         fs.unlink(`public/images/${slot.image}`, () => { })
 
-        await slotmodel.findByIdAndDelete(req.body.id);
+        await slotmodel.findByIdAndDelete(slotid);
         res.status(200)
             .json({ success: true, message: "slot removed successfully" })
     } catch (error) {
