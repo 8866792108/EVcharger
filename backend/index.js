@@ -3,12 +3,12 @@ const bodyparser = require("body-parser")
 const cors = require("cors");
 const Authroute = require("./Routes/Authroute");
 const Evlocation = require("./Routes/Evlocation")
+const Orderroute = require("./Routes/Orderroute")
 const ProductRouter = require('./Routes/ProductRouter')
 
 const { signupValidation } = require("./Middlewares/AuthValidate");
 const { signup } = require("./Controllers/userController");
 const upload = require("./Middlewares/upload");
-const evupload = require("./Middlewares/evupload");
 const { setitems } = require("./Controllers/EvController");
 
 require("dotenv").config()
@@ -30,27 +30,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors())
 app.use(express.static("./public/images"))
 
-// const storage = multer.diskStorage({
-//     destination: function (req, file, cb) {
-//         cb(null, './public/images')
-//     },
-//     filename: function (req, file, cb) {
-//         cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname))
-//     }
-// })
-
-// const upload = multer({ storage: storage })
 
 app.use("/user", Authroute)
 app.use("/products", ProductRouter)
 app.use("/slots", Evlocation)
+app.use("/orders",Orderroute)
 
 app.get("/", (req, res) => {
     res.send("welcome users")
 })
 
 app.post("/user/signup", upload.single("image"), signupValidation, signup)
-app.post("/slots/setitems",evupload.single("image"), setitems)
+app.post("/slots/setitems",upload.single("image"), setitems)
 
 
 app.listen(PORT, () => {

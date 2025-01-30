@@ -6,6 +6,7 @@ import Home from './component/Home';
 import Profile from './component/Profile';
 import DashboardTasks from './component/DashboardTasks'
 import Maps from './component/Maps'
+import Updateuser from './component/updateuser';
 function App() {
 
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path='/dashboard' element={<DashboardTasks/>} />
         {/* <Route path='/' element={<ResponsiveSidebar/>} /> */}
           <Route path='/profile' element={<Profile/>} />
+          <Route path='/updateuser' element={<Updateuser/>} />
           <Route path='/currentuser' element={<Maps/>} />
           <Route path='/ordermanage' element={<Maps/>} />
       </Routes>

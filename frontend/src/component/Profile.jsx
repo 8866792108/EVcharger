@@ -184,10 +184,10 @@ const Profile = () => {
                 <div className="space-y-4 md:col-span-2 text-black dark:text-gray-300">
                   <h3 className="text-lg font-semibold cursor-default">Quick Actions</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
+                    <NavLink to={'/updateuser'} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                       <Settings className="h-5 w-5" />
                       Account Settings
-                    </button>
+                    </NavLink>
                     <NavLink to={'/ordermanage'} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
                       <MapPin className="h-5 w-5" />
                       Order Locations
