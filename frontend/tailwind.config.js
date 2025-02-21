@@ -23,7 +23,8 @@ export default {
         ]
       },
       gridTemplateColumns:{
-        'header':'350px auto'
+        'header':'auto 350px',
+        '350a':'350px auto'
       }
     },
   },

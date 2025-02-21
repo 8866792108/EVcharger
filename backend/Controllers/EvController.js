@@ -54,11 +54,27 @@ const setitems = async (req, res) => {
 }
 
 
+const findById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const slot = await slotmodel.findById(id)
+
+        if (!slot) {
+            return res.status(404).json({ message: "Slot Not Found" });
+        }
+
+        res.status(200).json(slot);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+}
+
 
 const removeitems = async (req, res) => {
     try {
         console.log("the data is :: " + req.params);
-        const {slotid} = req.params
+        const { slotid } = req.params
         const slot = await slotmodel.findById(slotid);
         console.log("the find id is :: " + slot);
         fs.unlink(`public/images/${slot.image}`, () => { })
@@ -76,5 +92,6 @@ const removeitems = async (req, res) => {
 module.exports = {
     getitems,
     setitems,
-    removeitems
+    removeitems,
+    findById
 }

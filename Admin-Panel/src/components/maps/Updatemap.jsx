@@ -1,18 +1,62 @@
 import { Upload, User } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { useParams } from 'react-router-dom'
 
 const Updatemap = () => {
     const [mapinfo, setmapinfo] = useState({
         name: '',
         address: '',
         latitude: 0,
-        longitude: 0
+        longitude: 0,
+        start: "",
+        end: ""
     })
     const [Image, setImage] = useState({
         previewurl: null,
         file: null
     })
+
+    const { id } = useParams();
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get(`http://localhost:8080/slots/find/${id}`);
+                console.log(response.data)
+
+                setmapinfo({
+                    name: response.data.name,
+                    address: response.data.address,
+                    latitude: response.data.latitude,
+                    longitude: response.data.longitude,
+                    start: response.data.start,
+                    end: response.data.end
+                })
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+        fetchData();
+    }, [id])
+
+    const convertTo12Hour = (time24) => {
+        let [hours, minutes] = time24.split(":");
+        let period = +hours >= 12 ? "PM" : "AM";
+        let hours12 = +hours % 12 || 12; // Convert 24-hour to 12-hour format
+        return `${hours12}:${minutes} ${period}`;
+    }
+
+
+
+    const convertTo24Hour = (time12) => {
+        let [time, period] = time12.split(" ");
+        let [hours, minutes] = time.split(":");
+        if (period === "PM" && hours !== "12") hours = +hours + 12;
+        if (period === "AM" && hours === "12") hours = "00";
+        return `${hours}:${minutes}`;
+    }
+
 
     const hadlechange = (e) => {
         const { name, value } = e.target
@@ -22,7 +66,7 @@ const Updatemap = () => {
         console.log(mapinfo)
     }
 
-    
+
 
     const handlePhotoChange = e => {
         if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
@@ -122,6 +166,15 @@ const Updatemap = () => {
                         value={mapinfo.name}
                         id="name" name="name" className="w-full rounded border border-gray-300 bg-white py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
                 </div>
+
+                <div className="mb-4">
+                    <label htmlFor="address" className="text-sm leading-7 text-gray-600">Address</label>
+                    <textarea id="address"
+                        name="address"
+                        onChange={hadlechange}
+                        value={mapinfo.address}
+                        className="h-32 w-full resize-none rounded border border-gray-300 bg-white py-1 px-3 text-base leading-6 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"></textarea>
+                </div>
                 <div className="mb-4">
                     <label htmlFor="latitude" className="text-sm leading-7 text-gray-600">Latitude</label>
                     <input type="number"
@@ -136,14 +189,19 @@ const Updatemap = () => {
                         value={mapinfo.longitude}
                         id="longitude" name="longitude" className="w-1/4 rounded border border-gray-300 bg-white py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
                 </div>
-
                 <div className="mb-4">
-                    <label htmlFor="address" className="text-sm leading-7 text-gray-600">Address</label>
-                    <textarea id="address"
-                        name="address"
+                    <label htmlFor="start" className="text-sm leading-7 text-gray-600">Start Time :-</label>
+                    <input type="time"
                         onChange={hadlechange}
-                        value={mapinfo.address}
-                        className="h-32 w-full resize-none rounded border border-gray-300 bg-white py-1 px-3 text-base leading-6 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"></textarea>
+                        value={mapinfo.start}
+                        id="start" name="start" className="w-1/4 rounded border border-gray-300 bg-white py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
+                </div>
+                <div className="mb-4">
+                    <label htmlFor="end" className="text-sm leading-7 text-gray-600">End Time :-</label>
+                    <input type="text"
+                        onChange={hadlechange}
+                        value={mapinfo.end}
+                        id="end" name="end" className="w-1/4 rounded border border-gray-300 bg-white py-1 px-3 text-base leading-8 text-gray-700 outline-none transition-colors duration-200 ease-in-out focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200" />
                 </div>
                 <button className="rounded border-0 bg-indigo-500 py-2 px-6 text-lg text-white hover:bg-indigo-600 focus:outline-none">Send</button>
 

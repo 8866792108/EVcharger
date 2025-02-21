@@ -22,9 +22,13 @@ const slotschema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    All_slots: { 
-        type: [String], 
-        default: ["08:00-08:30", "08:30-09:00", "09:00-09:30","9:30-10:00","10:00-10:30"]
+    start: {
+        type: String,
+        required: true
+    },
+    end: {
+        type: String,
+        required: true
     }
 })
 

@@ -1,0 +1,53 @@
+.container-shadow{
+    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+}
+.item-shadow{
+    box-shadow: 0 8px 10px rgba(0,0,0,0.6);
+}
+.FadeInAnm{
+    animation: fadein 0.7s;
+}
+
+@keyframes fadein {
+    from{
+       opacity: 0;
+    }
+    to{
+       opacity:1;
+    }
+}
+.MoveUpAnm{
+    animation:moveup 0.7s;
+}
+@keyframes moveup {
+    from{
+        transform: translate(0,50px);
+        filter:blur(10px)
+    }
+    to{
+        transform: translate(0);
+        filter: blur(0);
+    }
+}
+.forwardslideanm{
+    animation:forwardanm 0.7s;
+}
+@keyframes forwardanm {
+    from{
+       transform: translate(100px,0);
+    }
+    to{
+       transform:translate(0)
+    }
+}
+.backwardSlideanm{
+    animation:backwardslide 0.7s;
+}
+@keyframes backwardslide {
+    from{
+        transform: translate(-100px,0);
+     }
+     to{
+        transform:translate(0)
+     }
+}

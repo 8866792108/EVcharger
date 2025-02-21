@@ -12,16 +12,20 @@ import {
   Map,
   MapPinCheck
 } from "lucide-react"
-import { Navigate, NavLink, Route, Router, Routes } from 'react-router-dom'
+import { Navigate, NavLink, Route, Router, Routes, useLocation } from 'react-router-dom'
 import MapAdd from "./components/maps/MapAdd"
 import Displaymap from "./components/maps/Displaymap"
 import Updatemap from "./components/maps/Updatemap"
+import axios from "axios"
 
 function App() {
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [currentSidebarTab, setCurrentSidebarTab] = useState("orderTab")
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false)
+
+
+  const location = useLocation()
 
   // Watch screen size
   useEffect(() => {
@@ -33,7 +37,7 @@ function App() {
 
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
-  }, [])
+  }, [location])
 
   // Click outside handlers
   const userMenuRef = useRef(null)
@@ -87,9 +91,12 @@ function App() {
                     setCurrentSidebarTab("orderTab")
                   }
                 }}
-                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${isSidebarOpen && currentSidebarTab === "orderTab"
-                  ? "text-white bg-indigo-600"
+                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${location.pathname === "/additems" || location.pathname === "/ManageItems"
+                  ? "text-white bg-[rgb(134,156,227)]"
                   : "text-gray-500 bg-white"
+                  } ${isSidebarOpen && currentSidebarTab === "orderTab"
+                    ? "text-gray-500 bg-indigo-600"
+                    : ""
                   }`}
               >
                 <Menu className="w-6 h-6" />
@@ -103,9 +110,12 @@ function App() {
                     setCurrentSidebarTab("mapTab")
                   }
                 }}
-                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${isSidebarOpen && currentSidebarTab === "mapTab"
-                  ? "text-white bg-indigo-600"
+                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${location.pathname === "/addmap" || location.pathname === "/ManageMaps"
+                  ? "text-white bg-[rgb(134,156,227)]"
                   : "text-gray-500 bg-white"
+                  } ${isSidebarOpen && currentSidebarTab === "mapTab"
+                    ? "text-gray-500 bg-indigo-600"
+                    : ""
                   }`}
               >
                 <Map className="w-6 h-6" />
@@ -198,7 +208,7 @@ function App() {
                   <div className="flex-1 px-4 space-y-2 overflow-hidden hover:overflow-auto">
                     <NavLink
                       to="/additems"
-                      className="flex items-center w-full space-x-2 text-indigo-600 rounded-lg transition-colors group hover:bg-indigo-600 hover:text-white"
+                      className={`flex items-center w-full space-x-2 text-indigo-600 rounded-lg transition-colors group hover:bg-indigo-600 hover:text-white ${location.pathname === "/additems" ? "text-white bg-[rgb(134,156,227)]" : " "}`}
                     >
                       <span className="p-2 rounded-lg group-hover:bg-indigo-700 group-hover:text-white">
                         <Plus className="w-6 h-6" />
@@ -207,7 +217,7 @@ function App() {
                     </NavLink>
                     <NavLink
                       to="/ManageItems"
-                      className="flex items-center space-x-2 text-indigo-600 transition-colors rounded-lg group hover:bg-indigo-600 hover:text-white"
+                      className={`flex items-center space-x-2 text-indigo-600 transition-colors rounded-lg group hover:bg-indigo-600 hover:text-white ${location.pathname === "/ManageItems" ? "text-white bg-[rgb(134,156,227)]" : " "}`}
                     >
                       <span className="p-2 transition-colors rounded-lg group-hover:bg-indigo-700 group-hover:text-white">
                         <img src="https://static.thenounproject.com/png/1326930-512.png" alt="done" className='w-6 h-6' />
@@ -233,7 +243,7 @@ function App() {
                   <div className="flex-1 px-4 space-y-2 overflow-hidden hover:overflow-auto">
                     <NavLink
                       to="/addmap"
-                      className="flex items-center w-full space-x-2 text-indigo-600 rounded-lg transition-colors group hover:bg-indigo-600 hover:text-white"
+                      className={`flex items-center w-full space-x-2 text-indigo-600 rounded-lg transition-colors group hover:bg-indigo-600 hover:text-white${location.pathname === "/addmap" ? "text-white bg-[rgb(134,156,227)]" : " "}`}
                     >
                       <span className="p-2 rounded-lg group-hover:bg-indigo-700 group-hover:text-white">
                         <Plus className="w-6 h-6" />
@@ -242,7 +252,7 @@ function App() {
                     </NavLink>
                     <NavLink
                       to="/ManageMaps"
-                      className="flex items-center space-x-2 text-indigo-600 rounded-lg transition-colors  group hover:bg-indigo-600 hover:text-white"
+                      className={`flex items-center space-x-2 text-indigo-600 rounded-lg transition-colors  group hover:bg-indigo-600 hover:text-white ${location.pathname === "/ManageMaps" ? "text-white bg-[rgb(134,156,227)]" : " "}`}
                     >
                       <span className="p-2 transition-colors rounded-lg group-hover:bg-indigo-700 group-hover:text-white">
                         <MapPinCheck className="w-6 h-6" />
@@ -274,7 +284,15 @@ function App() {
             <Route path="/" element={<Navigate to={'/addmap'} />} />
             <Route path='/addmap' element={<MapAdd />} />
             <Route path='/Managemaps' element={<Displaymap />} />
-            <Route path='/updatemaps' element={<Updatemap />} />
+            {/* <Route path='/updatemaps' element={<Updatemap />} /> */}
+            <Route path='/edit-map/:id' element={<Updatemap />}
+              loader={async ({ params }) => {
+                console.log(params)
+                const resposne = await axios.get(`http://localhost:8080/slots/find/${params.id}`)
+                return resposne.json()
+              }
+              }
+            />
           </Routes>
         </div>
 

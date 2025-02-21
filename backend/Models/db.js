@@ -1,12 +1,11 @@
 const mongoose = require("mongoose")
 
-const mongo_url=process.env.MONGODB_CON
+const mongo_url = process.env.MONGODB_CON
 
 mongoose.connect(mongo_url)
-    .then(()=>{
+    .then(() => {
         console.log("mongodb connected successfully");
     })
-    .catch((err)=>{
+    .catch((err) => {
         console.log(`mongodb connection failed : ${err}`);
     })
- 

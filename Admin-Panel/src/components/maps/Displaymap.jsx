@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import axios from 'axios'
+import { NavLink } from 'react-router-dom'
 
 const Displaymap = () => {
 
@@ -73,9 +74,9 @@ const Displaymap = () => {
             <div className="address">
               {data.address}
             </div>
-            <div className="update bg-blue-800 text-white p-2 flex justify-center rounded-lg">
+            <NavLink to={`/edit-map/${data._id}`} className="update bg-blue-800 text-white p-2 flex justify-center rounded-lg">
               <input type="button" value="Update" />
-            </div>
+            </NavLink>
             <div onClick={() => removemap(data._id)} className="remove bg-blue-500 text-white p-2 flex justify-center rounded-lg cursor-pointer">
               <input type="button" value="X" />
             </div>
