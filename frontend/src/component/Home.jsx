@@ -1,76 +1,100 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { handleerror, handlesuccess } from '../assets/utility'
-import { ToastContainer } from 'react-toastify'
-import ResponsiveSidebar from './ResponsiveSidebar'
-import MainContent from './MainContent'
-import Profile from './Profile'
-import DashboardTasks from './DashboardTasks'
-import Maps from './Maps'
-const Home = () => {
-    
-    const [loggeduser, setloggeduser] = useState('')
-    const navigate = useNavigate()
-    useEffect(() => {
-        setloggeduser(localStorage.getItem('loggeduser'))
-    }, [])
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import ResponsiveSidebar from "./ResponsiveSidebar";
+import Slider from "./Slider";
+import CarSlider from "./Slider";
+import Footer from "./Footer";
+import FuturisticVehicleSlider from "./FuturisticVehicleSlider";
+import VolthubMission from "./VolthubMission";
 
-    setTimeout(() => {
-        if (!localStorage.getItem('token')) {
-            navigate('/login')
-        }
-    }, 10)
+const Home = () => {
+  const [loggedUser, setLoggedUser] = useState(localStorage.getItem("loggeduser") || "");
+  const navigate = useNavigate();
+
+  // Reference to the FuturisticVehicleSlider section
+  const futuristicSectionRef = useRef(null);
+
+  // Function to scroll to the FuturisticVehicleSlider
+  const scrollToFuturisticSection = () => {
+    if (futuristicSectionRef.current) {
+      futuristicSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  useEffect(() => {
+    document.body.classList.add("bg-black", "m-0", "p-0");
 
     const fetchProducts = async () => {
-        try {
-            const url = "http://localhost:8080/products/"
-            const headers = {
-                headers: {
-                    'authorization': localStorage.getItem('token')
-                }
-            }
-            const response = await fetch(url, headers)
-            const result = await response.json()
-            console.log(result);
+      try {
+        const url = "http://localhost:8080/products/";
+        const headers = {
+          Authorization: localStorage.getItem("token"),
+          Accept: "application/json",
+        };
 
-        } catch (error) {
-            handleerror(error)
-        }
-    }
+        const response = await fetch(url, { headers });
+        if (!response.ok) throw new Error("Failed to fetch products");
 
-    useEffect(() => {
-        fetchProducts()
-    }, [])
+        const result = await response.json();
+        console.log(result);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
 
-    const handlelogout = (e) => {
-        localStorage.removeItem('loggeduser')
-        localStorage.removeItem('token')
-        handlesuccess('User Loggedout')
-        setTimeout(() => {
-            navigate('/login')
-        }, 1000);
-    }
+    fetchProducts();
 
+    return () => {
+      document.body.classList.remove("bg-black", "m-0", "p-0");
+    };
+  }, []);
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-
-    const toggleSidebar = () => {
-        setIsSidebarOpen(!isSidebarOpen)
-    }
-
-    return (
-
-        <div className='home md:grid grid-cols-header'>
-            <ResponsiveSidebar />
-            <main className="md:pl-16 md:transition-all md:duration-300 md:data-[expanded=true]:pl-64">
-                home
-            </main>
+  return (
+    <div className="bg-black min-h-screen text-white">
+      <main>
+        <ResponsiveSidebar />
+        <CarSlider scrollToSection={scrollToFuturisticSection} />
+        <VolthubMission />
+        <section className="py-12 px-10 bg-white text-black font-montserrat">
+          <div className="container mx-auto max-w-7xl">
+            <div className="flex flex-col md:flex-row items-start justify-between">
+              <h2 className="text-4xl font-bold md:w-1/2 leading-snug">
+                Explore Our Range of Electric Bikes
+              </h2>
+              <p className="text-base md:w-1/2 leading-relaxed">
+                Discover the perfect electric bike for your needs. At VOLTHUB, we offer a diverse selection of 
+                electric vehicles, each designed to provide a seamless and efficient ride. Whether you’re commuting 
+                or exploring, our bikes are equipped to enhance your journey.
+              </p>
+            </div>
+            <div className="mt-10 flex flex-col md:flex-row justify-between">
+              <div className="md:w-1/2">
+                <h3 className="text-lg font-semibold">Eco-Friendly</h3>
+                <p className="text-sm mt-2">
+                  Our bikes are designed to reduce carbon footprint while providing a smooth ride.
+                </p>
+              </div>
+              <div className="md:w-1/2">
+                <h3 className="text-lg font-semibold">Advanced Tech</h3>
+                <p className="text-sm mt-2">
+                  Equipped with the latest navigation and battery technology for optimal performance.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+        {/* Attach the ref to the section */}
+        <div ref={futuristicSectionRef}>
+          <FuturisticVehicleSlider />
         </div>
 
+        <Footer />
+      </main>
+      <ToastContainer />
+    </div>
+  );
+};
 
-
-
-    )
-}
-
-export default Home
+export default Home;

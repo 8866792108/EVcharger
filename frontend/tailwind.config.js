@@ -22,13 +22,15 @@ export default {
           '0 45px 65px rgba(0, 0, 0, 0.15)'
         ]
       },
-      gridTemplateColumns:{
-        'header':'auto 350px',
-        '350a':'350px auto'
-      }
+      gridTemplateColumns: {
+        'header': '350px auto'
+      },
+      fontFamily: {
+        montserrat: ["Montserrat", "sans-serif"],
+        playfair: ["Playfair Display", "serif"],
+      },
     },
   },
   plugins: [],
   darkMode: "class"
 }
-

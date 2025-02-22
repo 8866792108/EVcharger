@@ -1,53 +1,112 @@
-.container-shadow{
-    box-shadow: 0 0 20px rgba(0,0,0,0.7);
-}
-.item-shadow{
-    box-shadow: 0 8px 10px rgba(0,0,0,0.6);
-}
-.FadeInAnm{
-    animation: fadein 0.7s;
+.slider-container {
+  position: relative;
+  width: 100%;
+  height: 100vh; /* Full-screen slider */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
-@keyframes fadein {
-    from{
-       opacity: 0;
-    }
-    to{
-       opacity:1;
-    }
+.slider-image {
+  width: 40%; /* Reduce the width */
+  height: 100vh; /* Reduce the height */
+  max-width: 80vh;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.5s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px; /* Optional: Adds rounded corners */
 }
-.MoveUpAnm{
-    animation:moveup 0.7s;
+
+.slider-content {
+  color: white;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 10px;
 }
-@keyframes moveup {
-    from{
-        transform: translate(0,50px);
-        filter:blur(10px)
-    }
-    to{
-        transform: translate(0);
-        filter: blur(0);
-    }
+
+.slider-buttons {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  transform: translateY(-50%);
 }
-.forwardslideanm{
-    animation:forwardanm 0.7s;
+
+.slider-buttons button {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 24px;
+  transition: 0.3s;
 }
-@keyframes forwardanm {
-    from{
-       transform: translate(100px,0);
-    }
-    to{
-       transform:translate(0)
-    }
+
+.slider-buttons button:hover {
+  background: rgba(0, 0, 0, 0.8);
 }
-.backwardSlideanm{
-    animation:backwardslide 0.7s;
+
+/* Thumbnails Section */
+.slider-thumbnails {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 20px;
 }
-@keyframes backwardslide {
-    from{
-        transform: translate(-100px,0);
-     }
-     to{
-        transform:translate(0)
-     }
+
+.thumbnail {
+  width: 100px;
+  height: 80px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: 0.3s;
+  text-align: center;
+}
+
+.thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.thumbnail p {
+  font-size: 12px;
+  color: black;
+  margin-top: 5px;
+}
+
+.thumbnail:hover {
+  border-color: #000;
+}
+
+.thumbnail.active {
+  border: 2px solid #ff4c4c;
+}
+
+.zzbutton-74 {
+  background-color: #4caf50;
+  border: 2px solid #fff;
+  border-radius: 30px;
+  box-shadow: #fff 4px 4px 0 0;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 600;
+  font-size: 16px;
+  padding: 0 15px;
+  line-height: 45px;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
 }

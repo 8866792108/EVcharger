@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&family=Playfair+Display:wght@400..900&display=swap');
+
 
 @tailwind base;
 @tailwind components;
@@ -6,13 +7,10 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  /* background-color: rgb(25, 18, 18);
-  color: white; */
+  background-color: rgb(255, 255, 255);
+  color: white;
 }
 
-.family-fantasy{
-  font-family: fantasy;
-}
 .navbar{
     width: 100%;
 }
@@ -22,4 +20,14 @@ body {
 }
 .grid-auto-auto-auto{
   grid-template-columns: auto auto auto;
+}
+
+.logo_shadow{
+  position: absolute;
+  top: -200px;
+  width: 250px;
+  height: 250px;
+  opacity: 0.3;
+  background: linear-gradient(210deg, #ff0000 59.36%, #ff0000 81.49%), #d9d9d9;
+  filter: blur(75px);
 }

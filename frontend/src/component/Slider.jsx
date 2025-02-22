@@ -1,92 +1,56 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import slides from "../assets/img/imgdata"; // Import images
+import "./Slider.css";
 
-const slides = [
-  {
-    image: "../src/assets/imgs/pic1.png",
-    name: "LUNDEV",
-    description: "Tình ru anh chơi đùa\nChưa kịp chơi đùa mà em đã xa anh",
-    specs: ["Năm sản xuất 2022", "Tốc độ tối đa 100km/h", "Dung lượng pin 5.2 kWh"]
-  },
-  {
-    image: "../src/assets/imgs/pic2.png",
-    name: "EVO-X",
-    description: "Trải nghiệm tốc độ với EVO-X, thiết kế tương lai và mạnh mẽ.",
-    specs: ["Năm sản xuất 2023", "Tốc độ tối đa 120km/h", "Dung lượng pin 6.0 kWh"]
-  },
-  {
-    image: "../src/assets/imgs/pic3.png",
-    name: "EVO-X",
-    description: "Trải nghiệm tốc độ với EVO-X, thiết kế tương lai và mạnh mẽ.",
-    specs: ["Năm sản xuất 2023", "Tốc độ tối đa 120km/h", "Dung lượng pin 6.0 kWh"]
-  },
-  {
-    image: "../src/assets/imgs/pic4.png",
-    name: "X-TREME",
-    description: "Dẫn đầu phong cách với động cơ mạnh mẽ và kiểu dáng ấn tượng.",
-    specs: ["Năm sản xuất 2024", "Tốc độ tối đa 130km/h", "Dung lượng pin 7.0 kWh"]
-  }
-];
-
-export default function CarSlider() {
+export default function CarSlider({ scrollToSection }) {  // Accept scroll function as prop
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState("right");
+  const [direction, setDirection] = useState(1);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDirection("right");
-      setCurrent((prev) => (prev + 1) % slides.length);
+      handleNext();
     }, 5000);
     return () => clearInterval(interval);
   }, []);
 
   const handlePrev = () => {
-    setDirection("left");
+    setDirection(-1);
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
   const handleNext = () => {
-    setDirection("right");
+    setDirection(1);
     setCurrent((prev) => (prev + 1) % slides.length);
   };
 
   return (
-    <div className="relative w-full h-screen bg-black flex justify-center items-center text-white">
-      <div className="absolute top-5 left-10 flex items-center space-x-5 text-sm">
-        <img src="/logo.png" alt="Logo" className="w-10 h-10" />
-        <ul className="flex space-x-5">
-          <li>HOME</li>
-          <li>CATEGORY</li>
-          <li>INFO</li>
-          <li>CONTACT</li>
-        </ul>
-      </div>
-      <motion.div
-        key={current}
-        className="absolute w-3/4 h-auto"
-        initial={{ opacity: 0, scale: direction === "right" ? 0.2 : 2.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7 }}
-      >
-        <img src={slides[current].image} alt="Vehicle" className="w-full" />
-      </motion.div>
-      <div className="absolute left-10 top-1/3 text-left">
-        <h1 className="text-5xl font-bold">{slides[current].name}</h1>
-        <p className="text-lg mt-2">{slides[current].description}</p>
-        <button className="mt-4 px-4 py-2 bg-black rounded-lg">See more →</button>
-      </div>
-      <div className="absolute right-10 top-1/3">
-        <h2 className="text-2xl font-bold">CẤU HÌNH</h2>
-        <ul className="mt-2 space-y-2">
-          {slides[current].specs.map((spec, index) => (
-            <li key={index} className="flex items-center">• {spec}</li>
-          ))}
-        </ul>
+    <div className="relative w-full h-screen bg-black overflow-hidden">
+      {/* Image Slider */}
+      <div className="relative w-full h-full flex items-center justify-center">
+        <AnimatePresence custom={direction} mode="wait">
+          <motion.img
+            key={current}
+            src={slides[current].image}
+            alt="Vehicle"
+            className="absolute w-full h-full object-cover brightness-50"
+            initial={{ x: direction * 1000, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -direction * 1000, opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+          />
+        </AnimatePresence>
       </div>
 
-      <div className="absolute bottom-5 flex space-x-3">
-        <button onClick={handlePrev}>◀</button>
-        <button onClick={handleNext}>▶</button>
+      {/* Improved Information Section */}
+      <div className="absolute top-1/4 left-10 md:left-20 bg-opacity-70 p-6 rounded-xl text-white w-[90%] md:w-[40%] shadow-lg">
+        <h1 className="text-3xl font-bold mb-3">Discover <span className="text-green-400">Electric Freedom</span> with <span className="font-extrabold">VOLTHUB</span></h1>
+        <p className="text-base text-white leading-relaxed opacity-90 mb-4">Experience the future of mobility with our advanced electric vehicle solutions, designed for efficiency and sustainability.</p>
+        <div className="flex space-x-4">
+          {/* Trigger the scroll function on click */}
+          <button onClick={scrollToSection} className="button-74">Let's Charged ⚡</button>
+          <button className="button-75">Our Services</button>
+        </div>
       </div>
     </div>
   );

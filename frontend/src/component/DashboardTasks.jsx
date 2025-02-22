@@ -4,9 +4,10 @@ import Modal from './Modal'
 
 const DashboardTasks = () => {
   return (
-    <div className='dashboard md:grid grid-cols-header'>
-      <ResponsiveSidebar />
-      <main className="md:pl-16 md:transition-all md:duration-300 md:data-[expanded=true]:pl-64">
+    <div className='home flex flex-col items-center justify-center min-h-screen'>
+                {/* Horizontal Sidebar */}
+                <ResponsiveSidebar />
+      <main className="flex-1 w-full max-w-4xl p-4 md:transition-all md:duration-300">
         Dashboard
       </main>
     </div>

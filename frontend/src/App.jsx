@@ -1,37 +1,39 @@
-import { useState } from 'react'
-import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
-import Login from './component/Login'
-import SignUp from './component/SignUp';
+import React from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from './component/Home';
 import Profile from './component/Profile';
-import DashboardTasks from './component/DashboardTasks'
-import Maps from './component/Maps'
-import Updateuser from './component/updateuser';
-import Slider from './component/Slider';
-import Evmap from './components/Evmap';
-import Navbar from './components/Navbar';
-function App() {
+import DashboardTasks from './component/DashboardTasks';
+import Maps from './component/Maps';
+import CarSlider from './component/Slider'; // Import CarSlider component
 
+const App = () => {
   return (
-    <>
-      {/* <Routes>
-        <Route path="/" element={<Navigate to='/home' />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/home" element={<Home />} />
-        <Route path='/dashboard' element={<DashboardTasks/>} />
-          <Route path='/profile' element={<Profile/>} />
-          <Route path='/updateuser' element={<Updateuser/>} />
-          <Route path='/currentuser' element={<Maps/>} />
-          <Route path='/ordermanage' element={<Maps/>} />
-      </Routes> */}
-      {/* <div className='w-screen h-screen flex items-center justify-center overflow-hidden'>
-      </div> */}
-        <Navbar />
-        <div className="bg-gray-300 h-[200vh]"></div>
-        <Evmap />
-    </>
-  )
-}
+    <div>
+      {/* The routes will render the corresponding component based on the URL */}
+      <Routes>
+        {/* Redirect root (/) to '/home' */}
+        <Route path="/" element={<Navigate to="/home" />} />
 
-export default App
+        {/* Route for the Home page */}
+        <Route path="/home" element={<Home />} />
+
+        {/* Route for Dashboard */}
+        <Route path="/dashboard" element={<DashboardTasks />} />
+
+        {/* Route for Profile */}
+        <Route path="/profile" element={<Profile />} />
+
+        {/* Route for Current User */}
+        <Route path="/currentuser" element={<Maps />} />
+
+        {/* Route for Order Management */}
+        <Route path="/ordermanage" element={<Maps />} />
+
+        {/* Route for the CarSlider component */}
+        <Route path="/car-slider" element={<CarSlider />} />
+      </Routes>
+    </div>
+  );
+};
+
+export default App;
