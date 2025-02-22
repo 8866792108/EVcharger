@@ -51,7 +51,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="bg-black min-h-screen text-white">
+    <div className="bg-black min-h-screen text-white dark:text-gray-500">
       <main>
         <ResponsiveSidebar />
         <CarSlider scrollToSection={scrollToFuturisticSection} />
