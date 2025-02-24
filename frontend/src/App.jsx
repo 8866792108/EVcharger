@@ -5,6 +5,7 @@ import Profile from './component/Profile';
 import DashboardTasks from './component/DashboardTasks';
 import Maps from './component/Maps';
 import CarSlider from './component/Slider'; // Import CarSlider component
+import Evmap from './component/Evmap';
 
 const App = () => {
   return (
@@ -27,7 +28,7 @@ const App = () => {
         <Route path="/currentuser" element={<Maps />} />
 
         {/* Route for Order Management */}
-        <Route path="/ordermanage" element={<Maps />} />
+        <Route path="/ordermanage" element={<Evmap />} />
 
         {/* Route for the CarSlider component */}
         <Route path="/car-slider" element={<CarSlider />} />
