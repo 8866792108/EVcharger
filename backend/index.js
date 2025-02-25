@@ -40,7 +40,7 @@ app.get("/", (req, res) => {
     res.send("welcome users")
 })
 
-app.post("/user/signup", upload.single("image"), signupValidation, signup)
+// app.post("/user/signup", upload.single("image"), signupValidation, signup)
 app.post("/slots/setitems",upload.single("image"), setitems)
 
 

@@ -5,6 +5,7 @@ const { schema } = require("../Models/user");
 const signupValidation = (req, res, next) => {
 
     console.log(req.body)
+    
     const Schema = Joi.object({
         name: Joi.string().min(4).max(20).required().messages({'string.empty': 'Name is required'}),
         email: Joi.string().email().required(),

@@ -2,44 +2,21 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { handleerror, handlesuccess } from "../assets/utility"
-import { Upload, User } from "lucide-react";
-import axois from 'axios'
+import axios from "axios";
+
 const SignUp = () => {
+
 
   const [signupinfo, setsignupinfo] = useState({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    confirmpwd: ''
   })
 
-  const [Image, setImage] = useState({
-    previewurl: null,
-    file: null
-  })
-
-  const handlePhotoChange = e => {
-    if (e.target.files[0].type === 'image/png' || e.target.files[0].type === 'image/jpeg') {
-      //preview show
-      const reader = new FileReader()
-      reader.onload = (r) => {
-        setImage({
-          previewurl: r.target.result,
-          file: e.target.files[0]
-        })
-        console.log(r.target.result);
-        console.log(e.target.files[0])
-      }
-      reader.readAsDataURL(e.target.files[0])
-    } else {
-      handleerror("Invalid File !!")
-      Image.file = null
-    }
-
-  }
   const Navigate = useNavigate()
 
-  const hadlechange = (e) => {
+  const handlechange = (e) => {
     const { name, value } = e.target
     const copysignupinfo = { ...signupinfo }
     copysignupinfo[name] = value
@@ -49,142 +26,159 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { name, email, password } = signupinfo
-    // if (!name || !email || !password) {
-    //   return handleerror("name or email or password are required")
-    // }
+    const { name, email, password, confirmpwd } = signupinfo
+
+    if (password != confirmpwd) {
+      return toast.error("Both password is not same", {
+        position: "top-center",
+        autoClose: 2000
+      })
+    }
     console.log("Your name is: ", signupinfo.name);
-    const formdata = new FormData();
-    formdata.append("image", Image.file)
-    formdata.append("name", signupinfo.name)
-    formdata.append("email", signupinfo.email)
-    formdata.append("password", signupinfo.password)
+    const formdata = new FormData()
+    formdata.append("name", name)
+    formdata.append("email", email)
+    formdata.append("password", password)
+
+    console.log(formdata);
+
 
     try {
       const url = "http://localhost:8080/user/signup"
 
-      const response = await axois.post(url, formdata, {
+      const response = await axios.post(url, formdata, {
         headers: {
-          "Content-Type": "multipart/form-data"
+          'Content-Type': 'application/json'
         }
       })
       console.log("this is the response data::: " + response.data)
       const { message, success, error } = await response.data
-      console.log(message, success, error);
+      // console.log(message, success, error);
 
       if (success) {
-        handlesuccess(message)
+        toast.success(message, {
+          position: "top-center",
+          autoClose: 2000
+        })
         setTimeout(() => {
           Navigate('/login')
         }, 1000)
       } else if (error) {
         console.log(error)
         const details = error?.details[0].message
-        handleerror(details)
-      } else if (!success) {
-        handleerror(message)
+        toast.error(details, {
+          position: "top-center",
+          autoClose: 2000
+        })
+      } else {
+        toast.error(message, {
+          position: "top-center",
+          autoClose: 2000
+        })
       }
-      console.log(result);
 
     } catch (error) {
-      handleerror(error)
+      toast.error(error, {
+        position: "top-center",
+        autoClose: 2000
+      })
     }
   };
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-blue-500 to-pink-500">
-      <div className="bg-white rounded-3xl shadow-2xl p-8 w-full max-w-md">
-        <div className="text-center">
-          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 mx-auto mb-4">
-
+    <div className="bg-white text-black min-h-screen flex flex-col items-center justify-center">
+      <div className="w-full max-w-6xl mx-auto p-4">
+        {/* Navbar */}
+        <nav className="flex justify-between items-center py-4">
+          <ul className="flex space-x-6">
+            {["Home", "About", "Blog", "Pages", "Contact"].map((item) => (
+              <li key={item}>
+                <a className="text-black hover:text-gray-400" href="#">{item}</a>
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center space-x-4">
+            <a className="text-black" href="#">English</a>
+            <a className="text-black" href="#">Sign in</a>
+            <a className="bg-black text-white px-4 py-2 rounded-full" href="#">Register</a>
           </div>
-          <h1 className="text-3xl font-bold text-blue-500 mb-6">Sign Up</h1>
-        </div>
+        </nav>
 
-        <form onSubmit={handleSubmit} className=" text-black">
-          {/* preview uploaded image */}
-          <div className="flex justify-center">
-            <div className="relative mb-10">
-              <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                {Image.previewurl ? (
-                  <img
-                    src={Image.previewurl}
-                    alt="Profile Preview"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="h-12 w-12 text-gray-400" />
-                )}
+        {/* Main Content */}
+        <div className="flex flex-col lg:flex-row items-center justify-center lg:space-x-8 mt-8">
+          {/* Right Side - Signup Form */}
+          <div className="w-full lg:w-1/2 mt-8 lg:mt-0 bg-transparent text-black p-8 rounded-lg">
+            <h1 className="text-3xl font-bold mb-4">Hello!<br /> Create Your Account</h1>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium">Full Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  onChange={handlechange}
+                  value={signupinfo.name}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
               </div>
-              <label
-                htmlFor="photo-upload"
-                className="absolute bottom-0 right-0 bg-green-600 rounded-full p-2 cursor-pointer"
-              >
-                <Upload className="h-4 w-4 text-white" />
-              </label>
-              <input
-                id="photo-upload"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handlePhotoChange}
-              />
+              <div>
+                <label className="block text-sm font-medium">Enter Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  onChange={handlechange}
+                  value={signupinfo.email}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  onChange={handlechange}
+                  value={signupinfo.password}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium">Confirm Password</label>
+                <input
+                  type="password"
+                  name="confirmpwd"
+                  onChange={handlechange}
+                  value={signupinfo.confirmpwd}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <button className="w-full bg-black text-white py-2 rounded-lg" type="submit">Sign Up</button>
+            </form>
+
+            <div className="flex items-center my-4">
+              <hr className="flex-grow border-t border-gray-300" />
+              <span className="px-4 text-gray-500">Or sign up with</span>
+              <hr className="flex-grow border-t border-gray-300" />
             </div>
-          </div>
-          {/* Username Field */}
-          <div className="mb-4">
-            <input
-              type="text"
-              name="name"
-              onChange={hadlechange}
-              value={signupinfo.name}
-              placeholder="Username"
-              autoFocus
-              className="w-full py-3 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
 
-          {/* Email Field */}
-          <div className="mb-4">
-            <input
-              type="text"
-              name="email"
-              onChange={hadlechange}
-              placeholder="Email"
-              value={signupinfo.email}
-              className="w-full py-3 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
+            {/* Social Buttons */}
+            <div className="flex space-x-4 justify-center">
+              {["google", "apple", "facebook"].map((icon) => (
+                <button key={icon} className="bg-gray-100 p-2 rounded-full">
+                  <i className={`fab fa-${icon}`} />
+                </button>
+              ))}
+            </div>
+
+            <p className="text-center mt-4">
+              Already have an account? <a className="text-blue-500" href="/login">Sign In</a>
+            </p>
           </div>
 
-          {/* Password Field */}
-          <div className="mb-4">
-            <input
-              type="password"
-              name="password"
-              onChange={hadlechange}
-              placeholder="Password"
-              value={signupinfo.password}
-              className="w-full py-3 px-4 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
-            />
-          </div>
-
-          {/* Sign Up Button */}
-          <button
-            type="submit"
-            className="w-full py-3 bg-gradient-to-r from-pink-500 to-blue-400 text-white font-bold rounded-full hover:opacity-90 transition-all duration-300"
-          >
-            SIGN UP
-          </button>
-        </form>
-
-        {/* Back to Sign In */}
-        <div className="text-center mt-6 text-gray-600">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="text-blue-500 font-semibold hover:underline"
-          >
-            Sign in!
-          </Link>
+          {/* Left Side - Image */}
+          <img
+            src="https://storage.googleapis.com/a1aa/image/N0asow23DN_dD6Bnu1zNkoj15ysSrL2j8KWObgHcZ5I.jpg"
+            alt="Futuristic Robot"
+            className="w-full lg:w-1/2 rounded-lg"
+          />
         </div>
       </div>
       <ToastContainer />

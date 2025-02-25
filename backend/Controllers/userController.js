@@ -3,24 +3,16 @@ const userModel = require("../Models/user");
 const bcrypt = require("bcrypt");
 
 const signup = async (req, res) => {
-    console.log("file: ", req.file)
+
     console.log("body: ", req.body)
     try {
         const { name, email, password } = req.body;
         console.log("Your request body is: ", req.body);
-        if (!req.file || !req.file.filename) {
-            return res.status(400).json({
-                message: "Image upload is required",
-                success: false,
-            });
-        }
-
-        const { filename } = req.file;
 
         // Check if the user already exists
         const user = await userModel.findOne({ email });
         if (user) {
-            return res.status(409).json({
+            return res.status(200).json({
                 message: "User already exists",
                 success: false,
             });
@@ -29,7 +21,6 @@ const signup = async (req, res) => {
         // Create a new user
         const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = new userModel({
-            image: filename,
             name: name,
             email: email,
             password: hashedPassword

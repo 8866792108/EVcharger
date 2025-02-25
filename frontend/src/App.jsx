@@ -6,6 +6,8 @@ import DashboardTasks from './component/DashboardTasks';
 import Maps from './component/Maps';
 import CarSlider from './component/Slider'; // Import CarSlider component
 import Evmap from './component/Evmap';
+import LoginPage from './component/loginPage';
+import SignUp from './component/SignUp';
 
 const App = () => {
   return (
@@ -32,6 +34,9 @@ const App = () => {
 
         {/* Route for the CarSlider component */}
         <Route path="/car-slider" element={<CarSlider />} />
+
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignUp />} />
       </Routes>
     </div>
   );

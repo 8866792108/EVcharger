@@ -5,7 +5,7 @@ const {signupValidation, loginValidation}= require("../Middlewares/AuthValidate"
 router.post("/login",loginValidation,login)
 
 
-// router.post("/signup", signupValidation,signup)
+router.post("/signup", signupValidation,signup)
 
 
 module.exports = router
