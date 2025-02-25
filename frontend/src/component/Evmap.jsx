@@ -77,7 +77,7 @@ function Evmap() {
             try {
                 setInterval(interval)
                 const now = new Date()
-               
+
                 const requestData = {
                     startTime: now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
                     endTime: "8:00 PM",
@@ -276,7 +276,7 @@ function Evmap() {
                                         setInterval(e.target.value)
                                         fetchAvailableSlots(selectedSlot._id, e.target.value)
                                     }}
-                                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                                    className="mt-1 block w-full rounded-md border text-gray-800 border-gray-500 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                                 >
                                     <option value="20">20 minutes</option>
                                     <option value="30">30 minutes</option>
@@ -286,18 +286,26 @@ function Evmap() {
                         </div>
 
                         <div className="p-6 grid grid-cols-2 gap-4">
-                            {availableTimeSlots.map((timeSlot, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handleTimeSlotSelect(timeSlot)}
-                                    className="p-4 text-center rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all"
-                                >
-                                    <Calendar className="w-5 h-5 mx-auto mb-2 text-indigo-600" />
-                                    <p className="font-medium text-gray-900">{timeSlot.start}</p>
-                                    <p className="text-sm text-gray-500">to</p>
-                                    <p className="font-medium text-gray-900">{timeSlot.end}</p>
-                                </button>
-                            ))}
+                            {availableTimeSlots > 0
+                                ? availableTimeSlots.map((timeSlot, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleTimeSlotSelect(timeSlot)}
+                                        className="p-4 text-center rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all"
+                                    >
+                                        <Calendar className="w-5 h-5 mx-auto mb-2 text-indigo-600" />
+                                        <p className="font-medium text-gray-900">{timeSlot.start}</p>
+                                        <p className="text-sm text-gray-500">to</p>
+                                        <p className="font-medium text-gray-900">{timeSlot.end}</p>
+                                    </button>
+                                ))
+                                : <div className="flex justify-center items-center w-[36vw] h-[60vh] text-gray-500">
+                                    <div>
+                                        Not Available Slots
+                                    </div>
+                                </div>
+                            }
+                            { }
                         </div>
                     </div>
                 </div>
@@ -305,7 +313,7 @@ function Evmap() {
 
             {/* Payment Modal */}
             {showPaymentModal && selectedTimeSlot && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-900">
                     <div className="bg-white w-full max-w-md rounded-lg p-6">
                         <div className="flex items-center justify-between mb-4">
                             <h2 className="text-xl font-semibold text-gray-900">
