@@ -8,8 +8,23 @@ import CarSlider from './component/Slider'; // Import CarSlider component
 import Evmap from './component/Evmap';
 import LoginPage from './component/loginPage';
 import SignUp from './component/SignUp';
-
+import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
+
+  const GoogleAuthWrapper = ()=>{
+    return (
+      <GoogleOAuthProvider clientId='811730725449-o0icrsqm2p4usbv981nb0q5eq19ei5e0.apps.googleusercontent.com'>
+        <SignUp></SignUp>
+      </GoogleOAuthProvider>
+    )
+  }
+  const GoogleAuthWrapperlogin = ()=>{
+    return (
+      <GoogleOAuthProvider clientId='811730725449-o0icrsqm2p4usbv981nb0q5eq19ei5e0.apps.googleusercontent.com'>
+        <LoginPage></LoginPage>
+      </GoogleOAuthProvider>
+    )
+  }
   return (
     <div>
       {/* The routes will render the corresponding component based on the URL */}
@@ -35,8 +50,8 @@ const App = () => {
         {/* Route for the CarSlider component */}
         <Route path="/car-slider" element={<CarSlider />} />
 
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<GoogleAuthWrapperlogin />} />
+        <Route path="/signup" element={<GoogleAuthWrapper />} />
       </Routes>
     </div>
   );

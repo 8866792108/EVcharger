@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../Models/user");
 const bcrypt = require("bcrypt");
+const { oauth2client } = require("../utils/googleConfig");
+const axios = require('axios')
 
 const signup = async (req, res) => {
 
@@ -74,9 +76,92 @@ const login = async (req, res) => {
 }
 
 
+const googlelogin = async (req, res) => {
+    try {
+        console.log("Received code:", req.query.code);
+
+        if (!req.query.code) {
+            return res.status(400).json({ success: false, message: "Authorization code is missing." });
+        }
+
+        const { code } = req.query;
+        const { tokens } = await oauth2client.getToken(code);
+
+        oauth2client.setCredentials(tokens);
+
+        console.log("the tokens is the :: ", tokens.access_token)
+
+        const userInfoRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${tokens.access_token}`);
+        console.log("Google Login Details:", userInfoRes.data);
+
+        const { email, name, picture } = userInfoRes.data;
+        let user = await userModel.findOne({ email });
+
+        if (!user) {
+            user = await userModel.create({ name, email, password: picture });
+        }
+
+        const token = jwt.sign({ _id: user._id, email }, process.env.JWT_TOKEN);
+
+        return res.status(200).json({
+            success: true,
+            message: 'Success',
+            token,
+            user
+        });
+    } catch (error) {
+        console.error("Google Login Error:", error.response ? error.response.data : error.message);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error'
+        });
+    }
+};
+
+// const googlelogin = async (req, res) => {
+//     try {
+//         const { code } = req.query
+
+//         const googleRes = await oauth2client.getToken(code)
+
+//         // oauth2client.setCredentials(googleRes.tokens);
+
+//         console.log(googleRes)
+//         const UserRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`)
+
+//         console.log("Google Login Details :: " + UserRes.data)
+//         const { email, name, picture } = UserRes.data
+//         let user = await userModel.findOne({ email })
+
+//         if (!user) {
+//             user = await userModel.create({
+//                 name,
+//                 email,
+//                 password: picture
+//             })
+//         }
+
+//         const { _id } = user
+//         const token = jwt.sign({ _id, email }, process.env.JWT_TOKEN)
+
+//         return res.status(200).json({
+//             success: true,
+//             message: 'Success',
+//             token,
+//             user
+//         })
+//     } catch (error) {
+//         console.log("the error :: " , error)
+//         return res.status(200).json({
+//             success: false,
+//             message: 'Internal Server Error'
+//         })
+//     }
+// }
 
 
 module.exports = {
     signup,
-    login
+    login,
+    googlelogin
 }

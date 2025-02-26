@@ -1,4 +1,6 @@
+import { UserCircle2 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -35,9 +37,14 @@ const Navbar = () => {
 
         {/* Buttons */}
         <div className="flex space-x-4">
-          <button className="button-75 border-2 border-white text-white px-4 py-2 rounded-full hover:bg-white hover:text-black transition">
-            Explore
-          </button>
+          {!localStorage.getItem("email")
+          ?<NavLink to={'/login'} className="button-75 border-2 border-white text-white px-4 py-2 rounded-full hover:bg-white hover:text-black transition">
+            Login
+          </NavLink>
+          : <div className="button-75 border-2 border-white text-white px-4 py-2 rounded-full hover:bg-white hover:text-black transition">
+             <img src={localStorage.getItem("image") || "https://th.bing.com/th/id/OIP.Z90mcRJHpvhKKhoFsy_2rwHaHa?pid=ImgDet&w=185&h=185&c=7&dpr=1.3"} alt="" />
+             </div>
+          }
           <button className="button-74 bg-green-500 px-4 py-2 rounded-full text-white hover:bg-green-600 transition">
             Contact Us
           </button>
