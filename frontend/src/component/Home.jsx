@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import styled from "styled-components";
 import ResponsiveSidebar from "./ResponsiveSidebar";
 import CarSlider from "./Slider";
 import Footer from "./Footer";
@@ -92,6 +93,11 @@ const Home = () => {
                 </p>
               </div>
             </div>
+
+            {/* Styled Contact Us Button */}
+            <div className="mt-6 flex justify-center">
+              <StyledButton>Contact Us</StyledButton>
+            </div>
           </div>
         </section>
 
@@ -114,5 +120,30 @@ const Home = () => {
     </div>
   );
 };
+
+// Styled Components
+const StyledButton = styled.button`
+  background-color: #22c55e; /* Same green as Contact Us button */
+  color: white;
+  border-radius: 10em;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0.8em 1.6em;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border: none;
+  box-shadow: 0 0 0 0 #1e9e4a;
+
+  &:hover {
+    background-color: #1e9e4a; /* Darker green on hover */
+    transform: translateY(-4px) translateX(-2px);
+    box-shadow: 2px 5px 0 0 #166534;
+  }
+
+  &:active {
+    transform: translateY(2px) translateX(1px);
+    box-shadow: 0 0 0 0 #166534;
+  }
+`;
 
 export default Home;
