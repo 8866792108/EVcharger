@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import ResponsiveSidebar from "./ResponsiveSidebar";
-import Slider from "./Slider";
 import CarSlider from "./Slider";
 import Footer from "./Footer";
 import FuturisticVehicleSlider from "./FuturisticVehicleSlider";
@@ -10,6 +9,8 @@ import VolthubMission from "./VolthubMission";
 
 const Home = () => {
   const [loggedUser, setLoggedUser] = useState(localStorage.getItem("loggeduser") || "");
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   // Reference to the FuturisticVehicleSlider section
@@ -22,9 +23,14 @@ const Home = () => {
     }
   };
 
+  // Function to scroll back to top
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   useEffect(() => {
     document.body.classList.add("bg-black", "m-0", "p-0");
-
+    
     const fetchProducts = async () => {
       try {
         const url = "http://localhost:8080/products/";
@@ -37,9 +43,11 @@ const Home = () => {
         if (!response.ok) throw new Error("Failed to fetch products");
 
         const result = await response.json();
-        console.log(result);
+        setProducts(result);
       } catch (error) {
         console.error("Error fetching products:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -56,6 +64,8 @@ const Home = () => {
         <ResponsiveSidebar />
         <CarSlider scrollToSection={scrollToFuturisticSection} />
         <VolthubMission />
+
+        {/* Loading State for Products */}
         <section className="py-12 px-10 bg-white text-black font-montserrat">
           <div className="container mx-auto max-w-7xl">
             <div className="flex flex-col md:flex-row items-start justify-between">
@@ -84,11 +94,19 @@ const Home = () => {
             </div>
           </div>
         </section>
-        
-        {/* Attach the ref to the section */}
+
+        {/* Futuristic Section */}
         <div ref={futuristicSectionRef}>
           <FuturisticVehicleSlider />
         </div>
+
+        {/* Back to Top Button */}
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-5 right-5 bg-blue-600 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+        >
+          ⬆
+        </button>
 
         <Footer />
       </main>
