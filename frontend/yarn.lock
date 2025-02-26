@@ -478,6 +478,11 @@
   resolved "https://registry.npmjs.org/@react-leaflet/core/-/core-3.0.0.tgz"
   integrity sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==
 
+"@react-oauth/google@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.npmjs.org/@react-oauth/google/-/google-0.12.1.tgz"
+  integrity sha512-qagsy22t+7UdkYAiT5ZhfM4StXi9PPNvw0zuwNmabrWyMKddczMtBIOARflbaIj+wHiQjnMAsZmzsUYuXeyoSg==
+
 "@react-stately/utils@^3.10.5":
   version "3.10.5"
   resolved "https://registry.npmjs.org/@react-stately/utils/-/utils-3.10.5.tgz"
