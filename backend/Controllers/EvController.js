@@ -60,6 +60,7 @@ const findById = async (req, res) => {
 
         const slot = await slotmodel.findById(id)
 
+        console.log("The removed Slots are :: ",slot)
         if (!slot) {
             return res.status(404).json({ message: "Slot Not Found" });
         }

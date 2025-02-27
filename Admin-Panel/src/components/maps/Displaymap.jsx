@@ -19,9 +19,7 @@ const Displaymap = () => {
   const removemap = async (slotid) => {
     const formdata = new FormData()
     formdata.append("id", slotid)
-    const response = await axios.post("http://localhost:8080/slots/remove", {
-      "id": slotid
-    });
+    const response = await axios.post(`http://localhost:8080/slots/remove/${slotid}`);
 
     await getmaps();
     if (response.data.success) {
@@ -38,7 +36,7 @@ const Displaymap = () => {
   }, [])
 
   return (
-    <div className='Displaymap m-5'>
+    <div className='Displaymap m-5 h-[90vh]'>
       <div className='justify-around grid grid-cols-list gap-3 p-4 items-center'>
         <div className="Sr.No">
           Sr.no

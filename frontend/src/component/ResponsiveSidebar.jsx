@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const current = useLocation()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,8 +21,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-10 left-1/2 transform -translate-x-1/2 w-2/3 z-50 transition-colors duration-500 rounded-full ${
-        isScrolled ? "bg-black shadow-lg" : "bg-transparent"
+      className={`fixed top-10 left-1/2 transform -translate-x-1/2 w-2/3 transition-colors duration-500 rounded-full z-[1000] ${
+        isScrolled ? "bg-black shadow-lg" : `${current.pathname == "/ordermanage" ? "bg-black shadow-lg" :"bg-transparent"}`
       }`}
     >
       <div className="container mx-auto flex justify-between items-center py-3 px-6">
@@ -54,6 +56,7 @@ const Navbar = () => {
                 alt="Profile"
                 className="w-10 h-10 object-cover rounded-full"
               />
+              
             </div>
           )}
 
