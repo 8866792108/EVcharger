@@ -21,6 +21,7 @@ import b2 from "../assets/img/b2.png";
 import A1 from "../assets/img/A1.png";
 import A2 from "../assets/img/A2.png";
 import A3 from "../assets/img/A3.png";
+import { NavLink } from "react-router-dom";
 
 const vehicles = [
   {
@@ -30,7 +31,7 @@ const vehicles = [
     engine: "Electric Moter",
     speed: "120 KPH",
     power: "11 KW",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 2,
@@ -39,7 +40,7 @@ const vehicles = [
     engine: "Electric Motor",
     speed: "90 KPH",
     power: "6.4 KW",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 3,
@@ -48,7 +49,7 @@ const vehicles = [
     engine: "Electric",
     speed: "81 KPH",
     power: "4.4 KW",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 4,
@@ -57,7 +58,7 @@ const vehicles = [
     engine: "Electric",
     speed: "73 KPH",
     power: "4 KW",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 5,
@@ -173,7 +174,7 @@ const vehicles = [
     engine: "Electric",
     speed: "80 KPH",
     power: "5 kw",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 18,
@@ -182,7 +183,7 @@ const vehicles = [
     engine: "Electric",
     speed: "95 KPH",
     power: "7.5 kw",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 19,
@@ -191,7 +192,7 @@ const vehicles = [
     engine: "Electric",
     speed: "70 kph",
     power: "2.8 KW",
-    category: "MotorBikes",
+    category: "Bikes",
   },
   {
     id: 20,
@@ -200,11 +201,11 @@ const vehicles = [
     engine: "Electric",
     speed: "125 KPH",
     power: "11 KW",
-    category: "MotorBikes",
+    category: "Bikes",
   },
 ];
 
-const categories = ["All", "Cars", "MotorBikes", "Bicycles", "AutoRickshaws", "DC Motors", "AC Motors"];
+const categories = ["All", "Cars", "Bikes", "Bicycles", "AutoRickshaws", "DC Motors", "AC Motors"];
 
 const FuturisticVehicleSlider = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -276,9 +277,9 @@ const FuturisticVehicleSlider = () => {
               <p className="text-lg">🚀 <span className="font-semibold">Engine:</span> {filteredVehicles[currentIndex].engine}</p>
               <p className="text-lg">⚡ <span className="font-semibold">Top Speed:</span> {filteredVehicles[currentIndex].speed}</p>
               <p className="text-lg">🏎️ <span className="font-semibold">Horse Power:</span> {filteredVehicles[currentIndex].power}</p>
-              <button className="mt-4 bg-blue-500 px-6 py-3 text-white rounded-full hover:bg-blue-700 transition">
+              <NavLink to={`/ordermanage/${filteredVehicles[currentIndex].category}`} className="mt-4 bg-blue-500 px-6 py-3 text-white rounded-full hover:bg-blue-700 transition">
                 Charge..⚡
-              </button>
+              </NavLink>
             </div>
 
             {/* Vehicle Name at the Bottom */}

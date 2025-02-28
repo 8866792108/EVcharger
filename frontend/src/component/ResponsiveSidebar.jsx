@@ -19,25 +19,28 @@ const Navbar = () => {
   return (
     <nav
       className={`fixed top-5 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 transition-all duration-500 rounded-full z-[1000] p-3 ${
-        isScrolled || location.pathname === "/ordermanage"
+        isScrolled || location.pathname === "/ordermanage" || location.pathname === "/map"
           ? "bg-black shadow-lg"
           : "bg-transparent"
       }`}
     >
       <div className="flex justify-between items-center mx-auto">
         {/* Logo */}
-        <div className="text-white text-2xl font-semibold">VOLTHUB</div>
+        <NavLink to={'/home'} className="text-white text-2xl font-semibold">VOLTHUB</NavLink>
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-6 text-white">
+          <NavLink to="/home" className="cursor-pointer hover:opacity-80">
+            home
+          </NavLink>
           <NavLink to="/about" className="cursor-pointer hover:opacity-80">
             About Us
           </NavLink>
           <NavLink to="/map" className="cursor-pointer hover:opacity-80">
-            Supported Vehicles
+            map
           </NavLink>
           <NavLink to="/ordermanage" className="cursor-pointer hover:opacity-80">
-            Contact Us
+            Vehicle Management
           </NavLink>
           <NavLink className="cursor-pointer hover:opacity-80">FAQ</NavLink>
         </ul>

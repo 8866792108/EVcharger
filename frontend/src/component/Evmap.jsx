@@ -12,29 +12,74 @@ import Maps from "./Maps";
 import axios from "axios";
 
 const vehicleTypes = [
-    { id: "bike", label: "Bike", icon: '🏍️' },
-    { id: "car", label: "car", icon: '🚗' },
+    { id: "Bikes", label: "Bikes", icon: '🏍️' },
+    { id: "Cars", label: "Cars", icon: '🚗' },
     { id: "bycycle", label: "bycycle", icon: '🚲' },
     { id: "Auto", label: "Auto", icon: '🛺' }
 ];
 
 // const categories = ["All", "Cars", "MotorBikes", "Bicycles", "AutoRickshaws", "DC Motors", "AC Motors"];
+import s1 from "../assets/img/s1.png";
+import s2 from "../assets/img/s2.png";
+import s3 from "../assets/img/s3.png";
+import s5 from "../assets/img/s5.png";
+import s4 from "../assets/img/S4.png";
+import s6 from "../assets/img/s6.png";
+import s7 from "../assets/img/s7.png";
+import { useParams } from "react-router-dom";
+
+
+
 
 const categories = [
     {
-        id: "bike",
-        categories: ["OLA", "Ather", "Tata"]
+        id: "Bikes",
+        categories: [
+            {
+                id: "OLA",
+                image: s1
+            },
+            {
+                id: "Ather",
+                image: s2
+            },
+            {
+                id: "Bajaj",
+                image: s4
+            },
+            {
+                id: "TVS",
+                image: s3
+            },
+            {
+                id: "Hero",
+                image: s5
+            },
+            {
+                id: "REVOLT",
+                image: s7
+            },
+            {
+                id: "Rorr ez",
+                image: s6
+            }
+        ]
     },
     {
-        id: "car",
-        categories: ["SMC"]
+        id: "Cars",
+        categories: [
+            {
+                id: "SMC",
+                image: s1
+            }
+        ]
     }
 ];
 
 
 
 function Evmap() {
-    const [selectedVehicle, setSelectedVehicle] = useState("sedan");
+    const [selectedVehicle, setSelectedVehicle] = useState("Bikes");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [slots, setSlots] = useState([])
     const [selectedSlot, setSelectedSlot] = useState(null)
@@ -49,8 +94,24 @@ function Evmap() {
         cardNumber: "",
         expiryDate: "",
         cvv: "",
-        amount: 25.0 // Default amount
+        amount: 15.0 // Default amount
     })
+
+    const { category } = useParams()
+
+
+    useEffect(() => {
+        if (category) {
+            setSelectedVehicle(category)
+        }
+    }, [category])
+
+    const filteredSlots = slots.filter(
+        (slot) =>
+            slot.type === selectedVehicle && selectedCategory === "All"
+                ? (selectedCategory ? true : true)
+                : (selectedCategory ? slot.category === selectedCategory : true)
+    );
 
     useEffect(() => {
         const fetchSlots = async () => {
@@ -233,7 +294,7 @@ function Evmap() {
                             </div>
                         ) : (
                             <div>
-                                <div>
+                                <div className="flex flex-col">
                                     {/* Vehicle Selection */}
                                     <div className="grid grid-cols-4 gap-3 mb-8">
                                         {vehicleTypes.map((vehicle) => (
@@ -259,58 +320,96 @@ function Evmap() {
                                     </div>
 
                                     {/* Category Selection */}
-                                    <div className="grid grid-cols-4 gap-3 mb-8">
+                                    <div className="flex justify-between items-center gap-[30px] text-center mx-[20px] overflow-x-scroll over-scroll">
                                         {categories
                                             .filter((category) => category.id === selectedVehicle)
                                             .map((category) =>
                                                 category.categories.map((name, index) => (
-                                                    <div
-                                                        key={index}
-                                                        onClick={() => setSelectedCategory(name)}
-                                                        className={`flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer transition-all ${selectedCategory === name
-                                                            ? "bg-yellow-100 border-2 border-yellow-300"
-                                                            : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
-                                                            }`}
-                                                    >
-                                                        {name}
+                                                    <div>
+                                                        <div
+                                                            key={index}
+                                                            onClick={() => setSelectedCategory(prev => prev === name.id ? "All" : name.id)}
+                                                            className={`bg-cover bg-center flex flex-col items-center opacity-65 justify-end brightness-50 text-yellow-400 w-[200px] h-[100px] p-4 rounded-xl cursor-pointer transition-all ${selectedCategory === name.id
+                                                                ? "bg-yellow-100 border-4 border-solid border-yellow-600"
+                                                                : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
+                                                                }`}
+                                                            style={{ backgroundImage: `url(${name.image})` }}
+                                                        >
+                                                        </div>
+                                                        <p className="text-gray-800">{name.id}</p>
                                                     </div>
                                                 ))
                                             )}
                                     </div>
                                 </div>
                                 <div className="grid grid-cols-cards gap-4">
-                                    {slots.map(slot => (
-                                        <div
-                                            key={slot._id}
-                                            onClick={() => handleSlotSelect(slot._id)}
-                                            className="p-4 rounded-lg cursor-pointer transition-all transform hover:scale-[1.02] border-2 border-transparent hover:border-indigo-500 hover:bg-indigo-50"
-                                        >
-                                            <div className="space-y-4">
-                                                <img
-                                                    src={
-                                                        "http://localhost:8080/" + slot.image ||
-                                                        "https://images.unsplash.com/photo-1697650786218-65a29882e9c1?auto=format&fit=crop&w=800&q=80"
-                                                    }
-                                                    alt={slot.name}
-                                                    className="w-full h-48 rounded-lg object-cover"
-                                                />
-                                                <div>
-                                                    <h3 className="font-medium text-gray-900">
-                                                        {slot.name}
-                                                    </h3>
-                                                    <p className="text-sm text-gray-500 flex items-center mt-1">
-                                                        <MapPin className="w-4 h-4 mr-1" />
-                                                        {slot.address}
-                                                    </p>
-                                                    <p className="text-sm text-gray-500 flex items-center mt-1">
-                                                        <Clock className="w-4 h-4 mr-1" />
-                                                        {slot.start} -{" "}
-                                                        {slot.end}
-                                                    </p>
+                                    {filteredSlots.length > 0 ? (
+                                        filteredSlots.map((slot) => (
+                                            filteredSlots.length <= 1 ? (
+                                                <div
+                                                    key={slot._id}
+                                                    onClick={() => handleSlotSelect(slot._id)}
+                                                    className="p-4 w-[330px] h-[390px] rounded-lg cursor-pointer transition-all transform hover:scale-[1.02] border-2 border-transparent hover:border-indigo-500 hover:bg-indigo-50"
+                                                >
+                                                    <div className="space-y-4">
+                                                        <img
+                                                            src={
+                                                                "http://localhost:8080/" + slot.image ||
+                                                                "https://images.unsplash.com/photo-1697650786218-65a29882e9c1?auto=format&fit=crop&w=800&q=80"
+                                                            }
+                                                            alt={slot.name}
+                                                            className="w-full h-48 rounded-lg object-cover"
+                                                        />
+                                                        <div>
+                                                            <h3 className="font-medium text-gray-900">
+                                                                {slot.name}
+                                                            </h3>
+                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
+                                                                <MapPin className="w-4 h-4 mr-1" />
+                                                                {slot.address}
+                                                            </p>
+                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
+                                                                <Clock className="w-4 h-4 mr-1" />
+                                                                8:30 AM -{" "} 8:30 PM
+                                                            </p>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    ))}
+                                            ) : (
+                                                <div
+                                                    key={slot._id}
+                                                    onClick={() => handleSlotSelect(slot._id)}
+                                                    className="p-4 rounded-lg cursor-pointer transition-all transform hover:scale-[1.02] border-2 border-transparent hover:border-indigo-500 hover:bg-indigo-50"
+                                                >
+                                                    <div className="space-y-4">
+                                                        <img
+                                                            src={
+                                                                "http://localhost:8080/" + slot.image ||
+                                                                "https://images.unsplash.com/photo-1697650786218-65a29882e9c1?auto=format&fit=crop&w=800&q=80"
+                                                            }
+                                                            alt={slot.name}
+                                                            className="w-full h-48 rounded-lg object-cover"
+                                                        />
+                                                        <div>
+                                                            <h3 className="font-medium text-gray-900">
+                                                                {slot.name}
+                                                            </h3>
+                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
+                                                                <MapPin className="w-4 h-4 mr-1" />
+                                                                {slot.address}
+                                                            </p>
+                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
+                                                                <Clock className="w-4 h-4 mr-1" />
+                                                                8:30 AM -{" "} 8:30 PM
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+
+                                        ))) : (
+                                        <p className="text-gray-500">No slots available for selected filters.</p>
+                                    )}
                                 </div>
                             </div>
                         )}

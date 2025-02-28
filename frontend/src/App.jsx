@@ -42,10 +42,11 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
 
         {/* Route for Current User */}
-        <Route path="/currentuser" element={<Maps />} />
+        <Route path="/map" element={<Maps />} />
 
         {/* Route for Order Management */}
         <Route path="/ordermanage" element={<Evmap />} />
+        <Route path="/ordermanage/:category" element={<Evmap />} />
 
         {/* Route for the CarSlider component */}
         <Route path="/car-slider" element={<CarSlider />} />

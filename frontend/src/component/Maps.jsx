@@ -121,7 +121,7 @@ const Maps = () => {
                 >
                   <Popup>
                     <div className="w-[300px] flex flex-col justify-center items-center">
-                      <img src={"http://localhost:8080/" + stops.image} alt="" className=' mb-7' />
+                      <img src={"http://localhost:8080/" + stops.image} alt="" className=' w- mb-7' />
                       <h3 className="font-semibold">{stops.name}</h3>
                       <p>
                         Address: {stops.address}
