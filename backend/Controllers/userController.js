@@ -66,7 +66,7 @@ const login = async (req, res) => {
 
 
         res.status(201)
-            .json({ message: "login successfully", success: true, jwttoken, email, image: user.image, name: user.name })
+            .json({ message: "login successfully", success: true, jwttoken, email, name: user.name, _id: user._id })
 
 
     } catch (error) {
@@ -105,9 +105,12 @@ const googlelogin = async (req, res) => {
 
         return res.status(200).json({
             success: true,
-            message: 'Success',
+            message: 'Login Successfully',
             token,
-            user
+            email: user.email,
+            name: user.name,
+            image: user.password,
+            _id: user._id
         });
     } catch (error) {
         console.error("Google Login Error:", error.response ? error.response.data : error.message);

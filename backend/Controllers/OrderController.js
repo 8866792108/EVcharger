@@ -90,60 +90,206 @@ function roundToNearest30(time) {
 }
 
 // Function to generate time slots
-function generateTimeSlots(startTime, endTime, interval) {
-    let timeSlots = [];
-    let currentTime = roundToNearest30(moment(startTime, 'hh:mm A'));
+// function generateTimeSlots(startTime, endTime, interval) {
+//     let timeSlots = [];
+//     let currentTime = roundToNearest30(moment(startTime, 'hh:mm A'));
 
-    // Generate time slots at the given interval
-    while (currentTime.isBefore(moment(endTime, 'hh:mm A'))) {
-        let slotEndTime = moment(currentTime).add(interval, 'minutes');
-        timeSlots.push({
-            start: currentTime.format('hh:mm A'),
-            end: slotEndTime.format('hh:mm A')
+//     // Generate time slots at the given interval
+//     while (currentTime.isBefore(moment(endTime, 'hh:mm A'))) {
+//         let slotEndTime = moment(currentTime).add(interval, 'minutes');
+//         timeSlots.push({
+//             start: currentTime.format('hh:mm A'),
+//             end: slotEndTime.format('hh:mm A')
+//         });
+//         currentTime.add(interval, 'minutes');
+//     }
+
+//     return timeSlots;
+// }
+
+// function generateTimeSlots(startTime, endTime, interval) {
+//     let timeSlots = [];
+//     let currentTime = moment(startTime, 'hh:mm A');
+
+//     while (currentTime.isBefore(moment(endTime, 'hh:mm A'))) {
+//         let slotEndTime = moment(currentTime).add(interval, 'minutes');
+
+//         timeSlots.push({
+//             start: currentTime.format('hh:mm A'),
+//             end: slotEndTime.format('hh:mm A'),
+//             available: true // Default to available
+//         });
+
+//         currentTime.add(interval, 'minutes');
+//     }
+
+//     return timeSlots;
+// }
+
+// const availableslots = async (req, res) => {
+//     console.log(req.body);
+//     const { startTime, endTime, interval } = req.body; // Get dynamic parameters from the request body
+
+//     // Validate input
+//     if (!startTime || !endTime || !interval) {
+//         return res.status(400).json({ message: 'startTime, endTime, and interval are required.' });
+//     }
+
+//     // Get all bookings
+//     const bookings = await ordermodel.find();
+
+//     // Get the time slots based on dynamic start time, end time, and interval
+//     const allSlots = generateTimeSlots(startTime, endTime, interval);
+
+//     // Convert booking start and end times into moment objects for comparison
+//     const bookedSlots = bookings.map(booking => ({
+//         start: moment(booking.start),
+//         end: moment(booking.end)
+//     }));
+
+//     // Filter out the booked slots by checking if any time slot overlaps
+//     const availableSlots = allSlots.filter(slot => {
+//         return !bookedSlots.some(booked => {
+//             const slotStartTime = moment(slot.start, 'hh:mm A');
+//             const slotEndTime = moment(slot.end, 'hh:mm A');
+
+//             // Check if the slot overlaps with any booking
+//             return slotStartTime.isBefore(booked.end) && slotEndTime.isAfter(booked.start);
+//         });
+//     });
+//     console.log(availableSlots);
+
+//     res.json({ availableSlots });
+// }
+
+
+// function roundUpTime(time, interval) {
+//     const roundedMinutes = Math.ceil(time.minutes() / interval) * interval;
+//     return time.clone().minutes(roundedMinutes).seconds(0);
+// }
+
+// function generateTimeSlots(startTime, endTime, interval) {
+//     let timeSlots = [];
+//     let currentTime = moment(startTime, "hh:mm A");
+
+//     // Round up to the nearest interval
+//     currentTime = roundUpTime(currentTime, interval);
+
+//     while (currentTime.isBefore(moment(endTime, "hh:mm A"))) {
+//         let slotEndTime = moment(currentTime).add(interval, "minutes");
+
+//         timeSlots.push({
+//             start: currentTime.format("hh:mm A"),
+//             end: slotEndTime.format("hh:mm A"),
+//             available: true // Default to available
+//         });
+
+//         currentTime.add(interval, "minutes");
+//     }
+
+//     return timeSlots;
+// }
+
+// const availableslots = async (req, res) => {
+//     console.log(req.body)
+//     const { startTime, endTime, interval, userId, slotId } = req.body;
+
+//     if (!startTime || !endTime || !interval) {
+//         return res.status(400).json({ message: 'startTime, endTime, and interval are required.' });
+//     }
+
+//     // Fetch all booked slots from the database
+//     const bookings = await ordermodel.find({
+//         userId: userId,
+//         slotId: slotId
+//     });
+
+//     // Generate all time slots based on interval
+//     let allSlots = generateTimeSlots(startTime, endTime, interval);
+
+//     // Mark booked slots as unavailable
+//     allSlots = allSlots.map(slot => {
+//         const slotStart = moment(slot.start, 'hh:mm A');
+//         const slotEnd = moment(slot.end, 'hh:mm A');
+
+//         const isBooked = bookings.some(booking => {
+//             const bookedStart = moment(booking.start);
+//             const bookedEnd = moment(booking.end);
+//             return slotStart.isBefore(bookedEnd) && slotEnd.isAfter(bookedStart);
+//         });
+
+//         return {
+//             ...slot,
+//             available: !isBooked // If booked, mark as false
+//         };
+//     });
+
+//     res.json({ slots: allSlots });
+// }
+
+function roundUpTime(time, interval) {
+    const roundedMinutes = Math.ceil(time.minutes() / interval) * interval;
+    return time.clone().minutes(roundedMinutes).seconds(0);
+}
+
+function generateTimeSlots(startTime, endTime, interval, bookings) {
+    let timeSlots = [];
+    let currentTime = moment(startTime, "hh:mm A");
+
+    // Round up to the nearest interval
+    currentTime = roundUpTime(currentTime, interval);
+
+    while (currentTime.isBefore(moment(endTime, "hh:mm A"))) {
+        let slotEndTime = moment(currentTime).add(interval, "minutes");
+
+        // Check if this slot is booked
+        const isBooked = bookings.some(booking => {
+            const bookedStart = moment(booking.start, "hh:mm A");
+            const bookedEnd = moment(booking.end, "hh:mm A");
+
+            // If any part of this interval overlaps with a booking, mark unavailable
+            return (
+                (currentTime.isSameOrAfter(bookedStart) && currentTime.isBefore(bookedEnd)) ||
+                (slotEndTime.isAfter(bookedStart) && slotEndTime.isSameOrBefore(bookedEnd)) ||
+                (currentTime.isBefore(bookedStart) && slotEndTime.isAfter(bookedEnd))
+            );
         });
-        currentTime.add(interval, 'minutes');
+
+        timeSlots.push({
+            start: currentTime.format("hh:mm A"),
+            end: slotEndTime.format("hh:mm A"),
+            available: !isBooked // Mark as unavailable if booked
+        });
+
+        currentTime.add(interval, "minutes");
     }
 
     return timeSlots;
 }
 
-
 const availableslots = async (req, res) => {
-    console.log(req.body);
-    const { startTime, endTime, interval } = req.body; // Get dynamic parameters from the request body
+    try {
+        console.log(req.body);
+        const { startTime, endTime, interval, slotId } = req.body;
 
-    // Validate input
-    if (!startTime || !endTime || !interval) {
-        return res.status(400).json({ message: 'startTime, endTime, and interval are required.' });
-    }
+        if (!startTime || !endTime || !interval) {
+            return res.status(400).json({ message: 'startTime, endTime, and interval are required.' });
+        }
 
-    // Get all bookings
-    const bookings = await ordermodel.find();
-
-    // Get the time slots based on dynamic start time, end time, and interval
-    const allSlots = generateTimeSlots(startTime, endTime, interval);
-
-    // Convert booking start and end times into moment objects for comparison
-    const bookedSlots = bookings.map(booking => ({
-        start: moment(booking.start),
-        end: moment(booking.end)
-    }));
-
-    // Filter out the booked slots by checking if any time slot overlaps
-    const availableSlots = allSlots.filter(slot => {
-        return !bookedSlots.some(booked => {
-            const slotStartTime = moment(slot.start, 'hh:mm A');
-            const slotEndTime = moment(slot.end, 'hh:mm A');
-
-            // Check if the slot overlaps with any booking
-            return slotStartTime.isBefore(booked.end) && slotEndTime.isAfter(booked.start);
+        // Fetch all booked slots from the database
+        const bookings = await ordermodel.find({
+            slotId: slotId
         });
-    });
-    console.log(availableSlots);
 
-    res.json({ availableSlots });
-}
+        // Generate time slots with bookings applied
+        let allSlots = generateTimeSlots(startTime, endTime, interval, bookings);
 
+        res.json({ slots: allSlots });
+    } catch (error) {
+        console.error("Error fetching available slots:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
 
 const bookslot = async (req, res) => {
     const { start, end, userId, slotId } = req.body;

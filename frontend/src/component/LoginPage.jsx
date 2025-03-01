@@ -25,12 +25,18 @@ const LoginPage = () => {
       if (authResult['code']) {
         const result = await googleAuth(authResult['code'])
 
-        const { email, name, password } = result.data.user;
+        console.log("The google login data :: ", result.data)
+        const { email, name, _id, image, message } = result.data;
         const token = result.data.token
-        const obj = { email, name, password, token }
         localStorage.setItem("email", email)
         localStorage.setItem("name", name)
         localStorage.setItem("token", token)
+        localStorage.setItem("userId", _id)
+        localStorage.setItem("image", image)
+        toast.success(message, {
+          position: "top-center",
+          autoClose: 2000
+        })
         Navigate('/home')
         console.log("result.data.user... ", result.data.user)
       }
@@ -75,17 +81,18 @@ const LoginPage = () => {
       })
 
       const result = await response.json()
-      const { message, success, jwttoken, name, error } = result
+      const { message, success, jwttoken, name, email, _id, error } = result
       console.log("The logged user data :: " + result)
       if (success) {
         toast.success(message, {
           position: "top-center",
           autoClose: 2000
         })
-        localStorage.setItem('email', email)
-        localStorage.setItem('image', password)
+        localStorage.setItem('email', result.email)
         localStorage.setItem('token', jwttoken)
         localStorage.setItem('name', name)
+        localStorage.setItem('userId', _id)
+        localStorage.removeItem('image')
         setTimeout(() => {
           Navigate('/home')
         }, 1000)

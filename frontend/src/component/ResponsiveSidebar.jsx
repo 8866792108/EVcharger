@@ -18,11 +18,10 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-5 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 transition-all duration-500 rounded-full z-[1000] p-3 ${
-        isScrolled || location.pathname === "/ordermanage" || location.pathname === "/map"
-          ? "bg-black shadow-lg"
-          : "bg-transparent"
-      }`}
+      className={`fixed top-5 left-1/2 transform -translate-x-1/2 w-11/12 md:w-2/3 transition-all duration-500 rounded-full z-[1000] p-3 ${isScrolled || location.pathname === "/ordermanage" || location.pathname === "/map"
+        ? "bg-black shadow-lg"
+        : "bg-transparent"
+        }`}
     >
       <div className="flex justify-between items-center mx-auto">
         {/* Logo */}

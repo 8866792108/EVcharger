@@ -25,13 +25,17 @@ const SignUp = () => {
       if (authResult['code']) {
         const result = await googleAuth(authResult['code'])
 
-        const { email, name, password } = result.data.user;
+        const { email, name, image, _id, message } = result.data.user;
         const token = result.data.token
-        const obj = { email, name, password, token }
         localStorage.setItem("email", email)
         localStorage.setItem("name", name)
-        localStorage.setItem("image", password)
         localStorage.setItem("token", token)
+        localStorage.setItem("userId", _id)
+        localStorage.setItem("image", image)
+        toast.success(message, {
+          position: "top-center",
+          autoClose: 2000
+        })
         Navigate('/home')
         console.log("result.data.user... ", result.data.user)
       }

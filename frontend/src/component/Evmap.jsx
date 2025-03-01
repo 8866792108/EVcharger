@@ -156,42 +156,22 @@ function Evmap() {
     }, [])
 
     const fetchAvailableSlots = async (slotId, interval = 30) => {
-
         try {
-            try {
-                setInterval(interval)
-                const now = new Date()
+            const now = new Date();
+            const requestData = {
+                startTime: now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+                endTime: "8:00 PM",
+                interval: parseInt(interval),
+                slotId: slotId || selectedSlot
+            };
 
-                const requestData = {
-                    startTime: now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-                    endTime: "8:00 PM",
-                    interval: parseInt(interval),
-                    slotId: slotId
-                };
-
-                const response = await axios.post("http://localhost:8080/orders/api/available-slots", requestData)
-                    .then((data) => {
-                        console.log(data)
-                        setAvailableTimeSlots(data.data.availableSlots)
-                    })
-
-                // const data = await response.data
-
-                console.log("the available slots are the :: " + response)
-                // setAvailableTimeSlots(response.data.data.availableSlots)
-                // console.log(availableTimeSlots)
-            } catch (apiError) {
-                console.log("Using mock time slots as backend is not available" + apiError)
-            }
+            const response = await axios.post("http://localhost:8080/orders/api/available-slots", requestData);
+            setAvailableTimeSlots(response.data.slots); // Ensure the response matches this field
         } catch (error) {
-            console.error("Error fetching available slots:", error)
-            alert(
-                error instanceof Error
-                    ? error.message
-                    : "Failed to load available slots. Please try again."
-            )
+            console.error("Error fetching available slots:", error);
+            alert("Failed to load available slots. Please try again.");
         }
-    }
+    };
 
     const handleSlotSelect = slot => {
         console.log(slot);
@@ -204,10 +184,16 @@ function Evmap() {
         setShowTimeSlotsModal(true)
     }
 
-    const handleTimeSlotSelect = timeSlot => {
-        setSelectedTimeSlot(timeSlot)
-        setShowPaymentModal(true)
-    }
+    // const handleTimeSlotSelect = timeSlot => {
+    //     setSelectedTimeSlot(timeSlot)
+    //     setShowPaymentModal(true)
+    // }
+
+    const handleTimeSlotSelect = (timeSlot) => {
+        if (!timeSlot.available) return; // Prevent selecting booked slots
+        setSelectedTimeSlot(timeSlot);
+        setShowPaymentModal(true);
+    };
 
     const handlePayment = async () => {
         if (!selectedSlot || !selectedTimeSlot) return
@@ -457,17 +443,42 @@ function Evmap() {
                             </div>
                         </div>
 
+                        {/* <div className="p-6 grid grid-cols-2 gap-4">
+                            {availableTimeSlots.map((timeSlot, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => handleTimeSlotSelect(timeSlot)}
+                                    disabled={!timeSlot.available} // Disable button if slot is booked
+                                    className={`p-4 text-center rounded-lg border-2 
+                        ${timeSlot.available ? "border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all" : "border-gray-300 bg-gray-100 cursor-not-allowed"}
+                    `}
+                                >
+                                    <Calendar className={`w-5 h-5 mx-auto mb-2 ${timeSlot.available ? "text-indigo-600" : "text-gray-400"}`} />
+                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-gray-500"}`}>{timeSlot.start}</p>
+                                    <p className="text-sm text-gray-500">to</p>
+                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-gray-500"}`}>{timeSlot.end}</p>
+                                </button>
+                            ))}
+                        </div> */}
                         <div className="p-6 grid grid-cols-2 gap-4">
                             {availableTimeSlots.map((timeSlot, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handleTimeSlotSelect(timeSlot)}
-                                    className="p-4 text-center rounded-lg border-2 border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all"
+                                    disabled={!timeSlot.available}
+                                    className={`p-4 text-center rounded-lg border-2 transition-all ${timeSlot.available
+                                        ? "border-gray-200 hover:border-indigo-500 hover:bg-indigo-50"
+                                        : "border-red-400 bg-red-100 cursor-not-allowed"
+                                        }`}
                                 >
-                                    <Calendar className="w-5 h-5 mx-auto mb-2 text-indigo-600" />
-                                    <p className="font-medium text-gray-900">{timeSlot.start}</p>
+                                    <Calendar className={`w-5 h-5 mx-auto mb-2 ${timeSlot.available ? "text-indigo-600" : "text-red-600"}`} />
+                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-red-700"}`}>
+                                        {timeSlot.start}
+                                    </p>
                                     <p className="text-sm text-gray-500">to</p>
-                                    <p className="font-medium text-gray-900">{timeSlot.end}</p>
+                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-red-700"}`}>
+                                        {timeSlot.end}
+                                    </p>
                                 </button>
                             ))}
                         </div>
