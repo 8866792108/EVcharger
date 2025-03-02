@@ -31,7 +31,7 @@ const Home = () => {
 
   useEffect(() => {
     document.body.classList.add("bg-black", "m-0", "p-0");
-    
+
     const fetchProducts = async () => {
       try {
         const url = "http://localhost:8080/products/";
@@ -74,8 +74,8 @@ const Home = () => {
                 Explore Our Range of Electric Bikes
               </h2>
               <p className="text-base md:w-1/2 leading-relaxed">
-                Discover the perfect electric bike for your needs. At VOLTHUB, we offer a diverse selection of 
-                electric vehicles, each designed to provide a seamless and efficient ride. Whether you’re commuting 
+                Discover the perfect electric bike for your needs. At VOLTHUB, we offer a diverse selection of
+                electric vehicles, each designed to provide a seamless and efficient ride. Whether you’re commuting
                 or exploring, our bikes are equipped to enhance your journey.
               </p>
             </div>
@@ -109,7 +109,7 @@ const Home = () => {
         {/* Back to Top Button */}
         <button
           onClick={scrollToTop}
-          className="fixed bottom-5 right-5 bg-blue-200 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+          className="fixed bottom-[31px] right-[103px] bg-blue-200 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
         >
           🔝
         </button>
