@@ -1,265 +1,68 @@
 import React, { useState, useEffect } from "react";
-import {
-    MapPin,
-    Clock,
-    Calendar,
-    Zap,
-    AlertCircle,
-    X,
-    CreditCard
-} from "lucide-react";
-import Maps from "./Maps";
+import { useNavigate } from "react-router-dom";
+import { MapPin, Clock } from "lucide-react";
 import axios from "axios";
+import CarRental from "./filter";
+import Maps from "./Maps";
 
-const vehicleTypes = [
-    { id: "Bikes", label: "Bikes", icon: '🏍️' },
-    { id: "Cars", label: "Cars", icon: '🚗' },
-    { id: "bycycle", label: "bycycle", icon: '🚲' },
-    { id: "Auto", label: "Auto", icon: '🛺' }
-];
-
-// const categories = ["All", "Cars", "MotorBikes", "Bicycles", "AutoRickshaws", "DC Motors", "AC Motors"];
-import s1 from "../assets/img/s1.png";
-import s2 from "../assets/img/s2.png";
-import s3 from "../assets/img/s3.png";
-import s5 from "../assets/img/s5.png";
-import s4 from "../assets/img/S4.png";
-import s6 from "../assets/img/s6.png";
-import s7 from "../assets/img/s7.png";
-import { useParams } from "react-router-dom";
-
-
-
-
-const categories = [
-    {
-        id: "Bikes",
-        categories: [
-            {
-                id: "OLA",
-                image: s1
-            },
-            {
-                id: "Ather",
-                image: s2
-            },
-            {
-                id: "Bajaj",
-                image: s4
-            },
-            {
-                id: "TVS",
-                image: s3
-            },
-            {
-                id: "Hero",
-                image: s5
-            },
-            {
-                id: "REVOLT",
-                image: s7
-            },
-            {
-                id: "Rorr ez",
-                image: s6
-            }
-        ]
-    },
-    {
-        id: "Cars",
-        categories: [
-            {
-                id: "SMC",
-                image: s1
-            }
-        ]
-    }
-];
-
-
-
-function Evmap() {
-    const [selectedVehicle, setSelectedVehicle] = useState("Bikes");
-    const [selectedCategory, setSelectedCategory] = useState("All");
-    const [slots, setSlots] = useState([])
-    const [selectedSlot, setSelectedSlot] = useState(null)
-    const [availableTimeSlots, setAvailableTimeSlots] = useState([])
-    const [interval, setInterval] = useState("30")
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
-    const [showTimeSlotsModal, setShowTimeSlotsModal] = useState(false)
-    const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
-    const [showPaymentModal, setShowPaymentModal] = useState(false)
-    const [paymentDetails, setPaymentDetails] = useState({
-        cardNumber: "",
-        expiryDate: "",
-        cvv: "",
-        amount: 15.0 // Default amount
-    })
-
-    const { category } = useParams()
-
-
-    useEffect(() => {
-        if (category) {
-            setSelectedVehicle(category)
-        }
-    }, [category])
-
-    const filteredSlots = slots.filter(
-        (slot) =>
-            slot.type === selectedVehicle && selectedCategory === "All"
-                ? (selectedCategory ? true : true)
-                : (selectedCategory ? slot.category === selectedCategory : true)
-    );
+const Evmap = () => {
+    const navigate = useNavigate();
+    const [slots, setSlots] = useState([]);
+    const [filteredSlots, setFilteredSlots] = useState([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [showBookingPopup, setShowBookingPopup] = useState(false);
+    const [selectedSlot, setSelectedSlot] = useState(null);
 
     useEffect(() => {
         const fetchSlots = async () => {
             try {
-                setError(null)
-                setLoading(true)
-
-                try {
-                    const response = await axios.get("http://localhost:8080/slots/getitems")
-
-
-                    console.log(response);
-
-
-                    const data = await response.data
-
-                    console.log("the list of the slots stations :: " + data)
-
-                    if (response.data.success) {
-                        setSlots(response.data.data);
-                    } else {
-                        console.error("Failed to fetch stops");
-                    }
-                    // console.log(response.data.data)
-                } catch (apiError) {
-                    console.log("Using mock data as backend is not available")
-                    // setSlots(mockSlots)
+                setError(null);
+                setLoading(true);
+                const response = await axios.get("http://localhost:8080/slots/getitems");
+                if (response.data.success) {
+                    setSlots(response.data.data);
+                    setFilteredSlots(response.data.data);
+                } else {
+                    console.error("Failed to fetch slots");
                 }
             } catch (error) {
-                console.error("Error fetching slots:", error)
-                setError(
-                    error instanceof Error
-                        ? `Unable to load charging stations: ${error.message}`
-                        : "Unable to load charging stations. Please ensure the backend server is running at http://localhost:8080"
-                )
+                console.error("Error fetching slots:", error);
+                setError("Unable to load charging stations. Please ensure the backend server is running at http://localhost:8080");
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
-        }
+        };
+        fetchSlots();
+    }, []);
 
-        fetchSlots()
-    }, [])
-
-    const fetchAvailableSlots = async (slotId, interval = 30) => {
-        try {
-            const now = new Date();
-            const requestData = {
-                startTime: now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
-                endTime: "8:00 PM",
-                interval: parseInt(interval),
-                slotId: slotId || selectedSlot
-            };
-
-            const response = await axios.post("http://localhost:8080/orders/api/available-slots", requestData);
-            setAvailableTimeSlots(response.data.slots); // Ensure the response matches this field
-        } catch (error) {
-            console.error("Error fetching available slots:", error);
-            alert("Failed to load available slots. Please try again.");
-        }
-    };
+    useEffect(() => {
+        const filtered = slots.filter(slot =>
+            slot.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        setFilteredSlots(filtered);
+    }, [searchTerm, slots]);
 
     const handleSlotSelect = slot => {
-        console.log(slot);
-
-        setSelectedSlot(slot)
-        console.log("selected slot is the :: " + selectedSlot)
-        // console.log(selectedSlot);
-
-        fetchAvailableSlots(slot)
-        setShowTimeSlotsModal(true)
-    }
-
-    // const handleTimeSlotSelect = timeSlot => {
-    //     setSelectedTimeSlot(timeSlot)
-    //     setShowPaymentModal(true)
-    // }
-
-    const handleTimeSlotSelect = (timeSlot) => {
-        if (!timeSlot.available) return; // Prevent selecting booked slots
-        setSelectedTimeSlot(timeSlot);
-        setShowPaymentModal(true);
+        setSelectedSlot(slot);
+        setShowBookingPopup(true);
     };
 
-    const handlePayment = async () => {
-        if (!selectedSlot || !selectedTimeSlot) return
-
-        try {
-            const response = await fetch(
-                "http://localhost:8080/orders/api/book-slot",
-                {
-                    method: "POST",
-                    headers: {
-                        Accept: "application/json",
-                        "Content-Type": "application/json"
-                    },
-                    mode: "cors",
-                    credentials: "include",
-                    body: JSON.stringify({
-                        userId: "user123",
-                        slotId: selectedSlot,
-                        start: selectedTimeSlot.start,
-                        end: selectedTimeSlot.end,
-                        payment: paymentDetails
-                    })
-                }
-            )
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => null)
-                throw new Error(errorData?.message || "Failed to process payment")
-            }
-
-            alert("Payment successful! Your slot has been booked.")
-            setShowPaymentModal(false)
-            setShowTimeSlotsModal(false)
-            setSelectedTimeSlot(null)
-            fetchAvailableSlots(selectedSlot)
-        } catch (error) {
-            if (error instanceof Error && error.message.includes("Failed to fetch")) {
-                alert("Demo mode: Payment simulation successful!")
-                setShowPaymentModal(false)
-                setShowTimeSlotsModal(false)
-            } else {
-                alert(
-                    error instanceof Error
-                        ? error.message
-                        : "Payment failed. Please try again."
-                )
-            }
-        }
-    }
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 mt-8">
-            {/* Main Content */}
-            <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8 h-[100vh]">
-                <div className="w-full bg-gray-50 m-auto relative">
-                    {/* <div className="bg-white rounded-xl shadow-sm border border-indigo-100 z-0 "> */}
-                    <Maps />
-                    {/* </div> */}
-                </div>
-            </div>
-            <div className="">
-                <div className="bg-white rounded-xl shadow-sm border border-indigo-100 overflow-y-scroll mt-8">
-                    <div className="p-4 border-b border-gray-100">
-                        <h2 className="text-lg font-semibold text-gray-900">
-                            Available Locations
-                        </h2>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex flex-col">
+            <CarRental />
+            <div className="w-full" style={{ maxHeight: '100vh' }}>
+                <div className="bg-white rounded-xl shadow-lg h-full">
+                    <div className="p-4 bg-white border-b border-gray-100">
+                        <h2 className="text-lg font-semibold text-gray-900">Available Locations</h2>
+                        <input
+                            type="text"
+                            placeholder="Search locations..."
+                            value={searchTerm}
+                            onChange={e => setSearchTerm(e.target.value)}
+                            className="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500"
+                        />
                     </div>
                     <div className="p-4">
                         {loading ? (
@@ -268,317 +71,61 @@ function Evmap() {
                             </div>
                         ) : error ? (
                             <div className="text-center py-8">
-                                <AlertCircle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-                                <p className="text-red-600 font-medium mb-2">
-                                    Error Loading Stations
-                                </p>
+                                <p className="text-red-600 font-medium mb-2">Error Loading Stations</p>
                                 <p className="text-sm text-gray-500">{error}</p>
                             </div>
-                        ) : slots.length === 0 ? (
-                            <div className="text-center py-8">
-                                <p className="text-gray-500">No charging stations available</p>
-                            </div>
                         ) : (
-                            <div>
-                                <div className="flex flex-col">
-                                    {/* Vehicle Selection */}
-                                    <div className="grid grid-cols-4 gap-3 mb-8">
-                                        {vehicleTypes.map((vehicle) => (
-                                            <div
-                                                key={vehicle.id}
-                                                onClick={() => setSelectedVehicle(vehicle.id)}
-                                                className={`flex flex-col items-center justify-center p-4 rounded-xl cursor-pointer transition-all ${selectedVehicle === vehicle.id
-                                                    ? "bg-yellow-100 border-2 border-yellow-300"
-                                                    : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
-                                                    }`}
-                                            >
-                                                <div
-                                                    className={`text-4xl ${selectedVehicle === vehicle.id ? "text-gray-800" : "text-gray-600"
-                                                        }`}
-                                                >
-                                                    {vehicle.icon}
-                                                </div>
-                                                <span className="text-sm mt-2 font-medium text-gray-900">
-                                                    {vehicle.label}
-                                                </span>
-                                            </div>
-                                        ))}
+                            <div className="grid grid-cols-cards gap-4">
+                                {filteredSlots.map((slot) => (
+                                    <div
+                                        key={slot._id}
+                                        onClick={() => handleSlotSelect(slot._id)}
+                                        className="p-4 rounded-lg cursor-pointer transition-all transform hover:scale-[1.02] border-2 hover:border-indigo-500 hover:bg-indigo-50 shadow-md"
+                                    >
+                                        <img
+                                            src={"http://localhost:8080/" + slot.image || "https://images.unsplash.com/photo-1697650786218-65a29882e9c1?auto=format&fit=crop&w=800&q=80"}
+                                            alt={slot.name}
+                                            className="w-full h-48 rounded-lg object-cover"
+                                        />
+                                        <h3 className="font-medium text-gray-900">{slot.name}</h3>
+                                        <p className="text-sm text-gray-500 flex items-center mt-1">
+                                            <MapPin className="w-4 h-4 mr-1" /> {slot.address}
+                                        </p>
+                                        <p className="text-sm text-gray-500 flex items-center mt-1">
+                                            <Clock className="w-4 h-4 mr-1" /> 8:30 AM - 8:30 PM
+                                        </p>
                                     </div>
-
-                                    {/* Category Selection */}
-                                    <div className="flex justify-between items-center gap-[30px] text-center mx-[20px] overflow-x-scroll over-scroll">
-                                        {categories
-                                            .filter((category) => category.id === selectedVehicle)
-                                            .map((category) =>
-                                                category.categories.map((name, index) => (
-                                                    <div>
-                                                        <div
-                                                            key={index}
-                                                            onClick={() => setSelectedCategory(prev => prev === name.id ? "All" : name.id)}
-                                                            className={`bg-cover bg-center flex flex-col items-center opacity-65 justify-end brightness-50 text-yellow-400 w-[200px] h-[100px] p-4 rounded-xl cursor-pointer transition-all ${selectedCategory === name.id
-                                                                ? "bg-yellow-100 border-4 border-solid border-yellow-600"
-                                                                : "bg-gray-50 border border-gray-200 hover:bg-gray-100"
-                                                                }`}
-                                                            style={{ backgroundImage: `url(${name.image})` }}
-                                                        >
-                                                        </div>
-                                                        <p className="text-gray-800">{name.id}</p>
-                                                    </div>
-                                                ))
-                                            )}
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-cards gap-4">
-                                    {filteredSlots.length > 0 ? (
-                                        filteredSlots.map((slot) => (
-                                            filteredSlots.length <= 1 ? (
-                                                <div
-                                                    key={slot._id}
-                                                    onClick={() => handleSlotSelect(slot._id)}
-                                                    className="p-4 w-[330px] h-[390px] rounded-lg cursor-pointer transition-all transform hover:scale-[1.02] border-2 border-transparent hover:border-indigo-500 hover:bg-indigo-50"
-                                                >
-                                                    <div className="space-y-4">
-                                                        <img
-                                                            src={
-                                                                "http://localhost:8080/" + slot.image ||
-                                                                "https://images.unsplash.com/photo-1697650786218-65a29882e9c1?auto=format&fit=crop&w=800&q=80"
-                                                            }
-                                                            alt={slot.name}
-                                                            className="w-full h-48 rounded-lg object-cover"
-                                                        />
-                                                        <div>
-                                                            <h3 className="font-medium text-gray-900">
-                                                                {slot.name}
-                                                            </h3>
-                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
-                                                                <MapPin className="w-4 h-4 mr-1" />
-                                                                {slot.address}
-                                                            </p>
-                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
-                                                                <Clock className="w-4 h-4 mr-1" />
-                                                                8:30 AM -{" "} 8:30 PM
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div
-                                                    key={slot._id}
-                                                    onClick={() => handleSlotSelect(slot._id)}
-                                                    className="p-4 rounded-lg cursor-pointer transition-all transform hover:scale-[1.02] border-2 border-transparent hover:border-indigo-500 hover:bg-indigo-50"
-                                                >
-                                                    <div className="space-y-4">
-                                                        <img
-                                                            src={
-                                                                "http://localhost:8080/" + slot.image ||
-                                                                "https://images.unsplash.com/photo-1697650786218-65a29882e9c1?auto=format&fit=crop&w=800&q=80"
-                                                            }
-                                                            alt={slot.name}
-                                                            className="w-full h-48 rounded-lg object-cover"
-                                                        />
-                                                        <div>
-                                                            <h3 className="font-medium text-gray-900">
-                                                                {slot.name}
-                                                            </h3>
-                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
-                                                                <MapPin className="w-4 h-4 mr-1" />
-                                                                {slot.address}
-                                                            </p>
-                                                            <p className="text-sm text-gray-500 flex items-center mt-1">
-                                                                <Clock className="w-4 h-4 mr-1" />
-                                                                8:30 AM -{" "} 8:30 PM
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )
-
-                                        ))) : (
-                                        <p className="text-gray-500">No slots available for selected filters.</p>
-                                    )}
-                                </div>
+                                ))}
                             </div>
                         )}
                     </div>
                 </div>
             </div>
-
-            {/* Time Slots Modal */}
-            {showTimeSlotsModal && selectedSlot && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-end z-[1000]">
-                    <div className="bg-white w-full max-w-md h-full overflow-y-auto">
-                        <div className="p-6 border-b border-gray-200">
-                            <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-semibold text-gray-900">
-                                    Available Time Slots
-                                </h2>
-                                <button
-                                    onClick={() => setShowTimeSlotsModal(false)}
-                                    className="text-gray-400 hover:text-gray-500"
-                                >
-                                    <X className="w-6 h-6" />
-                                </button>
-                            </div>
-                            <p className="text-gray-500 mt-1">
-                                Book your slot at {selectedSlot.name}
-                            </p>
-
-                            <div className="mt-4">
-                                <label className="text-sm font-medium text-gray-700">
-                                    Time Interval:
-                                </label>
-                                <select
-                                    value={interval}
-                                    onChange={e => {
-                                        setInterval(e.target.value)
-                                        fetchAvailableSlots(selectedSlot._id, e.target.value)
-                                    }}
-                                    className="mt-1 block w-full rounded-md border text-gray-600 border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-
-                                >
-                                    <option value="20">20 minutes</option>
-                                    <option value="30">30 minutes</option>
-                                    <option value="60">60 minutes</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* <div className="p-6 grid grid-cols-2 gap-4">
-                            {availableTimeSlots.map((timeSlot, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handleTimeSlotSelect(timeSlot)}
-                                    disabled={!timeSlot.available} // Disable button if slot is booked
-                                    className={`p-4 text-center rounded-lg border-2 
-                        ${timeSlot.available ? "border-gray-200 hover:border-indigo-500 hover:bg-indigo-50 transition-all" : "border-gray-300 bg-gray-100 cursor-not-allowed"}
-                    `}
-                                >
-                                    <Calendar className={`w-5 h-5 mx-auto mb-2 ${timeSlot.available ? "text-indigo-600" : "text-gray-400"}`} />
-                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-gray-500"}`}>{timeSlot.start}</p>
-                                    <p className="text-sm text-gray-500">to</p>
-                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-gray-500"}`}>{timeSlot.end}</p>
-                                </button>
-                            ))}
-                        </div> */}
-                        <div className="p-6 grid grid-cols-2 gap-4">
-                            {availableTimeSlots.map((timeSlot, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => handleTimeSlotSelect(timeSlot)}
-                                    disabled={!timeSlot.available}
-                                    className={`p-4 text-center rounded-lg border-2 transition-all ${timeSlot.available
-                                        ? "border-gray-200 hover:border-indigo-500 hover:bg-indigo-50"
-                                        : "border-red-400 bg-red-100 cursor-not-allowed"
-                                        }`}
-                                >
-                                    <Calendar className={`w-5 h-5 mx-auto mb-2 ${timeSlot.available ? "text-indigo-600" : "text-red-600"}`} />
-                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-red-700"}`}>
-                                        {timeSlot.start}
-                                    </p>
-                                    <p className="text-sm text-gray-500">to</p>
-                                    <p className={`font-medium ${timeSlot.available ? "text-gray-900" : "text-red-700"}`}>
-                                        {timeSlot.end}
-                                    </p>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Payment Modal */}
-            {showPaymentModal && selectedTimeSlot && (
+            {showBookingPopup && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[2000]">
-                    <div className="bg-white w-full max-w-md rounded-lg p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-xl font-semibold text-gray-900">
-                                Payment Details
-                            </h2>
-                            <button
-                                onClick={() => setShowPaymentModal(false)}
-                                className="text-gray-400 hover:text-gray-500"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
+                    <div className="bg-white w-full max-w-md rounded-lg p-6 shadow-lg">
+                        <h2 className="text-xl font-semibold text-gray-900 mb-4">Select Your Parking Slot</h2>
+                        <div className="grid grid-cols-5 gap-2">
+                            {[...Array(8)].map((_, index) => (
+                                <button
+                                    key={index}
+                                    className="w-12 h-12 bg-gray-200 rounded-md hover:bg-green-500 transition"
+                                >
+                                    {index + 1}
+                                </button>
+                            ))}
                         </div>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700">
-                                    Card Number
-                                </label>
-                                <input
-                                    type="text"
-                                    placeholder="1234 5678 9012 3456"
-                                    value={paymentDetails.cardNumber}
-                                    onChange={e =>
-                                        setPaymentDetails({
-                                            ...paymentDetails,
-                                            cardNumber: e.target.value
-                                        })
-                                    }
-                                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                />
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        Expiry Date
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="MM/YY"
-                                        value={paymentDetails.expiryDate}
-                                        onChange={e =>
-                                            setPaymentDetails({
-                                                ...paymentDetails,
-                                                expiryDate: e.target.value
-                                            })
-                                        }
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700">
-                                        CVV
-                                    </label>
-                                    <input
-                                        type="text"
-                                        placeholder="123"
-                                        value={paymentDetails.cvv}
-                                        onChange={e =>
-                                            setPaymentDetails({
-                                                ...paymentDetails,
-                                                cvv: e.target.value
-                                            })
-                                        }
-                                        className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                                    />
-                                </div>
-                            </div>
-
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-gray-700">Amount:</span>
-                                    <span className="text-lg font-semibold text-gray-900">
-                                        ${paymentDetails.amount.toFixed(2)}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={handlePayment}
-                                className="w-full flex items-center justify-center space-x-2 bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition-colors"
-                            >
-                                <CreditCard className="w-5 h-5" />
-                                <span>Pay Now</span>
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => setShowBookingPopup(false)}
+                            className="mt-4 bg-red-500 text-white py-2 px-4 rounded-md w-full hover:bg-red-600"
+                        >
+                            Close
+                        </button>
                     </div>
                 </div>
             )}
         </div>
-    )
+    );
 }
+
 export default Evmap;

@@ -30,13 +30,13 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <ul className="hidden md:flex space-x-6 text-white">
           <NavLink to="/home" className="cursor-pointer hover:opacity-80">
-            home
+            Home
           </NavLink>
           <NavLink to="/about" className="cursor-pointer hover:opacity-80">
             About Us
           </NavLink>
           <NavLink to="/map" className="cursor-pointer hover:opacity-80">
-            map
+            Map
           </NavLink>
           <NavLink to="/ordermanage" className="cursor-pointer hover:opacity-80">
             Vehicle Management
