@@ -32,7 +32,7 @@ const Navbar = () => {
           <NavLink to="/home" className="cursor-pointer hover:opacity-80">
             Home
           </NavLink>
-          <NavLink to="/about" className="cursor-pointer hover:opacity-80">
+          <NavLink to="/AboutUs" className="cursor-pointer hover:opacity-80">
             About Us
           </NavLink>
           <NavLink to="/map" className="cursor-pointer hover:opacity-80">
@@ -82,7 +82,7 @@ const Navbar = () => {
       {/* Mobile Navigation Menu */}
       {isMenuOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-black shadow-md text-white text-center py-4 space-y-4 rounded-b-lg">
-          <NavLink to="/about" className="block" onClick={() => setIsMenuOpen(false)}>
+          <NavLink to="/AboutUs" className="block" onClick={() => setIsMenuOpen(false)}>
             About Us
           </NavLink>
           <NavLink to="/map" className="block" onClick={() => setIsMenuOpen(false)}>

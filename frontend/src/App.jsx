@@ -6,8 +6,9 @@ import DashboardTasks from './component/DashboardTasks';
 import Maps from './component/Maps';
 import CarSlider from './component/Slider'; // Import CarSlider component
 import Evmap from './component/Evmap';
-import LoginPage from './component/loginPage';
+import LoginPage from './component/LoginPage';
 import SignUp from './component/SignUp';
+import AboutUs from './component/About';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
 
@@ -34,6 +35,8 @@ const App = () => {
 
         {/* Route for the Home page */}
         <Route path="/home" element={<Home />} />
+
+        <Route path='/AboutUs' element={<AboutUs />}/>
 
         {/* Route for Dashboard */}
         <Route path="/dashboard" element={<DashboardTasks />} />
