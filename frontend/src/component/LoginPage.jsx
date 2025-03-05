@@ -2,11 +2,12 @@
 
 import { useGoogleLogin } from "@react-oauth/google"
 import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { NavLink, useNavigate } from "react-router-dom"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import { googleAuth } from "./api"
 import styled from "styled-components"
+import Navbar from "./Navbar"
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -118,25 +119,8 @@ const LoginPage = () => {
   return (
     <div className="bg-black min-h-screen text-white flex flex-col">
       {/* Navbar */}
-      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800">
-        <div className="flex items-center">
-          <LogoText>VOLTHUB</LogoText>
-        </div>
-        <div className="hidden md:flex space-x-8">
-          {["Home", "About", "Products", "Blog", "Contact"].map((item) => (
-            <NavLink key={item} href="#">
-              {item}
-            </NavLink>
-          ))}
-        </div>
-        <div className="flex items-center space-x-4">
-          <NavButton className="bg-transparent border border-blue-500" onClick={() => navigate("/login")}>
-            Login
-          </NavButton>
-          <NavButton className="bg-blue-500 hover:bg-blue-600" onClick={() => navigate("/signup")}>
-            Register
-          </NavButton>
-        </div>
+      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 z-[500]">
+        <Navbar />
       </nav>
 
       {/* Main Content */}
@@ -291,7 +275,7 @@ const LogoText = styled.div`
   letter-spacing: 1px;
 `
 
-const NavLink = styled.a`
+const NavLinks = styled.a`
   color: #f3f4f6;
   font-weight: 500;
   transition: all 0.2s ease;

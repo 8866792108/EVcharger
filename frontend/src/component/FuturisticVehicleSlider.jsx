@@ -277,7 +277,7 @@ const FuturisticVehicleSlider = () => {
               <p className="text-lg">🚀 <span className="font-semibold">Engine:</span> {filteredVehicles[currentIndex].engine}</p>
               <p className="text-lg">⚡ <span className="font-semibold">Top Speed:</span> {filteredVehicles[currentIndex].speed}</p>
               <p className="text-lg">🏎️ <span className="font-semibold">Horse Power:</span> {filteredVehicles[currentIndex].power}</p>
-              <NavLink to={`/ordermanage/${filteredVehicles[currentIndex].category}`} className="mt-4 bg-blue-500 px-6 py-3 text-white rounded-full hover:bg-blue-700 transition">
+              <NavLink to={`/stations/${filteredVehicles[currentIndex].category}`} className="mt-4 bg-blue-500 px-6 py-3 text-white rounded-full hover:bg-blue-700 transition">
                 Charge..⚡
               </NavLink>
             </div>

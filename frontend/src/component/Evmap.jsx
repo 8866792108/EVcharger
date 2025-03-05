@@ -9,6 +9,7 @@ import { motion } from "framer-motion"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import CarRental from "./filter"
+import Navbar from "./Navbar"
 
 const Evmap = () => {
   const navigate = useNavigate()
@@ -87,7 +88,7 @@ const Evmap = () => {
       }
 
       const allowedBrands = vehicleTypeMap[selectedVehicleType] || []
-      filtered = filtered.filter(slot => 
+      filtered = filtered.filter(slot =>
         allowedBrands.some(brand => slot.name.toLowerCase().includes(brand.toLowerCase()))
       )
     }
@@ -189,12 +190,15 @@ const Evmap = () => {
     })
   }
 
-  const handleNavigateToMaps = (address) => {
-    // Create Google Maps URL with the destination address
-    const encodedAddress = encodeURIComponent(address)
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`
-    // Open in new tab
-    window.open(mapsUrl, "_blank")
+  const handleNavigateToMaps = (address, name) => {
+
+    const NewAdd = address.replaceAll(" ", "+")
+    const NewName = name.replaceAll(" ", "+")
+    console.log("new address :: " + NewName + NewAdd);
+
+    const navigateUrl = `https://www.google.com/maps/dir/${userLocation.latitude},${userLocation.longitude}/${NewName},${NewAdd}`;
+
+    window.open(navigateUrl, '_blank');
   }
 
   const handleFindNearMe = () => {
@@ -212,40 +216,35 @@ const Evmap = () => {
     }
   }
 
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const { latitude, longitude } = position.coords
+        setUserLocation({ latitude, longitude })
+      }, (error) => {
+        toast.error("Please enable location services to use this feature")
+      })
+    } else {
+      toast.error("Geolocation is not supported by your browser")
+    }
+  }, [])
   // Add this helper function to calculate distance
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371 // Earth's radius in km
     const dLat = (lat2 - lat1) * Math.PI / 180
     const dLon = (lon2 - lon1) * Math.PI / 180
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-             Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-             Math.sin(dLon/2) * Math.sin(dLon/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2)
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
     return R * c // Distance in km
   }
 
   return (
     <div className="bg-black min-h-screen text-white flex flex-col">
       {/* Navbar */}
-      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 fixed top-0 left-0 right-0 z-10 bg-black">
-        <div className="flex items-center">
-          <LogoText>VOLTHUB</LogoText>
-        </div>
-        <div className="hidden md:flex space-x-8">
-          {["Home", "About", "Products", "Blog", "Contact"].map((item) => (
-            <NavLink key={item} href="#">
-              {item}
-            </NavLink>
-          ))}
-        </div>
-        <div className="flex items-center space-x-4">
-          <NavButton className="bg-transparent border border-blue-500" onClick={() => navigate("/login")}>
-            Login
-          </NavButton>
-          <NavButton className="bg-blue-500 hover:bg-blue-600" onClick={() => navigate("/signup")}>
-            Register
-          </NavButton>
-        </div>
+      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 fixed top-0 left-0 right-0 z-[500] bg-black">
+        <Navbar />
       </nav>
 
       {/* Main Content */}
@@ -253,9 +252,9 @@ const Evmap = () => {
         <div className="max-w-6xl mx-auto">
           {/* Hero Section with Background Image */}
           <div className="relative h-96 mb-16">
-            <div 
+            <div
               className="absolute inset-0 bg-cover bg-center"
-              style={{ 
+              style={{
                 backgroundImage: 'url("https://i.pinimg.com/474x/a2/88/32/a28832bd28790cd14caaa00a3d92e04e.jpg")',
                 filter: 'brightness(0.7)'
               }}
@@ -286,7 +285,7 @@ const Evmap = () => {
                   />
                   <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
                 </div>
-                
+
                 {/* Vehicle Type Filter */}
                 <div className="flex gap-3 flex-wrap justify-center">
                   {[
@@ -301,18 +300,17 @@ const Evmap = () => {
                       key={type.value}
                       onClick={() => {
                         setSelectedVehicleType(type.value)
-                        if (['bicycle', 'autorickshaw'].includes(type.value)) {
+                        if (['tesla', 'bicycle', 'autorickshaw'].includes(type.value)) {
                           toast.info("Coming soon!", {
                             position: "top-center",
                             autoClose: 3000
                           })
                         }
                       }}
-                      className={`px-4 py-2 rounded-full transition-all ${
-                        selectedVehicleType === type.value
-                          ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white'
-                          : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                      }`}
+                      className={`px-4 py-2 rounded-full transition-all ${selectedVehicleType === type.value
+                        ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                        }`}
                     >
                       {type.label}
                     </button>
@@ -332,7 +330,7 @@ const Evmap = () => {
           </div>
 
           {/* Filter Section */}
-          
+
           {/* Stations Grid */}
           <motion.div
             className="bg-gray-900 rounded-xl shadow-lg p-8 mb-8"
@@ -390,7 +388,7 @@ const Evmap = () => {
                           Book Slot
                         </FuturisticButton>
                         <FuturisticButton
-                          onClick={() => handleNavigateToMaps(slot.address)}
+                          onClick={() => handleNavigateToMaps(slot.address, slot.name)}
                           className="flex-1"
                           $secondary
                         >
@@ -448,12 +446,11 @@ const Evmap = () => {
                     disabled={slot.status === "booked"}
                     className={`
                       p-4 rounded-lg font-medium text-sm
-                      ${
-                        slot.status === "booked"
-                          ? "bg-red-900 text-red-300 cursor-not-allowed opacity-60"
-                          : slot.number === selectedSlotNumber
-                            ? "bg-gradient-to-r from-blue-500 to-green-500 text-white"
-                            : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ${slot.status === "booked"
+                        ? "bg-red-900 text-red-300 cursor-not-allowed opacity-60"
+                        : slot.number === selectedSlotNumber
+                          ? "bg-gradient-to-r from-blue-500 to-green-500 text-white"
+                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
                       }
                       transition-colors duration-200
                     `}
@@ -502,11 +499,10 @@ const Evmap = () => {
                   <button
                     key={option.value}
                     onClick={() => handleDurationSelect(option.value)}
-                    className={`p-3 text-sm rounded-lg border ${
-                      selectedDuration === option.value
-                        ? "bg-gradient-to-r from-blue-500 to-green-500 text-white border-transparent"
-                        : "bg-gray-800 text-gray-300 border-gray-700 hover:border-blue-500"
-                    }`}
+                    className={`p-3 text-sm rounded-lg border ${selectedDuration === option.value
+                      ? "bg-gradient-to-r from-blue-500 to-green-500 text-white border-transparent"
+                      : "bg-gray-800 text-gray-300 border-gray-700 hover:border-blue-500"
+                      }`}
                   >
                     {option.label}
                   </button>

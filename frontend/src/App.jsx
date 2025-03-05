@@ -48,8 +48,8 @@ const App = () => {
         <Route path="/map" element={<Maps />} />
 
         {/* Route for Order Management */}
-        <Route path="/ordermanage" element={<Evmap />} />
-        <Route path="/ordermanage/:category" element={<Evmap />} />
+        <Route path="/stations" element={<Evmap />} />
+        <Route path="/stations/:category" element={<Evmap />} />
 
         {/* Route for the CarSlider component */}
         <Route path="/car-slider" element={<CarSlider />} />

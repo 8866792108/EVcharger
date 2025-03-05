@@ -6,10 +6,17 @@ import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
 import styled from "styled-components"
 import { motion } from "framer-motion"
+import axios from "axios"
+import Navbar from "./Navbar"
 
 const AboutUs = () => {
   const navigate = useNavigate()
-  const [feedback, setFeedback] = useState({ name: "", email: "", message: "" })
+  const [feedback, setFeedback] = useState(
+    {
+      name: localStorage.getItem('name') || "",
+      email: localStorage.getItem('email') ||"",
+      message: ""
+    })
   const [activeTimelineItem, setActiveTimelineItem] = useState(0)
 
   const handleFeedbackChange = (e) => {
@@ -17,14 +24,67 @@ const AboutUs = () => {
     setFeedback((prev) => ({ ...prev, [name]: value }))
   }
 
+  // const handleFeedbackSubmit = async (e) => {
+  //   e.preventDefault()
+  //   // Here you would typically send the feedback to your server
+  //   console.log("Feedback submitted:", feedback)
+  //   toast.success("Thank you for your feedback!", {
+  //     position: "top-center",
+  //     autoClose: 3000,
+  //   })
+  //   setFeedback({ name: "", email: "", message: "" })
+  // }
+
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault()
-    // Here you would typically send the feedback to your server
-    console.log("Feedback submitted:", feedback)
-    toast.success("Thank you for your feedback!", {
-      position: "top-center",
-      autoClose: 3000,
-    })
+
+    const formdata = new FormData()
+    formdata.append("name", feedback.name)
+    formdata.append("email", feedback.email)
+    formdata.append("message", feedback.message)
+    formdata.append("userId", localStorage.getItem('userId'))
+
+    console.log(formdata)
+
+    try {
+      const url = "http://localhost:8080/user/feedback"
+
+      const response = await axios.post(url, formdata, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      console.log("this is the response data::: " + response.data)
+      const { message, success, error } = await response.data
+
+      if (success) {
+        toast.success(message, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+        setTimeout(() => {
+          navigate("/AboutUs")
+        }, 1000)
+      } else if (error) {
+        console.log(error)
+        const details = error?.details[0].message
+        toast.error(details, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      } else {
+        toast.error(message, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }
+    } catch (error) {
+      toast.error(error, {
+        position: "top-center",
+        autoClose: 2000,
+      })
+    }
     setFeedback({ name: "", email: "", message: "" })
   }
 
@@ -36,9 +96,8 @@ const AboutUs = () => {
   }, [])
 
   const teamMembers = [
-    { name: "Sanjay Madta", role: "CEO & Founder", image: "" },
-    { name: "Max Power", role: "CTO", image: "/placeholder.svg?height=200&width=200" },
-    { name: "Zoe Charge", role: "Head of Design", image: "/placeholder.svg?height=200&width=200" },
+    { name: "Sanjay Madta", role: "CEO & Founder", image: "../src/assets/about/ceo.jpg" },
+    { name: "Head of the DepartMent", role: "CTO", image: "./placeholder.svg?height=200&width=200" },
   ]
 
   const timelineItems = [
@@ -52,25 +111,8 @@ const AboutUs = () => {
   return (
     <div className="bg-black min-h-screen text-white flex flex-col">
       {/* Navbar */}
-      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800">
-        <div className="flex items-center">
-          <LogoText>VOLTHUB</LogoText>
-        </div>
-        <div className="hidden md:flex space-x-8">
-          {["Home", "About", "Products", "Blog", "Contact"].map((item) => (
-            <NavLink key={item} href="#">
-              {item}
-            </NavLink>
-          ))}
-        </div>
-        <div className="flex items-center space-x-4">
-          <NavButton className="bg-transparent border border-blue-500" onClick={() => navigate("/login")}>
-            Login
-          </NavButton>
-          <NavButton className="bg-blue-500 hover:bg-blue-600" onClick={() => navigate("/signup")}>
-            Register
-          </NavButton>
-        </div>
+      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 z-[500]">
+        <Navbar />
       </nav>
 
       {/* Main Content */}
@@ -123,7 +165,7 @@ const AboutUs = () => {
                   <img
                     src={member.image || "/placeholder.svg"}
                     alt={member.name}
-                    className="w-32 h-32 rounded-full mx-auto mb-4"
+                    className="w-32 h-32 rounded-full mx-auto mb-4 bg-cover bg-center bg-no-repeat"
                   />
                   <h3 className="text-xl font-semibold">{member.name}</h3>
                   <p className="text-blue-400">{member.role}</p>

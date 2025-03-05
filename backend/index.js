@@ -37,6 +37,7 @@ app.use("/slots", Evlocation)
 app.use("/orders",Orderroute)
 app.use('/auth',Authroute)
 
+
 app.get("/", (req, res) => {
     res.send("welcome users")
 })

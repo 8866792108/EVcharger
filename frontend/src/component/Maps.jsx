@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leafl
 import "leaflet/dist/leaflet.css"
 import axios from 'axios'
 import { Icon } from 'leaflet'
+import Navbar from './Navbar'
 // import map from "https://cdn-icons-png.flaticon.com/512/684/684908.png"
 
 
@@ -88,9 +89,11 @@ const Maps = () => {
   return (
     <div className='home flex flex-col items-center justify-center min-h-screen'>
       {/* Horizontal Sidebar */}
-      <ResponsiveSidebar />
+      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 fixed top-0 left-0 right-0 z-[500] bg-black">
+        <Navbar />
+      </nav>
 
-      <main className="flex-1 w-full  p-4 md:transition-all md:duration-300">
+      <main className="flex-1 w-full  p-4 md:transition-all md:duration-300 mt-8">
         {current && (
 
           <div className="h-[calc(100vh-4rem)]">

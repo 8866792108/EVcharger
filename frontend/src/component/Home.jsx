@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import styled from "styled-components";
-import ResponsiveSidebar from "./ResponsiveSidebar";
+import Navbar from "./Navbar"
 import CarSlider from "./Slider";
 import Footer from "./Footer";
 import FuturisticVehicleSlider from "./FuturisticVehicleSlider";
@@ -62,7 +62,9 @@ const Home = () => {
   return (
     <div className="bg-black min-h-screen text-white dark:text-gray-500">
       <main>
-        <ResponsiveSidebar />
+        <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 fixed top-0 left-0 right-0 z-[500] bg-black">
+          <Navbar />
+        </nav>
         <CarSlider scrollToSection={scrollToFuturisticSection} />
         <VolthubMission />
 

@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../Models/user");
 const bcrypt = require("bcrypt");
 const { oauth2client } = require("../utils/googleConfig");
-const axios = require('axios')
+const axios = require('axios');
+const feedbackmodel = require("../Models/feedback");
 
 const signup = async (req, res) => {
 
@@ -121,6 +122,35 @@ const googlelogin = async (req, res) => {
     }
 };
 
+
+const feedback = async (req, res) => {
+    try {
+        const { name, email, message, userId } = req.body;
+        console.log("Your feedback body is: ", req.body);
+
+        // Create a new user
+        const newfeedback = new feedbackmodel({
+            userId: userId,
+            name: name,
+            email: email,
+            message: message
+        });
+        console.log("New Feedback: ", newfeedback)
+
+        // Save the user to the database
+        await newfeedback.save()
+        return res.status(201).json({
+            message: "send successful",
+            success: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error: " + error.message,
+            success: false,
+        });
+    }
+}
+
 // const googlelogin = async (req, res) => {
 //     try {
 //         const { code } = req.query
@@ -166,5 +196,6 @@ const googlelogin = async (req, res) => {
 module.exports = {
     signup,
     login,
-    googlelogin
+    googlelogin,
+    feedback
 }
