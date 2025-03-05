@@ -9,6 +9,7 @@ import Evmap from './component/Evmap';
 import LoginPage from './component/LoginPage';
 import SignUp from './component/SignUp';
 import AboutUs from './component/About';
+import Payment from './component/Payment'; // Add this import
 import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
 
@@ -56,6 +57,7 @@ const App = () => {
 
         <Route path="/login" element={<GoogleAuthWrapperlogin />} />
         <Route path="/signup" element={<GoogleAuthWrapper />} />
+        <Route path="/payment" element={<Payment />} />
       </Routes>
     </div>
   );
