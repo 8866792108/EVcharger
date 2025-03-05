@@ -291,39 +291,79 @@ const availableslots = async (req, res) => {
     }
 };
 
+// const bookslot = async (req, res) => {
+//     const { start, end, userId, slotId } = req.body;
+
+//     // Validate input to ensure start and end times are present
+//     if (!start || !end) {
+//         return res.status(400).json({ message: 'Start and end times are required.' });
+//     }
+
+//     // Convert to Date objects using moment.js
+//     const startTime = moment(start, 'hh:mm A').isValid() ? moment(start, 'hh:mm A').toDate() : null;
+//     const endTime = moment(end, 'hh:mm A').isValid() ? moment(end, 'hh:mm A').toDate() : null;
+
+//     if (!startTime || !endTime) {
+//         return res.status(400).json({ message: 'Invalid start or end time format.' });
+//     }
+
+//     // Check if the slot is already booked
+//     const existingBooking = await ordermodel.findOne({
+//         start: { $lte: endTime },
+//         end: { $gte: startTime },
+//         slotId: slotId
+//     });
+
+//     if (existingBooking) {
+//         return res.status(400).json({ message: 'Slot is already booked.' });
+//     }
+
+//     // Create a new booking
+//     const newBooking = new ordermodel({
+//         userId: userId,
+//         slotId: slotId,
+//         start: startTime,
+//         end: endTime
+//     });
+
+//     try {
+//         const response = await newBooking.save();
+//         res.status(201).json({ message: 'Slot booked successfully!', booking: response });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Error booking slot.' });
+//     }
+// };
 const bookslot = async (req, res) => {
-    const { start, end, userId, slotId } = req.body;
+    console.log("the payment data is the :: ", req.body)
 
-    // Validate input to ensure start and end times are present
-    if (!start || !end) {
-        return res.status(400).json({ message: 'Start and end times are required.' });
-    }
+    const { userId, slotId, date, time, duration, slotnumber, method, transaction } = req.body
 
-    // Convert to Date objects using moment.js
-    const startTime = moment(start, 'hh:mm A').isValid() ? moment(start, 'hh:mm A').toDate() : null;
-    const endTime = moment(end, 'hh:mm A').isValid() ? moment(end, 'hh:mm A').toDate() : null;
-
-    if (!startTime || !endTime) {
-        return res.status(400).json({ message: 'Invalid start or end time format.' });
-    }
-
+    const price = (duration / 30) * 10
     // Check if the slot is already booked
     const existingBooking = await ordermodel.findOne({
-        start: { $lte: endTime },
-        end: { $gte: startTime },
-        slotId: slotId
+        slotId: slotId,
+        date: date,
+        time: time,
+        duration: duration,
+        slotnumber: slotnumber
     });
 
     if (existingBooking) {
-        return res.status(400).json({ message: 'Slot is already booked.' });
+        return res.status(200).json({ message: 'Slot is already booked.' });
     }
 
     // Create a new booking
     const newBooking = new ordermodel({
         userId: userId,
         slotId: slotId,
-        start: startTime,
-        end: endTime
+        method: method,
+        date: date,
+        time: time,
+        duration: duration,
+        slotnumber: slotnumber,
+        transaction: transaction,
+        price: price
     });
 
     try {
@@ -331,7 +371,7 @@ const bookslot = async (req, res) => {
         res.status(201).json({ message: 'Slot booked successfully!', booking: response });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error booking slot.' });
+        res.status(200).json({ message: 'Error booking slot.' });
     }
 };
 

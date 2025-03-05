@@ -3,6 +3,9 @@ import { MapPin, Settings, LogOut, ListOrdered, LayoutDashboard, LogIn, User } f
 import { BluetoothDevices } from "./BluetoothDevices"
 import ResponsiveSidebar from "./ResponsiveSidebar"
 import { NavLink } from "react-router-dom"
+import { motion } from 'framer-motion'
+import { FaUser, FaCar, FaCreditCard, FaHistory, FaBell, FaShieldAlt, FaQuestionCircle } from 'react-icons/fa'
+import Navbar from './Navbar'
 
 const Profile = () => {
   const [islogin, setislogin] = useState(false)
@@ -15,111 +18,164 @@ const Profile = () => {
       { id: 2, name: "Office Station", address: "456 Work Ave" }
     ]
   })
+  const [activeTab, setActiveTab] = useState('profile')
+  const [profileData, setProfileData] = useState({
+    name: 'John Doe',
+    email: 'john.doe@example.com',
+    phone: '+1 (555) 123-4567',
+    vehicles: [
+      { id: 1, model: 'Tesla Model 3', year: '2023', licensePlate: 'EV-123' },
+      { id: 2, model: 'Chevrolet Bolt', year: '2022', licensePlate: 'EV-456' }
+    ],
+    chargingHistory: [
+      { id: 1, date: '2024-03-01', location: 'Central Station', duration: '45 mins', cost: '$12.50' },
+      { id: 2, date: '2024-02-28', location: 'West Side Hub', duration: '30 mins', cost: '$8.75' }
+    ]
+  })
+
+  const tabs = [
+    { id: 'profile', label: 'Profile', icon: <FaUser /> },
+    { id: 'vehicles', label: 'My Vehicles', icon: <FaCar /> },
+    { id: 'payments', label: 'Payment Methods', icon: <FaCreditCard /> },
+    { id: 'history', label: 'Charging History', icon: <FaHistory /> },
+    { id: 'notifications', label: 'Notifications', icon: <FaBell /> },
+    { id: 'security', label: 'Security', icon: <FaShieldAlt /> },
+    { id: 'help', label: 'Help & Support', icon: <FaQuestionCircle /> }
+  ]
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold mb-4">Personal Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ProfileField label="Full Name" value={profileData.name} />
+              <ProfileField label="Email" value={profileData.email} />
+              <ProfileField label="Phone" value={profileData.phone} />
+              <ProfileField label="Location" value="New York, USA" />
+            </div>
+            <motion.button
+              className="px-6 py-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg
+                text-white font-medium hover:shadow-lg transition-all duration-300"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              Edit Profile
+            </motion.button>
+          </div>
+        )
+
+      case 'vehicles':
+        return (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">My Vehicles</h3>
+              <motion.button
+                className="px-4 py-2 bg-green-500 rounded-lg text-white font-medium"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Add Vehicle
+              </motion.button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {profileData.vehicles.map(vehicle => (
+                <motion.div
+                  key={vehicle.id}
+                  className="p-4 bg-gray-800 rounded-xl border border-gray-700"
+                  whileHover={{ scale: 1.02 }}
+                >
+                  <h4 className="font-semibold text-lg mb-2">{vehicle.model}</h4>
+                  <p className="text-gray-400">Year: {vehicle.year}</p>
+                  <p className="text-gray-400">License: {vehicle.licensePlate}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case 'history':
+        return (
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold mb-4">Charging History</h3>
+            <div className="space-y-4">
+              {profileData.chargingHistory.map(session => (
+                <motion.div
+                  key={session.id}
+                  className="p-4 bg-gray-800 rounded-xl border border-gray-700"
+                  whileHover={{ scale: 1.01 }}
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h4 className="font-semibold">{session.location}</h4>
+                      <p className="text-gray-400">{session.date}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold text-green-400">{session.cost}</p>
+                      <p className="text-gray-400">{session.duration}</p>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )
+
+      default:
+        return (
+          <div className="text-center text-gray-400">
+            Content for {activeTab} will be available soon.
+          </div>
+        )
+    }
+  }
 
   return (
-   <div className='home flex flex-col items-center justify-center min-h-screen'>
-               {/* Horizontal Sidebar */}
-               <ResponsiveSidebar />
-   
-               <main className="flex-1 w-full max-w-4xl p-4 md:transition-all md:duration-300">
-        <div className=" max-w-screen-2xl mx-auto p-6">
-          <div className=" bg-white dark:bg-black dark:text-gray-200 rounded-xl shadow-sm overflow-hidden">
-            {/* Profile Header */}
-            <div className="relative h-32 bg-[#db0000]">
-              <div className="absolute -bottom-16 left-6">
-                <div className="w-32 h-32 rounded-full border-4 border-white bg-white">
-
-                  {localStorage.getItem("image")
-                    ? <img
-                      src={"http://localhost:8080/" + localStorage.getItem("image")}
-                      alt="Profile"
-                      className="w-full h-full rounded-full object-cover"
-                    />
-                    : <User className="w-full h-full text-black"/>
-                  }
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-16 px-6 pb-6">
-              {/* Profile Info */}
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-800 dark:bg-black dark:text-white">{localStorage.getItem('loggeduser') || "Guest"}</h2>
-                  <p className="text-gray-400 dark:bg-black dark:text-white">{localStorage.getItem("user_email")}</p>
-                </div>
-                {islogin
-                  && <button
-                    onClick={() => setIsEditing(!isEditing)}
-                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+    <div className="min-h-screen bg-black text-white">
+      <Navbar />
+      
+      <div className="max-w-7xl mx-auto px-4 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Sidebar */}
+          <div className="md:col-span-1">
+            <div className="bg-gray-900 rounded-xl p-4">
+              <div className="flex flex-col space-y-2">
+                {tabs.map(tab => (
+                  <motion.button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-300
+                      ${activeTab === tab.id 
+                        ? 'bg-gradient-to-r from-blue-500/20 to-green-500/20 text-white' 
+                        : 'text-gray-400 hover:bg-gray-800'}`}
+                    whileHover={{ x: 4 }}
                   >
-                    {isEditing ? "Save Changes" : "Edit Profile"}
-                  </button>
-                }
-                {/* <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                >
-                  {isEditing ? "Save Changes" : "Edit Profile"}
-                </button> */}
-              </div>
-
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Saved Locations */}
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold flex items-center gap-2 text-black dark:text-white">
-                    <MapPin className="h-5 w-5" />
-                    Saved Locations
-                  </h3>
-                  {userData.savedLocations.map(location => (
-                    <div key={location.id} className=" dark:bg-gray-900 dark:text-gray-200 p-4 rounded-lg bg-red-50 text-gray-800 hover:text-gray-950 hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                      <h4 className="font-medium">{location.name}</h4>
-                      <p className="text-gray-400 text-sm">{location.address}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Bluetooth Devices */}
-                <div className=" space-y-4">
-                  <BluetoothDevices />
-                </div>
-
-                {/* Quick Actions */}
-                <div className="space-y-4 md:col-span-2 text-black dark:text-gray-300">
-                  <h3 className="text-lg font-semibold cursor-default">Quick Actions</h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                      <Settings className="h-5 w-5" />
-                      Account Settings
-                    </button>
-                    <NavLink to={'/ordermanage'} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                      <MapPin className="h-5 w-5" />
-                      Order Locations
-                    </NavLink>
-                    <NavLink to={'/currentuser'} className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                      <LayoutDashboard className="h-5 w-5" />
-                      Manage Locations
-                    </NavLink>
-                    {islogin
-                      ? <button onClick={() => { localStorage.removeItem("token") }} className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-600 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                        <LogOut className="h-5 w-5" />
-                        Logout
-                      </button>
-                      : <NavLink to={"/login"}  className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:text-gray-200 dark:bg-gray-900 rounded-lg hover:bg-red-100 hover:font-medium hover:border hover:border-red-200 dark:hover:border dark:hover:border-gray-700">
-                        <LogIn className="h-5 w-5" />
-                        Login
-                      </NavLink>
-                    }
-                  </div>
-                </div>
+                    {tab.icon}
+                    <span>{tab.label}</span>
+                  </motion.button>
+                ))}
               </div>
             </div>
           </div>
+
+          {/* Main Content */}
+          <div className="md:col-span-3">
+            <div className="bg-gray-900 rounded-xl p-6">
+              {renderTabContent()}
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
 
+const ProfileField = ({ label, value }) => (
+  <div className="p-4 bg-gray-800 rounded-lg">
+    <p className="text-sm text-gray-400 mb-1">{label}</p>
+    <p className="font-medium">{value}</p>
+  </div>
+)
 
 export default Profile

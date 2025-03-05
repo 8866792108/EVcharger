@@ -9,18 +9,21 @@ import Evmap from './component/Evmap';
 import LoginPage from './component/LoginPage';
 import SignUp from './component/SignUp';
 import AboutUs from './component/About';
-import Payment from './component/Payment'; // Add this import
+import Payment from './component/Payment';
+import Orders from './component/Orders';
+import Contact from './component/Contact';
+import Starter from './component/Starter';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
 
-  const GoogleAuthWrapper = ()=>{
+  const GoogleAuthWrapper = () => {
     return (
       <GoogleOAuthProvider clientId='811730725449-o0icrsqm2p4usbv981nb0q5eq19ei5e0.apps.googleusercontent.com'>
         <SignUp></SignUp>
       </GoogleOAuthProvider>
     )
   }
-  const GoogleAuthWrapperlogin = ()=>{
+  const GoogleAuthWrapperlogin = () => {
     return (
       <GoogleOAuthProvider clientId='811730725449-o0icrsqm2p4usbv981nb0q5eq19ei5e0.apps.googleusercontent.com'>
         <LoginPage></LoginPage>
@@ -31,13 +34,13 @@ const App = () => {
     <div>
       {/* The routes will render the corresponding component based on the URL */}
       <Routes>
-        {/* Redirect root (/) to '/home' */}
-        <Route path="/" element={<Navigate to="/home" />} />
+
+        <Route path="/" element={<Starter />} />
 
         {/* Route for the Home page */}
         <Route path="/home" element={<Home />} />
 
-        <Route path='/AboutUs' element={<AboutUs />}/>
+        <Route path='/AboutUs' element={<AboutUs />} />
 
         {/* Route for Dashboard */}
         <Route path="/dashboard" element={<DashboardTasks />} />
@@ -57,7 +60,9 @@ const App = () => {
 
         <Route path="/login" element={<GoogleAuthWrapperlogin />} />
         <Route path="/signup" element={<GoogleAuthWrapper />} />
-        <Route path="/payment" element={<Payment />} />
+        <Route path="/:slotId/:date/:time/:duration/:slotnumber/payment" element={<Payment />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/contact" element={<Contact />} />
       </Routes>
     </div>
   );

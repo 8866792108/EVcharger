@@ -1,151 +1,173 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
-import styled from "styled-components";
-import Navbar from "./Navbar"
+import { motion } from "framer-motion";
+import Navbar from "./Navbar";
 import CarSlider from "./Slider";
 import Footer from "./Footer";
 import FuturisticVehicleSlider from "./FuturisticVehicleSlider";
 import VolthubMission from "./VolthubMission";
+import IntroSlider from "./IntroSlider";
+import { FaBolt, FaChargingStation, FaClock, FaMapMarkedAlt } from "react-icons/fa";
 
 const Home = () => {
-  const [loggedUser, setLoggedUser] = useState(localStorage.getItem("loggeduser") || "");
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
   const navigate = useNavigate();
-
-  // Reference to the FuturisticVehicleSlider section
   const futuristicSectionRef = useRef(null);
 
-  // Function to scroll to the FuturisticVehicleSlider
+  const handleIntroComplete = () => {
+    setShowIntro(false);
+  };
+
   const scrollToFuturisticSection = () => {
-    if (futuristicSectionRef.current) {
-      futuristicSectionRef.current.scrollIntoView({ behavior: "smooth" });
+    futuristicSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const features = [
+    {
+      icon: <FaBolt className="text-4xl text-yellow-400" />,
+      title: "Fast Charging",
+      description: "Quick and efficient charging for your vehicle"
+    },
+    {
+      icon: <FaChargingStation className="text-4xl text-green-400" />,
+      title: "Wide Network",
+      description: "Access to charging stations nationwide"
+    },
+    {
+      icon: <FaClock className="text-4xl text-blue-400" />,
+      title: "24/7 Availability",
+      description: "Charging stations available round the clock"
+    },
+    {
+      icon: <FaMapMarkedAlt className="text-4xl text-purple-400" />,
+      title: "Easy Location",
+      description: "Find nearest stations with our smart map"
     }
-  };
+  ];
 
-  // Function to scroll back to top
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    document.body.classList.add("bg-black", "m-0", "p-0");
-
-    const fetchProducts = async () => {
-      try {
-        const url = "http://localhost:8080/products/";
-        const headers = {
-          Authorization: localStorage.getItem("token"),
-          Accept: "application/json",
-        };
-
-        const response = await fetch(url, { headers });
-        if (!response.ok) throw new Error("Failed to fetch products");
-
-        const result = await response.json();
-        setProducts(result);
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-
-    return () => {
-      document.body.classList.remove("bg-black", "m-0", "p-0");
-    };
-  }, []);
+  if (showIntro) {
+    return <IntroSlider onComplete={handleIntroComplete} />;
+  }
 
   return (
-    <div className="bg-black min-h-screen text-white dark:text-gray-500">
-      <main>
-        <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 fixed top-0 left-0 right-0 z-[500] bg-black">
-          <Navbar />
-        </nav>
-        <CarSlider scrollToSection={scrollToFuturisticSection} />
-        <VolthubMission />
+    <div className="bg-black min-h-screen text-white">
+      {/* Navbar */}
+      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800/50 fixed top-0 left-0 right-0 z-[500] bg-black/90 backdrop-blur-sm">
+        <Navbar />
+      </nav>
 
-        {/* Loading State for Products */}
-        <section className="py-12 px-10 bg-white text-black font-montserrat">
-          <div className="container mx-auto max-w-7xl">
-            <div className="flex flex-col md:flex-row items-start justify-between">
-              <h2 className="text-4xl font-bold md:w-1/2 leading-snug">
-                Explore Our Range of Electric Bikes
-              </h2>
-              <p className="text-base md:w-1/2 leading-relaxed">
-                Discover the perfect electric bike for your needs. At VOLTHUB, we offer a diverse selection of
-                electric vehicles, each designed to provide a seamless and efficient ride. Whether you’re commuting
-                or exploring, our bikes are equipped to enhance your journey.
-              </p>
-            </div>
-            <div className="mt-10 flex flex-col md:flex-row justify-between">
-              <div className="md:w-1/2">
-                <h3 className="text-lg font-semibold">Eco-Friendly</h3>
-                <p className="text-sm mt-2">
-                  Our bikes are designed to reduce carbon footprint while providing a smooth ride.
-                </p>
-              </div>
-              <div className="md:w-1/2">
-                <h3 className="text-lg font-semibold">Advanced Tech</h3>
-                <p className="text-sm mt-2">
-                  Equipped with the latest navigation and battery technology for optimal performance.
-                </p>
-              </div>
-            </div>
+      {/* Hero Section */}
+      <CarSlider scrollToSection={scrollToFuturisticSection} />
 
-            {/* Styled Contact Us Button */}
-            <div className="mt-6 flex justify-center">
-              <StyledButton>Contact Us</StyledButton>
-            </div>
+      {/* Features Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-black via-gray-900 to-black">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            className="text-center mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+              Why Choose{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                VOLTHUB
+              </span>
+            </h2>
+            <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+              Experience the future of electric vehicle charging with our innovative solutions
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <motion.div
+                key={index}
+                className="p-6 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 
+                  border border-gray-700 hover:border-gray-600 transition-all duration-300
+                  backdrop-blur-sm group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -5 }}
+              >
+                <div className="mb-4 transform group-hover:scale-110 transition-transform duration-300">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
+                <p className="text-gray-400">{feature.description}</p>
+              </motion.div>
+            ))}
           </div>
-        </section>
-
-        {/* Futuristic Section */}
-        <div ref={futuristicSectionRef}>
-          <FuturisticVehicleSlider />
         </div>
+      </section>
 
-        {/* Back to Top Button */}
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-[31px] right-[103px] bg-blue-200 text-white p-3 rounded-full shadow-lg hover:bg-blue-700 transition"
+      {/* Futuristic Vehicle Section */}
+      <div ref={futuristicSectionRef}>
+        <FuturisticVehicleSlider />
+      </div>
+
+      {/* Mission Section */}
+      <VolthubMission />
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10" />
+        <motion.div 
+          className="max-w-4xl mx-auto text-center relative z-10"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
         >
-          🔝
-        </button>
+          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+            Ready to Start Your Electric Journey?
+          </h2>
+          <p className="text-xl text-gray-300 mb-8">
+            Join thousands of satisfied customers who have made the switch to sustainable mobility
+          </p>
+          <motion.button
+            onClick={() => navigate('/stations')}
+            className="px-8 py-4 bg-gradient-to-r from-blue-500 to-green-500 rounded-full
+              text-lg font-semibold hover:shadow-lg hover:shadow-green-500/20 
+              transition-all duration-300"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Find Charging Stations
+          </motion.button>
+        </motion.div>
+      </section>
 
-        <Footer />
-      </main>
+      {/* Show Intro Button */}
+      <motion.button
+        onClick={() => setShowIntro(true)}
+        className="fixed bottom-8 left-8 px-4 py-2 bg-gradient-to-r from-blue-500 to-green-500 
+          text-white rounded-full shadow-lg flex items-center gap-2 z-50"
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <svg 
+          className="w-5 h-5" 
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            strokeLinecap="round" 
+            strokeLinejoin="round" 
+            strokeWidth={2} 
+            d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" 
+          />
+        </svg>
+        Show Intro
+      </motion.button>
+
+      <Footer />
       <ToastContainer />
     </div>
   );
 };
-
-// Styled Components
-const StyledButton = styled.button`
-  background-color: #22c55e; /* Same green as Contact Us button */
-  color: white;
-  border-radius: 10em;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 0.8em 1.6em;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  border: none;
-  box-shadow: 0 0 0 0 #1e9e4a;
-
-  &:hover {
-    background-color: #1e9e4a; /* Darker green on hover */
-    transform: translateY(-4px) translateX(-2px);
-    box-shadow: 2px 5px 0 0 #166534;
-  }
-
-  &:active {
-    transform: translateY(2px) translateX(1px);
-    box-shadow: 0 0 0 0 #166534;
-  }
-`;
 
 export default Home;

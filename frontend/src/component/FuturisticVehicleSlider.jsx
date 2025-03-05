@@ -223,7 +223,6 @@ const FuturisticVehicleSlider = () => {
     setCurrentIndex((prev) => (prev - 1 + filteredVehicles.length) % filteredVehicles.length);
   };
 
-  // Swipe Gesture Handling
   const handlers = useSwipeable({
     onSwipedLeft: nextSlide,
     onSwipedRight: prevSlide,
@@ -232,95 +231,177 @@ const FuturisticVehicleSlider = () => {
   });
 
   return (
-    <div
+    <motion.div
       {...handlers}
-      className="relative w-full min-h-screen bg-black text-white flex items-center justify-center px-10"
+      className="relative w-full min-h-screen bg-gradient-to-b from-black via-gray-900 to-black 
+        text-white flex items-center justify-center px-10 overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
-      {/* Filter Dropdown - Positioned at the Top-Right */}
-      <div className="absolute top-5 right-10 ">
+      {/* Background Animation */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-green-500/20" />
+        <div className="charging-particles" />
+      </div>
+
+      {/* Category Filter */}
+      <motion.div 
+        className="absolute top-8 right-10 z-10"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
         <select
           value={selectedCategory}
           onChange={(e) => {
             setSelectedCategory(e.target.value);
-            setCurrentIndex(0); // Reset slider when category changes
+            setCurrentIndex(0);
           }}
-          className="bg-gray-800 text-white px-4 py-2 rounded-md border border-gray-600"
+          className="bg-gray-800/80 text-white px-6 py-3 rounded-full border border-gray-600 
+            backdrop-blur-sm hover:bg-gray-700/80 transition-all cursor-pointer focus:outline-none 
+            focus:ring-2 focus:ring-blue-500"
         >
           {categories.map((category, index) => (
             <option key={index} value={category}>{category}</option>
           ))}
         </select>
-      </div>
+      </motion.div>
 
       <AnimatePresence mode="wait">
         {filteredVehicles.length > 0 ? (
           <motion.div
             key={filteredVehicles[currentIndex].id}
-            initial={{ opacity: 0, scale: 0.9, x: 50 }}
-            animate={{ opacity: 1, scale: 1, x: 0 }}
-            exit={{ opacity: 0, scale: 0.9, x: -50 }}
+            initial={{ opacity: 0, scale: 0.9, y: 50 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: -50 }}
             transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="relative flex items-center justify-center w-full max-w-6xl"
+            className="relative flex flex-col md:flex-row items-center justify-center w-full max-w-7xl 
+              bg-gray-900/40 backdrop-blur-md rounded-3xl p-8 border border-gray-800"
           >
             {/* Left - Vehicle Image */}
-            <div className="flex-1 flex items-center justify-center">
+            <motion.div 
+              className="flex-1 flex items-center justify-center p-4"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.3 }}
+            >
               <img
                 src={filteredVehicles[currentIndex].image}
                 alt={filteredVehicles[currentIndex].name}
-                className="w-full max-w-xl object-contain h-[500px]"
+                className="w-full max-w-xl object-contain h-[500px] drop-shadow-2xl"
               />
-            </div>
+            </motion.div>
 
             {/* Right - Vehicle Specs */}
-            <div className="flex-1 flex flex-col items-start space-y-4 pl-10">
-              <h3 className="text-3xl font-semibold">Specifications</h3>
-              <p className="text-lg">🚀 <span className="font-semibold">Engine:</span> {filteredVehicles[currentIndex].engine}</p>
-              <p className="text-lg">⚡ <span className="font-semibold">Top Speed:</span> {filteredVehicles[currentIndex].speed}</p>
-              <p className="text-lg">🏎️ <span className="font-semibold">Horse Power:</span> {filteredVehicles[currentIndex].power}</p>
-              <NavLink to={`/stations/${filteredVehicles[currentIndex].category}`} className="mt-4 bg-blue-500 px-6 py-3 text-white rounded-full hover:bg-blue-700 transition">
-                Charge..⚡
-              </NavLink>
-            </div>
+            <div className="flex-1 flex flex-col items-start space-y-6 pl-10">
+              <motion.h2
+                className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-green-400 
+                  bg-clip-text text-transparent"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                {filteredVehicles[currentIndex].name}
+              </motion.h2>
 
-            {/* Vehicle Name at the Bottom */}
-            <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 bg-gray-900 bg-opacity-80 px-8 py-3 rounded-full text-lg font-bold shadow-lg">
-              {filteredVehicles[currentIndex].name}
+              <motion.div 
+                className="space-y-4 w-full"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 }}
+              >
+                <SpecCard icon="🚀" label="Engine" value={filteredVehicles[currentIndex].engine} />
+                <SpecCard icon="⚡" label="Top Speed" value={filteredVehicles[currentIndex].speed} />
+                <SpecCard icon="🏎️" label="Power" value={filteredVehicles[currentIndex].power} />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="w-full pt-6"
+              >
+                <NavLink 
+                  to={`/stations/${filteredVehicles[currentIndex].category}`}
+                  className="block w-full text-center bg-gradient-to-r from-blue-500 to-green-500 
+                    px-8 py-4 text-white rounded-full text-lg font-semibold
+                    hover:shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-1 
+                    transition-all duration-300"
+                >
+                  Charge Now ⚡
+                </NavLink>
+              </motion.div>
             </div>
           </motion.div>
         ) : (
-          <div className="text-center text-xl font-semibold">No Vehicles Available</div>
+          <motion.div 
+            className="text-center text-2xl font-semibold bg-gray-900/60 backdrop-blur-sm 
+              rounded-xl p-8 border border-gray-800"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            No Vehicles Available
+          </motion.div>
         )}
       </AnimatePresence>
 
       {/* Navigation Arrows */}
       {filteredVehicles.length > 1 && (
         <>
-          <button
-            onClick={prevSlide}
-            className="absolute left-10 text-3xl bg-gray-800 p-3 rounded-full hover:bg-gray-700 transition"
-          >
-            ◀
-          </button>
-          <button
-            onClick={nextSlide}
-            className="absolute right-10 text-3xl bg-gray-800 p-3 rounded-full hover:bg-gray-700 transition"
-          >
-            ▶
-          </button>
+          <NavButton direction="left" onClick={prevSlide}>◀</NavButton>
+          <NavButton direction="right" onClick={nextSlide}>▶</NavButton>
         </>
       )}
 
-      {/* Dots Indicator */}
-      <div className="absolute bottom-6 flex space-x-2">
+      {/* Progress Indicator */}
+      <motion.div 
+        className="absolute bottom-8 flex space-x-3"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
         {filteredVehicles.map((_, index) => (
-          <div
+          <motion.div
             key={index}
-            className={`w-3 h-3 rounded-full ${index === currentIndex ? "bg-white" : "bg-gray-500"}`}
-          ></div>
+            className={`w-2.5 h-2.5 rounded-full cursor-pointer 
+              ${index === currentIndex ? 'bg-gradient-to-r from-blue-400 to-green-400' : 'bg-gray-600'}`}
+            whileHover={{ scale: 1.2 }}
+            onClick={() => setCurrentIndex(index)}
+          />
         ))}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
+
+// Reusable Components
+const SpecCard = ({ icon, label, value }) => (
+  <motion.div 
+    className="bg-gray-800/50 backdrop-blur-sm rounded-xl p-4 border border-gray-700
+      hover:bg-gray-800/70 transition-all duration-300"
+    whileHover={{ scale: 1.02 }}
+  >
+    <div className="flex items-center space-x-3">
+      <span className="text-2xl">{icon}</span>
+      <div>
+        <p className="text-gray-400 text-sm">{label}</p>
+        <p className="text-lg font-semibold">{value}</p>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const NavButton = ({ children, direction, onClick }) => (
+  <motion.button
+    onClick={onClick}
+    className={`absolute ${direction === 'left' ? 'left-6' : 'right-6'} top-1/2 -translate-y-1/2 
+      bg-gray-800/80 backdrop-blur-sm text-2xl p-4 rounded-full border border-gray-700
+      hover:bg-gray-700/80 transition-all duration-300`}
+    whileHover={{ scale: 1.1 }}
+    whileTap={{ scale: 0.9 }}
+  >
+    {children}
+  </motion.button>
+);
 
 export default FuturisticVehicleSlider;

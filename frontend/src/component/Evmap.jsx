@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation, NavLink } from "react-router-dom"
 import { MapPin, Clock, Calendar, Navigation, Search, X, MapIcon } from "lucide-react"
 import axios from "axios"
 import styled from "styled-components"
@@ -113,7 +113,8 @@ const Evmap = () => {
   }, [searchTerm, selectedVehicleType, slots, isNearMeActive, userLocation])
 
   const handleSlotSelect = (slot) => {
-    setSelectedSlot(slot)
+    console.log(slot)
+    setSelectedSlot(slot._id)
     setShowBookingPopup(true)
     setSelectedDuration(null)
     setStartTime("")
@@ -527,13 +528,16 @@ const Evmap = () => {
               >
                 Cancel
               </button>
-              <FuturisticButton
-                onClick={handleProceedToPayment}
-                className="flex-1"
-                disabled={!selectedDate || !startTime || !selectedDuration || !selectedSlotNumber}
-              >
-                Proceed to Payment
-              </FuturisticButton>
+              <NavLink to={`/${selectedSlot}/${selectedDate}/${startTime}/${selectedDuration}/${selectedSlotNumber}/payment`} >
+                <FuturisticButton
+                  onClick={handleProceedToPayment}
+                  className="flex-1"
+                  disabled={!selectedDate || !startTime || !selectedDuration || !selectedSlotNumber}
+
+                >
+                  Proceed to Payment
+                </FuturisticButton>
+              </NavLink>
             </div>
           </motion.div>
         </div>
@@ -554,7 +558,7 @@ const LogoText = styled.div`
   letter-spacing: 1px;
 `
 
-const NavLink = styled.a`
+const NavLinks = styled.a`
   color: #f3f4f6;
   font-weight: 500;
   transition: all 0.2s ease;
@@ -609,6 +613,10 @@ const FuturisticInput = styled.input`
   
   &::placeholder {
     color: #6b7280;
+  }
+  &::-webkit-calendar-picker-indicator {
+    filter: invert(60%) sepia(80%) saturate(300%) hue-rotate(180deg);
+    cursor: pointer;
   }
 `
 
