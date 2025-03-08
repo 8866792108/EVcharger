@@ -1,3 +1,264 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+}
+
+/* Custom animations */
+@keyframes slideIn {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Sidebar Animations */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+/* Hover effect for sidebar items */
+.sidebar-item {
+  @apply relative overflow-hidden transition-all duration-300;
+}
+
+.sidebar-item::after {
+  content: '';
+  @apply absolute bottom-0 left-0 w-0 h-0.5 bg-indigo-600 transition-all duration-300;
+}
+
+.sidebar-item:hover::after {
+  @apply w-full;
+}
+
+/* Active sidebar item animation */
+.sidebar-item-active {
+  animation: pulseScale 2s infinite;
+}
+
+@keyframes pulseScale {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Sidebar backdrop animation */
+.sidebar-backdrop {
+  animation: backdropBlur 0.3s ease-out forwards;
+}
+
+@keyframes backdropBlur {
+  from {
+    backdrop-filter: blur(0);
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* Sidebar hover effects */
+.nav-item {
+  @apply relative overflow-hidden transition-all duration-300 ease-in-out;
+}
+
+.nav-item::before {
+  content: '';
+  @apply absolute inset-0 bg-indigo-50 transform scale-x-0 origin-left transition-transform duration-300;
+  z-index: -1;
+}
+
+.nav-item:hover::before {
+  @apply scale-x-100;
+}
+
+/* Animation classes */
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+/* Custom focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+}
+
+/* Sidebar specific styles */
+.sidebar-container {
+  @apply fixed inset-y-0 left-0 z-10 flex-shrink-0 bg-white border-r border-gray-200 shadow-lg transition-all duration-300 ease-in-out transform;
+}
+
+.sidebar-container.open {
+  @apply translate-x-0;
+}
+
+.sidebar-container.closed {
+  @apply -translate-x-full;
+}
+
+.sidebar-nav-item {
+  @apply flex items-center px-4 py-3 text-gray-600 transition-all duration-200 ease-in-out hover:bg-indigo-50 hover:text-indigo-600 rounded-lg;
+}
+
+.sidebar-nav-item.active {
+  @apply bg-indigo-50 text-indigo-600 font-medium;
+}
+
+.sidebar-icon {
+  @apply w-5 h-5 transition-transform duration-200 ease-in-out transform group-hover:scale-110;
+}
+
+.sidebar-text {
+  @apply ml-3 text-sm font-medium transition-all duration-200 ease-in-out opacity-100;
+}
+
+.sidebar-collapsed .sidebar-text {
+  @apply opacity-0;
+}
+
+/* Button styles */
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus-ring;
+}
+
+.btn-primary {
+  @apply bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800;
+}
+
+.btn-secondary {
+  @apply bg-gray-200 text-gray-700 hover:bg-gray-300 active:bg-gray-400;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200;
+}
+
+/* Input styles */
+.input {
+  @apply w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-all duration-200;
+}
+
+/* Badge styles */
+.badge {
+  @apply px-2 py-1 text-xs font-medium rounded-full;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-800;
+}
+
+.badge-error {
+  @apply bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply bg-blue-100 text-blue-800;
+}
+
+/* Message popup animations */
+.message-popup-enter {
+  animation: slideIn 0.3s ease-out;
+}
+
+.message-popup-exit {
+  animation: slideIn 0.3s ease-out reverse;
+}

@@ -53,6 +53,24 @@ const findById = async (req, res) => {
     }
 }
 
+const findByOrderId = async (req, res) => {
+    try {
+        const { userId } = req.params;
+
+        // Find all orders that belong to the user
+        const orders = await ordermodel.find({ userId: userId });
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: "No orders found for this user" });
+        }
+
+        res.status(200).json({ orders });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
+
+
 // const bookslot = async (req, res) => {
 //     try {
 //         const { startTime, endTime } = req.body;
@@ -381,5 +399,6 @@ module.exports = {
     remove,
     findById,
     bookslot,
-    availableslots
+    availableslots,
+    findByOrderId
 }

@@ -26,8 +26,9 @@ const Orders = () => {
         return
       }
 
-      const response = await axios.get(`http://localhost:8080/orders/find/${userId}`)
-      setOrders(response.data || [])
+      const response = await axios.get(`http://localhost:8080/orders/api/find/${userId}`)
+      console.log(response.data)
+      setOrders(response.data.orders || [])
     } catch (error) {
       toast.error("Failed to fetch orders")
       console.error("Error fetching orders:", error)
@@ -36,6 +37,32 @@ const Orders = () => {
     }
   }
 
+  const calculateEndTime = (startTime, duration) => {
+    const [startHours, startMinutes] = startTime.split(":").map(Number);
+
+    // Create a new Date object and set the start time
+    const date = new Date();
+    date.setHours(startHours, startMinutes);
+
+    // Add duration in minutes
+    date.setMinutes(date.getMinutes() + duration);
+
+    // Format the end time in HH:MM format with AM/PM
+    return date.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const convertToAMPM = (timeString) => {
+    const [hours, minutes] = timeString.split(":").map(Number);
+
+    const period = hours >= 12 ? "PM" : "AM";
+    const formattedHours = hours % 12 || 12; // Convert 0 (midnight) & 12 (noon) correctly
+
+    return `${formattedHours}:${minutes.toString().padStart(2, "0")} ${period}`;
+  };
   const getStatusColor = (status) => {
     switch (status) {
       case 'successful': return 'bg-green-500'
@@ -58,11 +85,11 @@ const Orders = () => {
   return (
     <div className="bg-black min-h-screen text-white">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-6 md:mb-8 gap-4">
           <h1 className="text-2xl md:text-3xl font-bold">My Bookings</h1>
-          <button 
+          <button
             onClick={() => navigate('/stations')}
             className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
@@ -77,7 +104,7 @@ const Orders = () => {
         ) : orders.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-gray-400 text-lg mb-4">No bookings found</div>
-            <button 
+            <button
               onClick={() => navigate('/stations')}
               className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
             >
@@ -96,28 +123,38 @@ const Orders = () => {
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 md:mb-6 gap-4">
                   <div>
                     <h3 className="text-xl font-semibold mb-2">
-                      Slot #{order.slotNumber}
+                      Slot #{order.slotnumber}
                     </h3>
                     <p className="text-gray-400">
                       User: {localStorage.getItem('name')}
                     </p>
                   </div>
-                  <div className={`px-4 py-2 rounded-full ${getStatusColor(order.status)} text-white text-sm`}>
-                    {order.status || 'pending'}
-                  </div>
+                  {/* <div className={`px-4 py-2 rounded-full ${getStatusColor(order.status)} text-white text-sm`}> */}
+                  {order.status === 'Pending' && (
+                    <div className={`px-4 py-2 rounded-full ${getStatusColor(order.status)} bg-yellow-500 text-white text-sm`}>
+                      {order.status}
+                    </div>
+                  )}
+                  {order.status === 'Accepted' && (
+                    <div className={`px-4 py-2 rounded-full ${getStatusColor(order.status)} bg-green-600 text-white text-sm`}>
+                      {order.status}
+                    </div>
+                  )}
+                  {/* </div> */}
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                   <div>
                     <p className="text-gray-400 text-sm mb-1">Start Time</p>
                     <p className="font-medium">
-                      {formatDate(order.start)}
+                      {/* {formatDate(order.time)} */}
+                      {convertToAMPM(order.time)}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-sm mb-1">End Time</p>
                     <p className="font-medium">
-                      {formatDate(order.end)}
+                      {calculateEndTime(order.time, order.duration)}
                     </p>
                   </div>
                   <div>
@@ -126,19 +163,33 @@ const Orders = () => {
                       ₹{order.price || '---'}
                     </p>
                   </div>
-                </div>
 
-                <div className="mt-6 pt-6 border-t border-gray-800">
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="text-gray-400 text-sm">Booking ID</p>
                       <p className="font-mono">{order._id}</p>
                     </div>
-                    {order.status === 'pending' && (
+                    <div>
+                      <p className="text-gray-400 text-sm">Date</p>
+                      <p className="font-mono">{order.date}</p>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-6 border-t border-gray-800">
+                  <div className="flex justify-end items-center">
+                    {/* <div>
+                      <p className="text-gray-400 text-sm">Booking ID</p>
+                      <p className="font-mono">{order._id}</p>
+                    </div> */}
+
+                    {order.status === 'Pending' && (
                       <div className="text-sm text-yellow-400">
                         Waiting for admin approval
                       </div>
                     )}
+
                   </div>
                 </div>
               </motion.div>

@@ -10,12 +10,16 @@ import {
   Twitter,
   Plus,
   Map,
-  MapPinCheck
+  MapPinCheck,
+  X,
+  AlertCircle,
+  CreditCard
 } from "lucide-react"
 import { Navigate, NavLink, Route, Router, Routes, useLocation } from 'react-router-dom'
 import MapAdd from "./components/maps/MapAdd"
 import Displaymap from "./components/maps/Displaymap"
 import Updatemap from "./components/maps/Updatemap"
+import PaymentManagement from "./components/payments/PaymentManagement"
 import axios from "axios"
 
 function App() {
@@ -23,7 +27,9 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [currentSidebarTab, setCurrentSidebarTab] = useState("orderTab")
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false)
-
+  const [showMessage, setShowMessage] = useState(false)
+  const [messageContent, setMessageContent] = useState({ title: "", message: "", type: "info" })
+  const [pendingOrders, setPendingOrders] = useState([])
 
   const location = useLocation()
 
@@ -55,23 +61,131 @@ function App() {
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Fetch pending orders
+  const fetchPendingOrders = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/orders/api/find/67bf33c91efcee6b632c86a7")
+      const orders = response.data.orders
+      const pending = orders.filter(order => order.status === "Pending")
+      setPendingOrders(pending)
+      
+      if (pending.length > 0) {
+        const pendingDetails = pending.map(order => `
+          • Slot ${order.slotnumber} - ${order.date} at ${order.time}
+          Amount: $${order.price} (${order.method})
+        `).join('\n')
+        
+        showNotification(
+          `${pending.length} Pending Payment${pending.length > 1 ? 's' : ''}`,
+          pendingDetails,
+          "warning"
+        )
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error)
+      showNotification(
+        "Error",
+        "Failed to fetch order status",
+        "error"
+      )
+    }
+  }
+
+  // Load pending orders on component mount
+  useEffect(() => {
+    fetchPendingOrders()
+  }, [])
+
+  // Message popup function
+  const showNotification = (title, message, type = "info") => {
+    setMessageContent({ title, message, type })
+    setShowMessage(true)
+    if (type !== "warning") { // Keep warning messages visible until user dismisses
+      setTimeout(() => setShowMessage(false), 5000)
+    }
+  }
+
   return (
     <>
-      <div className="flex h-screen antialiased text-gray-900 bg-gray-100 dark:bg-dark dark:text-light">
+      <div className="flex h-screen antialiased text-gray-900 bg-gradient-to-br from-gray-50 to-gray-100 dark:bg-dark dark:text-light">
+        {/* Enhanced Message Popup */}
+        {showMessage && (
+          <div className={`fixed top-4 right-4 z-50 min-w-[320px] max-w-[400px] transform transition-all duration-300 ease-in-out ${showMessage ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+            <div className={`relative p-4 rounded-lg shadow-lg ${
+              messageContent.type === 'success' ? 'bg-green-50 border-l-4 border-green-500' :
+              messageContent.type === 'error' ? 'bg-red-50 border-l-4 border-red-500' :
+              messageContent.type === 'warning' ? 'bg-yellow-50 border-l-4 border-yellow-500' :
+              'bg-blue-50 border-l-4 border-blue-500'
+            }`}>
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  {messageContent.type === 'success' && (
+                    <svg className="w-5 h-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                  {messageContent.type === 'error' && (
+                    <svg className="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                  {messageContent.type === 'warning' && (
+                    <AlertCircle className="w-5 h-5 text-yellow-400" />
+                  )}
+                  {messageContent.type === 'info' && (
+                    <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clipRule="evenodd" />
+                    </svg>
+                  )}
+                </div>
+                <div className="ml-3 w-full">
+                  <h3 className={`text-sm font-medium ${
+                    messageContent.type === 'success' ? 'text-green-800' :
+                    messageContent.type === 'error' ? 'text-red-800' :
+                    messageContent.type === 'warning' ? 'text-yellow-800' :
+                    'text-blue-800'
+                  }`}>
+                    {messageContent.title}
+                  </h3>
+                  <div className={`mt-2 text-sm whitespace-pre-line ${
+                    messageContent.type === 'success' ? 'text-green-700' :
+                    messageContent.type === 'error' ? 'text-red-700' :
+                    messageContent.type === 'warning' ? 'text-yellow-700' :
+                    'text-blue-700'
+                  }`}>
+                    {messageContent.message}
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowMessage(false)}
+                  className={`absolute top-4 right-4 text-sm ${
+                    messageContent.type === 'success' ? 'text-green-400 hover:text-green-500' :
+                    messageContent.type === 'error' ? 'text-red-400 hover:text-red-500' :
+                    messageContent.type === 'warning' ? 'text-yellow-400 hover:text-yellow-500' :
+                    'text-blue-400 hover:text-blue-500'
+                  }`}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-shrink-0 transition-all">
-          {/* Sidebar backdrop */}
+          {/* Sidebar backdrop with blur effect */}
           {isSidebarOpen && (
             <div
-              className="fixed inset-0 z-10 bg-black bg-opacity-50 lg:hidden"
+              className="fixed inset-0 z-10 bg-black/20 backdrop-blur-sm lg:hidden sidebar-backdrop"
               onClick={() => setIsSidebarOpen(false)}
             />
           )}
 
-          {/* Left mini bar */}
-          <nav className="z-20 flex-col items-center flex-shrink-0 hidden w-16 py-4 bg-white border-r-2 border-indigo-100 shadow-md sm:flex rounded-tr-3xl rounded-br-3xl">
-            {/* Logo */}
-            <div className="flex-shrink-0 py-4">
-              <a href="#">
+          {/* Left mini bar with enhanced styling */}
+          <nav className="z-20 flex-col items-center flex-shrink-0 hidden w-16 py-4 bg-white border-r border-gray-200 shadow-lg sm:flex rounded-tr-2xl rounded-br-2xl animate-slide-in-left">
+            {/* Logo with animation */}
+            <div className="flex-shrink-0 py-4 animate-scale-in">
+              <a href="#" className="block transition-transform duration-200 hover:scale-110">
                 <img
                   className="w-20 h-auto"
                   src="./src/assets/logo.png"
@@ -81,7 +195,7 @@ function App() {
             </div>
 
             <div className="flex flex-col items-center flex-1 p-2 space-y-4">
-              {/* Menu button */}
+              {/* Menu button with enhanced animations */}
               <button
                 onClick={() => {
                   if (isSidebarOpen && currentSidebarTab === "orderTab") {
@@ -91,16 +205,16 @@ function App() {
                     setCurrentSidebarTab("orderTab")
                   }
                 }}
-                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${location.pathname === "/additems" || location.pathname === "/ManageItems"
-                  ? "text-white bg-[rgb(134,156,227)]"
-                  : "text-gray-500 bg-white"
-                  } ${isSidebarOpen && currentSidebarTab === "orderTab"
-                    ? "text-gray-500 bg-indigo-600"
-                    : ""
-                  }`}
+                className={`sidebar-item p-2 transition-all duration-200 rounded-xl shadow-sm hover:shadow-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  location.pathname === "/additems" || location.pathname === "/ManageItems"
+                    ? "text-white bg-indigo-600 shadow-indigo-100 sidebar-item-active"
+                    : "text-gray-600 bg-white hover:text-white"
+                }`}
               >
-                <Menu className="w-6 h-6" />
+                <Menu className="w-6 h-6 transform transition-transform group-hover:scale-110" />
               </button>
+
+              {/* Map button with enhanced animations */}
               <button
                 onClick={() => {
                   if (isSidebarOpen && currentSidebarTab === "mapTab") {
@@ -110,18 +224,16 @@ function App() {
                     setCurrentSidebarTab("mapTab")
                   }
                 }}
-                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${location.pathname === "/addmap" || location.pathname === "/ManageMaps"
-                  ? "text-white bg-[rgb(134,156,227)]"
-                  : "text-gray-500 bg-white"
-                  } ${isSidebarOpen && currentSidebarTab === "mapTab"
-                    ? "text-gray-500 bg-indigo-600"
-                    : ""
-                  }`}
+                className={`sidebar-item p-2 transition-all duration-200 rounded-xl shadow-sm hover:shadow-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  location.pathname === "/addmap" || location.pathname === "/ManageMaps"
+                    ? "text-white bg-indigo-600 shadow-indigo-100 sidebar-item-active"
+                    : "text-gray-600 bg-white hover:text-white"
+                }`}
               >
-                <Map className="w-6 h-6" />
+                <Map className="w-6 h-6 transform transition-transform group-hover:scale-110" />
               </button>
 
-              {/* Messages button */}
+              {/* Messages button with enhanced animations */}
               <button
                 onClick={() => {
                   if (isSidebarOpen && currentSidebarTab === "messagesTab") {
@@ -129,60 +241,51 @@ function App() {
                   } else {
                     setIsSidebarOpen(true)
                     setCurrentSidebarTab("messagesTab")
+                    showNotification("New Message", "You have 3 unread messages", "info")
                   }
                 }}
-                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${isSidebarOpen && currentSidebarTab === "messagesTab"
-                  ? "text-white bg-indigo-600"
-                  : "text-gray-500 bg-white"
-                  }`}
+                className="sidebar-item relative p-2 transition-all duration-200 rounded-xl shadow-sm hover:shadow-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-gray-600 bg-white"
               >
-                <MessageSquare className="w-6 h-6" />
+                <MessageSquare className="w-6 h-6 transform transition-transform group-hover:scale-110" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
               </button>
 
-              {/* Notifications button */}
+              {/* Notifications button with enhanced animations */}
               <button
                 onClick={() => {
-                  if (isSidebarOpen && currentSidebarTab === "notificationsTab") {
-                    setIsSidebarOpen(false)
-                  } else {
-                    setIsSidebarOpen(true)
-                    setCurrentSidebarTab("notificationsTab")
+                  if (pendingOrders.length > 0) {
+                    fetchPendingOrders()
                   }
                 }}
-                className={`p-2 transition-colors rounded-lg shadow-md hover:bg-indigo-800 hover:text-white focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2 ${isSidebarOpen && currentSidebarTab === "notificationsTab"
-                  ? "text-white bg-indigo-600"
-                  : "text-gray-500 bg-white"
-                  }`}
+                className="sidebar-item relative p-2 transition-all duration-200 rounded-xl shadow-sm hover:shadow-md hover:bg-indigo-600 hover:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 text-gray-600 bg-white"
               >
-                <Bell className="w-6 h-6" />
+                <Bell className="w-6 h-6 transform transition-transform group-hover:scale-110" />
+                {pendingOrders.length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full animate-pulse">
+                    {pendingOrders.length}
+                  </span>
+                )}
               </button>
             </div>
 
-            {/* User avatar */}
-            <div
-              className="relative flex items-center flex-shrink-0 p-2"
-              ref={userMenuRef}
-            >
+            {/* Enhanced user avatar section with animations */}
+            <div className="relative flex items-center flex-shrink-0 p-2" ref={userMenuRef}>
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="transition-opacity rounded-lg opacity-80 hover:opacity-100 focus:outline-none focus:ring focus:ring-indigo-600 focus:ring-offset-white focus:ring-offset-2"
+                className="p-1 transition-all duration-200 rounded-xl hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transform hover:scale-105"
               >
                 <img
-                  className="w-10 h-10 rounded-lg shadow-md"
+                  className="w-10 h-10 rounded-xl shadow-sm object-cover"
                   src="./src/assets/logo.png"
                   alt="User"
                 />
               </button>
               {isUserMenuOpen && (
-                <div
-                  className="absolute w-48 py-1 mt-2 origin-bottom-left bg-white rounded-md shadow-lg left-10 bottom-14 focus:outline-none"
-                  role="menu"
-                >
-
-                  <a
-                    href="#"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
+                <div className="absolute w-56 p-2 mt-2 space-y-2 bg-white rounded-lg shadow-lg left-12 bottom-12 focus:outline-none animate-scale-in">
+                  <a href="#" className="nav-item block px-4 py-2 text-sm text-gray-700 rounded-lg hover:bg-indigo-50 transition-colors duration-200">
+                    Profile Settings
+                  </a>
+                  <a href="#" className="nav-item block px-4 py-2 text-sm text-gray-700 rounded-lg hover:bg-indigo-50 transition-colors duration-200">
                     Sign out
                   </a>
                 </div>
@@ -190,15 +293,15 @@ function App() {
             </div>
           </nav>
 
-          {/* Sidebar */}
+          {/* Enhanced main sidebar with animations */}
           {isSidebarOpen && (
-            <div className="fixed inset-y-0 left-0 z-10 flex-shrink-0 w-64 bg-white border-r-2 border-indigo-100 shadow-lg sm:left-16 rounded-tr-3xl rounded-br-3xl sm:w-72 lg:static lg:w-64">
+            <div className="sidebar-container sm:left-16 rounded-tr-2xl rounded-br-2xl sm:w-72 lg:static lg:w-64">
               {currentSidebarTab === "orderTab" && (
-                <nav className="flex flex-col h-full">
-                  <div className="flex items-center justify-center flex-shrink-0 py-10">
+                <nav className="flex flex-col h-full animate-slide-in-left">
+                  <div className="flex items-center justify-center flex-shrink-0 py-10 animate-scale-in">
                     <NavLink to="/">
                       <img
-                        className="w-24 h-auto"
+                        className="w-24 h-auto transform transition-transform hover:scale-110"
                         src="./src/assets/logo.png"
                         alt="K-UI"
                       />
@@ -208,21 +311,30 @@ function App() {
                   <div className="flex-1 px-4 space-y-2 overflow-hidden hover:overflow-auto">
                     <NavLink
                       to="/additems"
-                      className={`flex items-center w-full space-x-2 text-indigo-600 rounded-lg transition-colors group hover:bg-indigo-600 hover:text-white ${location.pathname === "/additems" ? "text-white bg-[rgb(134,156,227)]" : " "}`}
+                      className={`sidebar-nav-item group ${location.pathname === "/additems" ? "active" : ""}`}
                     >
-                      <span className="p-2 rounded-lg group-hover:bg-indigo-700 group-hover:text-white">
-                        <Plus className="w-6 h-6" />
+                      <span className="p-2 rounded-lg transition-colors group-hover:bg-indigo-100">
+                        <Plus className="sidebar-icon" />
                       </span>
-                      <span>Add New Item</span>
+                      <span className="sidebar-text">Add New Item</span>
                     </NavLink>
                     <NavLink
                       to="/ManageItems"
-                      className={`flex items-center space-x-2 text-indigo-600 transition-colors rounded-lg group hover:bg-indigo-600 hover:text-white ${location.pathname === "/ManageItems" ? "text-white bg-[rgb(134,156,227)]" : " "}`}
+                      className={`sidebar-nav-item group ${location.pathname === "/ManageItems" ? "active" : ""}`}
                     >
-                      <span className="p-2 transition-colors rounded-lg group-hover:bg-indigo-700 group-hover:text-white">
-                        <img src="https://static.thenounproject.com/png/1326930-512.png" alt="done" className='w-6 h-6' />
+                      <span className="p-2 rounded-lg transition-colors group-hover:bg-indigo-100">
+                        <img src="https://static.thenounproject.com/png/1326930-512.png" alt="done" className="sidebar-icon" />
                       </span>
-                      <span>Order Management</span>
+                      <span className="sidebar-text">Order Management</span>
+                    </NavLink>
+                    <NavLink
+                      to="/payments"
+                      className={`sidebar-nav-item group ${location.pathname === "/payments" ? "active" : ""}`}
+                    >
+                      <span className="p-2 rounded-lg transition-colors group-hover:bg-indigo-100">
+                        <CreditCard className="sidebar-icon" />
+                      </span>
+                      <span className="sidebar-text">Payment Management</span>
                     </NavLink>
                   </div>
                 </nav>
@@ -278,22 +390,23 @@ function App() {
           )}
         </div>
 
-        {/* Main content */}
+        {/* Main content area */}
         <div className="flex flex-col flex-1">
-          <Routes>
-            <Route path="/" element={<Navigate to={'/addmap'} />} />
-            <Route path='/addmap' element={<MapAdd />} />
-            <Route path='/Managemaps' element={<Displaymap />} />
-            {/* <Route path='/updatemaps' element={<Updatemap />} /> */}
-            <Route path='/edit-map/:id' element={<Updatemap />}
-              loader={async ({ params }) => {
-                console.log(params)
-                const resposne = await axios.get(`http://localhost:8080/slots/find/${params.id}`)
-                return resposne.json()
-              }
-              }
-            />
-          </Routes>
+          <main className="flex-1 p-4">
+            <Routes>
+              <Route path="/" element={<Navigate to={'/addmap'} />} />
+              <Route path='/addmap' element={<MapAdd />} />
+              <Route path='/Managemaps' element={<Displaymap />} />
+              <Route path='/payments' element={<PaymentManagement />} />
+              <Route path='/edit-map/:id' element={<Updatemap />}
+                loader={async ({ params }) => {
+                  console.log(params)
+                  const resposne = await axios.get(`http://localhost:8080/slots/find/${params.id}`)
+                  return resposne.json()
+                }}
+              />
+            </Routes>
+          </main>
         </div>
 
         {/* Settings Panel */}

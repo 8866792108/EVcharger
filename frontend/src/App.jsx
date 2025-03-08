@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
 import Home from './component/Home';
 import Profile from './component/Profile';
@@ -16,6 +16,24 @@ import Starter from './component/Starter';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
 
+  useEffect(() => {
+    // Page load hone par ek flag set karein
+    sessionStorage.setItem("isPageActive", "true");
+
+    const handleTabClose = () => {
+      // Check karein ki browser close ho raha hai ya tab
+      if (!navigator.userActivation.isActive) {
+        localStorage.clear(); // Sirf tab close hone par localStorage clear hoga
+      }
+    };
+
+    // Jab user page close kare to function chale
+    window.addEventListener("unload", handleTabClose);
+
+    return () => {
+      window.removeEventListener("unload", handleTabClose);
+    };
+  }, []);
   const GoogleAuthWrapper = () => {
     return (
       <GoogleOAuthProvider clientId='811730725449-o0icrsqm2p4usbv981nb0q5eq19ei5e0.apps.googleusercontent.com'>
@@ -40,7 +58,7 @@ const App = () => {
         {/* Route for the Home page */}
         <Route path="/home" element={<Home />} />
 
-        <Route path='/AboutUs' element={<AboutUs />} />
+        <Route path='/About' element={<AboutUs />} />
 
         {/* Route for Dashboard */}
         <Route path="/dashboard" element={<DashboardTasks />} />

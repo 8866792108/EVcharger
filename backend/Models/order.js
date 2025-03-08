@@ -26,7 +26,8 @@ const OrdersSchema = new mongoose.Schema({
     duration: { type: String, required: true },
     slotnumber: { type: String, required: true },
     price: { type: String, required: true },
-    transaction: { type: String, required: true }
+    transaction: { type: String, required: true },
+    status: { type: String, default:"Pending" }
 });
 
 // OrdersSchema.index({ start: 1, end: 1 }, { unique: true });

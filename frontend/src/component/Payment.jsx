@@ -197,7 +197,7 @@ const Payment = () => {
       </nav>
 
       <div className="flex-grow p-4 md:p-10">
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Side - Payment Methods */}
           <div className="lg:col-span-2 space-y-4">
             <motion.div
@@ -267,16 +267,16 @@ const Payment = () => {
               <div className="space-y-4">
                 <div className="flex justify-between font-semibold">
                   <span>Sub Total</span>
-                  <span>₹{bookingDetails?.price}</span>
+                  <span>₹{(duration / 30) * 10}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Convenience Fee</span>
-                  <span>₹20.00</span>
+                  <span>₹0.5</span>
                 </div>
                 <div className="border-t border-gray-700 my-3"></div>
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Amount Payable</span>
-                  <span className="text-blue-400">₹{(bookingDetails?.price || 0) + 20}</span>
+                  <span className="text-blue-400">₹{(duration / 30) * 10 + 0.5}</span>
                 </div>
 
                 <button
@@ -318,7 +318,7 @@ const Payment = () => {
 
             <div className="bg-black p-6 rounded-xl mb-6 flex justify-center">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${(duration / 30) * 10}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${(duration / 30) * 10 + 0.5}`}
                 alt="Payment QR Code"
                 className="w-64 h-64 object-contain"
               />
@@ -327,7 +327,7 @@ const Payment = () => {
             <div className="text-center space-y-4">
               <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
                 <span className="text-gray-400">Amount:</span>
-                <span className="text-lg font-semibold">₹{(duration / 30) * 10}</span>
+                <span className="text-lg font-semibold">₹{(duration / 30) * 10 + 0.5}</span>
               </div>
               <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
                 <input type="text" onChange={(e) => settransaction(e.target.value)} value={transaction} className="w-full h-[50px] bg-gray-800 outline-none text-white text-[22px]" placeholder="Transaction ID" />

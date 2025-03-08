@@ -7,8 +7,8 @@ import 'react-toastify/dist/ReactToastify.css'
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
+    name: localStorage.getItem('name') || "",
+    email: localStorage.getItem('email') || "",
     message: ''
   })
 
@@ -51,10 +51,10 @@ const Contact = () => {
   return (
     <div className="bg-black min-h-screen text-white">
       <Navbar />
-      
+
       {/* Hero Section */}
       <div className="relative overflow-hidden py-20 bg-gradient-to-b from-blue-900/20 to-transparent">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="max-w-7xl mx-auto px-4 text-center"
@@ -66,7 +66,7 @@ const Contact = () => {
             Have questions about our services? We're here to help and answer any question you might have.
           </p>
         </motion.div>
-        
+
         {/* Animated background elements */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-green-500/10" />
@@ -195,7 +195,7 @@ const Contact = () => {
                 </div>
                 <h2 className="text-2xl font-bold">Join With Us</h2>
               </div>
-              
+
               <div className="mb-6">
                 <p className="text-gray-400">Want to add your charging station to our network? Fill out the form below and we'll get back to you!</p>
               </div>
@@ -208,7 +208,7 @@ const Contact = () => {
                       type="text"
                       name="ownerName"
                       value={joinFormData.ownerName}
-                      onChange={(e) => setJoinFormData({...joinFormData, ownerName: e.target.value})}
+                      onChange={(e) => setJoinFormData({ ...joinFormData, ownerName: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                       required
                     />
@@ -219,7 +219,7 @@ const Contact = () => {
                       type="text"
                       name="businessName"
                       value={joinFormData.businessName}
-                      onChange={(e) => setJoinFormData({...joinFormData, businessName: e.target.value})}
+                      onChange={(e) => setJoinFormData({ ...joinFormData, businessName: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                       required
                     />
@@ -232,7 +232,7 @@ const Contact = () => {
                     type="text"
                     name="stationLocation"
                     value={joinFormData.stationLocation}
-                    onChange={(e) => setJoinFormData({...joinFormData, stationLocation: e.target.value})}
+                    onChange={(e) => setJoinFormData({ ...joinFormData, stationLocation: e.target.value })}
                     className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                     placeholder="Full address of your station"
                     required
@@ -246,7 +246,7 @@ const Contact = () => {
                       type="tel"
                       name="contactNumber"
                       value={joinFormData.contactNumber}
-                      onChange={(e) => setJoinFormData({...joinFormData, contactNumber: e.target.value})}
+                      onChange={(e) => setJoinFormData({ ...joinFormData, contactNumber: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                       required
                     />
@@ -257,7 +257,7 @@ const Contact = () => {
                       type="email"
                       name="email"
                       value={joinFormData.email}
-                      onChange={(e) => setJoinFormData({...joinFormData, email: e.target.value})}
+                      onChange={(e) => setJoinFormData({ ...joinFormData, email: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                       required
                     />
@@ -270,7 +270,7 @@ const Contact = () => {
                     <select
                       name="stationType"
                       value={joinFormData.stationType}
-                      onChange={(e) => setJoinFormData({...joinFormData, stationType: e.target.value})}
+                      onChange={(e) => setJoinFormData({ ...joinFormData, stationType: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                     >
                       <option value="car">Car Charging</option>
@@ -283,10 +283,10 @@ const Contact = () => {
                     <select
                       name="numberOfPorts"
                       value={joinFormData.numberOfPorts}
-                      onChange={(e) => setJoinFormData({...joinFormData, numberOfPorts: e.target.value})}
+                      onChange={(e) => setJoinFormData({ ...joinFormData, numberOfPorts: e.target.value })}
                       className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                     >
-                      {[1,2,3,4,5,6,7,8].map(num => (
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                         <option key={num} value={num}>{num}</option>
                       ))}
                     </select>
@@ -298,7 +298,7 @@ const Contact = () => {
                   <textarea
                     name="additionalInfo"
                     value={joinFormData.additionalInfo}
-                    onChange={(e) => setJoinFormData({...joinFormData, additionalInfo: e.target.value})}
+                    onChange={(e) => setJoinFormData({ ...joinFormData, additionalInfo: e.target.value })}
                     rows="4"
                     className="w-full px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                     placeholder="Any additional details about your station..."
