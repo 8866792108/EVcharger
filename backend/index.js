@@ -4,7 +4,6 @@ const cors = require("cors");
 const Authroute = require("./Routes/Authroute");
 const Evlocation = require("./Routes/Evlocation")
 const Orderroute = require("./Routes/Orderroute")
-const ProductRouter = require('./Routes/ProductRouter')
 
 const { signupValidation } = require("./Middlewares/AuthValidate");
 const { signup } = require("./Controllers/userController");
@@ -32,10 +31,8 @@ app.use(express.static("./public/images"))
 
 
 app.use("/user", Authroute)
-app.use("/products", ProductRouter)
 app.use("/slots", Evlocation)
-app.use("/orders",Orderroute)
-app.use('/auth',Authroute)
+app.use("/orders", Orderroute)
 
 
 app.get("/", (req, res) => {
@@ -43,7 +40,7 @@ app.get("/", (req, res) => {
 })
 
 // app.post("/user/signup", upload.single("image"), signupValidation, signup)
-app.post("/slots/setitems",upload.single("image"), setitems)
+app.post("/slots/setitems", upload.single("image"), setitems)
 
 
 app.listen(PORT, () => {

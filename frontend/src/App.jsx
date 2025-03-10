@@ -8,6 +8,7 @@ import CarSlider from './component/Slider'; // Import CarSlider component
 import Evmap from './component/Evmap';
 import LoginPage from './component/LoginPage';
 import SignUp from './component/SignUp';
+import ForgotPassword from './component/ForgotPassword';
 import AboutUs from './component/About';
 import Payment from './component/Payment';
 import Orders from './component/Orders';
@@ -78,6 +79,7 @@ const App = () => {
 
         <Route path="/login" element={<GoogleAuthWrapperlogin />} />
         <Route path="/signup" element={<GoogleAuthWrapper />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/:slotId/:date/:time/:duration/:slotnumber/payment" element={<Payment />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/contact" element={<Contact />} />

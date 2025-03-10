@@ -129,11 +129,6 @@ const LoginPage = () => {
           {/* Left Side - Image with Overlay */}
           <div className="w-full lg:w-1/2 relative">
             <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-black/50 z-10"></div>
-            <img
-              src="/placeholder.svg?height=800&width=600"
-              alt="Electric Vehicle"
-              className="w-full h-full object-cover"
-            />
             <div className="absolute inset-0 flex flex-col justify-center items-center z-20 p-10 text-center">
               <h2 className="text-4xl font-bold mb-4">Welcome to VOLTHUB</h2>
               <p className="text-lg mb-6">The future of electric mobility starts here</p>
@@ -162,9 +157,13 @@ const LoginPage = () => {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <label className="block text-sm font-medium">Password</label>
-                    <a className="text-sm text-blue-400 hover:text-blue-300" href="#">
+                    <button
+                      type="button"
+                      className="text-sm text-blue-400 hover:text-blue-300"
+                      onClick={() => navigate("/forgot-password")}
+                    >
                       Forgot password?
-                    </a>
+                    </button>
                   </div>
                   <div className="relative">
                     <FuturisticInput

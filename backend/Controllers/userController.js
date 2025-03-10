@@ -4,6 +4,8 @@ const bcrypt = require("bcrypt");
 const { oauth2client } = require("../utils/googleConfig");
 const axios = require('axios');
 const feedbackmodel = require("../Models/feedback");
+const otpModel = require("../Models/otp");
+const { SendVerificationCode } = require("../Middlewares/EmailConfige");
 
 const signup = async (req, res) => {
 
@@ -151,51 +153,114 @@ const feedback = async (req, res) => {
     }
 }
 
-// const googlelogin = async (req, res) => {
-//     try {
-//         const { code } = req.query
+const ForgetPassword = async (req, res) => {
+    try {
+        const { email } = req.body
 
-//         const googleRes = await oauth2client.getToken(code)
+        const user = await userModel.findOne({ email: email });
+        if (!user) {
+            return res.status(200).json({
+                message: "User not found",
+                success: false,
+            });
+        }
 
-//         // oauth2client.setCredentials(googleRes.tokens);
+        // SendVerificationCode("sanjaychilgani119@gmail.com", Math.floor((Math.random() * 1000000) + 1))
+        const randomotp = Math.floor((Math.random() * 1000000) + 1)
+        const newotp = new otpModel({
+            email: email,
+            otp: randomotp
+        })
+        await newotp.save()
 
-//         console.log(googleRes)
-//         const UserRes = await axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${googleRes.tokens.access_token}`)
+        SendVerificationCode(email, randomotp)
 
-//         console.log("Google Login Details :: " + UserRes.data)
-//         const { email, name, picture } = UserRes.data
-//         let user = await userModel.findOne({ email })
+        return res.status(200).json({
+            message: "OTP verified successfully!",
+            success: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error: " + error.message,
+            success: false,
+        });
+    }
+}
+const VerifyOTP = async (req, res) => {
+    try {
+        const { email, otp } = req.body
 
-//         if (!user) {
-//             user = await userModel.create({
-//                 name,
-//                 email,
-//                 password: picture
-//             })
-//         }
+        // SendVerificationCode("sanjaychilgani119@gmail.com", Math.floor((Math.random() * 1000000) + 1))
+        const randomotp = Math.floor((Math.random() * 1000000) + 1)
+        const result = await otpModel.findOne({
+            email: email,
+            otp: otp
+        })
 
-//         const { _id } = user
-//         const token = jwt.sign({ _id, email }, process.env.JWT_TOKEN)
+        if (!result) {
+            return res.status(200).json({
+                message: "Invalid OTP",
+                success: false,
+            });
+        }
 
-//         return res.status(200).json({
-//             success: true,
-//             message: 'Success',
-//             token,
-//             user
-//         })
-//     } catch (error) {
-//         console.log("the error :: " , error)
-//         return res.status(200).json({
-//             success: false,
-//             message: 'Internal Server Error'
-//         })
-//     }
-// }
+        result.isVerified = true
+
+        await result.save()
+
+        return res.status(200).json({
+            message: "OTP Verified SuccessFully",
+            success: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error: " + error.message,
+            success: false,
+        });
+    }
+}
+
+const updatePassword = async (req, res) => {
+    console.log("body: ", req.body);
+    try {
+        const { email, password } = req.body;
+        console.log("Your request body is: ", req.body);
+
+        // Check if the user exists
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false,
+            });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Update user's password
+        user.password = hashedPassword;
+        await user.save();
+
+        return res.status(200).json({
+            message: "Password reset successfully!",
+            success: true,
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error: " + error.message,
+            success: false,
+        });
+    }
+};
 
 
 module.exports = {
     signup,
     login,
     googlelogin,
-    feedback
+    feedback,
+    ForgetPassword,
+    VerifyOTP,
+    updatePassword
 }
