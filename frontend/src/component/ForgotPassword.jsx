@@ -21,6 +21,30 @@ const ForgotPassword = () => {
     confirmpwd: "",
   })
 
+  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [isExpired, setIsExpired] = useState(false);
+  const [showResend, setShowResend] = useState(false);
+
+  useEffect(() => {
+    if (timeLeft <= 0) {
+      setIsExpired(true);
+      setShowResend(true);
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+
+  const formatTime = (seconds) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
   const handlechange = (e) => {
     const { name, value } = e.target
     const copydatainfo = { ...datainfo }
@@ -125,6 +149,12 @@ const ForgotPassword = () => {
 
   const handleResetPassword = async (e) => {
     e.preventDefault()
+    if (!isOtpVerified) {
+      return toast.error("Not Verified OTP", {
+        position: "top-center",
+        autoClose: 2000,
+      })
+    }
     if (!datainfo.password || !datainfo.confirmpwd) {
       return toast.error("Please fill in all fields", {
         position: "top-center",
@@ -159,6 +189,13 @@ const ForgotPassword = () => {
         setTimeout(() => {
           navigate("/login")
         }, 2000)
+      } else if (result.error) {
+        console.log(result.error)
+        const details = result.error?.details[0].message
+        toast.error(details, {
+          position: "top-center",
+          autoClose: 2000,
+        })
       } else {
         toast.error(result.message || "Failed to reset password", {
           position: "top-center",
@@ -232,7 +269,7 @@ const ForgotPassword = () => {
 
               ) : showOtpField && (
                 <div className="space-y-6">
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium mb-2">Verification Code</label>
                     <div className="flex gap-4">
                       <FuturisticInput
@@ -252,6 +289,46 @@ const ForgotPassword = () => {
                         Verify
                       </FuturisticButton>
                     </div>
+                  </div> */}
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Verification Code</label>
+                    <div className="flex gap-4 items-center">
+                      <FuturisticInput
+                        type="text"
+                        placeholder="Enter verification code"
+                        value={datainfo.otp}
+                        name="otp"
+                        disabled={isOtpVerified}
+                        onChange={handlechange}
+                        className="flex-grow p-2 border rounded-md"
+                      />
+                      <FuturisticButton
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        disabled={isOtpVerified}
+                        // className={`px-4 py-2 rounded-md ${isOtpVerified ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500 text-white"}`}
+                        className="!w-auto whitespace-nowrap"
+                      >
+                        Verify
+                      </FuturisticButton>
+                    </div>
+                    <p className="text-sm text-red-500 mt-2">
+                      {isExpired ? "OTP Expired! Request a new one." : `Time left: ${formatTime(timeLeft)}`}
+                    </p>
+                    {showResend  && (
+                      <FuturisticButton
+                        type="button"
+                        onClick={(e) => {
+                          handleSubmit
+                          setTimeLeft(300); // Reset timer to 5 minutes
+                          setIsExpired(false);
+                          setShowResend(false);
+                        }}
+                        className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md"
+                      >
+                        Resend OTP
+                      </FuturisticButton>
+                    )}
                   </div>
                   <form className="space-y-6" onSubmit={handleResetPassword}>
                     <div>
