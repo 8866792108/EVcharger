@@ -64,7 +64,7 @@ const AboutUs = () => {
           autoClose: 2000,
         })
         setTimeout(() => {
-          navigate("/AboutUs")
+          navigate("/about")
         }, 1000)
       } else if (error) {
         console.log(error)

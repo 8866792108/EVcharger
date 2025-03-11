@@ -14,6 +14,7 @@ import Payment from './component/Payment';
 import Orders from './component/Orders';
 import Contact from './component/Contact';
 import Starter from './component/Starter';
+import BookingPage from './component/BookingPage';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
 
@@ -80,6 +81,7 @@ const App = () => {
         <Route path="/login" element={<GoogleAuthWrapperlogin />} />
         <Route path="/signup" element={<GoogleAuthWrapper />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/booking/:slotId" element={<BookingPage />} />
         <Route path="/:slotId/:date/:time/:duration/:slotnumber/payment" element={<Payment />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/contact" element={<Contact />} />

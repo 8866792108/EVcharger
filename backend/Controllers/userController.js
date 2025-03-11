@@ -101,7 +101,7 @@ const googlelogin = async (req, res) => {
         let user = await userModel.findOne({ email });
 
         if (!user) {
-            user = await userModel.create({ name, email, password: picture });
+            user = await userModel.create({ name, email });
         }
 
         const token = jwt.sign({ _id: user._id, email }, process.env.JWT_TOKEN);
@@ -112,7 +112,7 @@ const googlelogin = async (req, res) => {
             token,
             email: user.email,
             name: user.name,
-            image: user.password,
+            image: picture,
             _id: user._id
         });
     } catch (error) {
