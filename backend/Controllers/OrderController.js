@@ -1,3 +1,5 @@
+const { PaymentVerification } = require("../Middlewares/EmailConfige");
+const { SendSMS } = require("../Middlewares/SMSConfigue");
 const ordermodel = require("../Models/order");
 const moment = require("moment")
 
@@ -245,69 +247,128 @@ function roundToNearest30(time) {
 //     res.json({ slots: allSlots });
 // }
 
-function roundUpTime(time, interval) {
-    const roundedMinutes = Math.ceil(time.minutes() / interval) * interval;
-    return time.clone().minutes(roundedMinutes).seconds(0);
-}
+// function roundUpTime(time, interval) {
+//     const roundedMinutes = Math.ceil(time.minutes() / interval) * interval;
+//     return time.clone().minutes(roundedMinutes).seconds(0);
+// }
 
-function generateTimeSlots(startTime, endTime, interval, bookings) {
-    let timeSlots = [];
-    let currentTime = moment(startTime, "hh:mm A");
+// function generateTimeSlots(startTime, endTime, interval, bookings) {
+//     let timeSlots = [];
+//     let currentTime = moment(startTime, "hh:mm A");
 
-    // Round up to the nearest interval
-    currentTime = roundUpTime(currentTime, interval);
+//     // Round up to the nearest interval
+//     currentTime = roundUpTime(currentTime, interval);
 
-    while (currentTime.isBefore(moment(endTime, "hh:mm A"))) {
-        let slotEndTime = moment(currentTime).add(interval, "minutes");
+//     while (currentTime.isBefore(moment(endTime, "hh:mm A"))) {
+//         let slotEndTime = moment(currentTime).add(interval, "minutes");
 
-        // Check if this slot is booked
-        const isBooked = bookings.some(booking => {
-            const bookedStart = moment(booking.start, "hh:mm A");
-            const bookedEnd = moment(booking.end, "hh:mm A");
+//         // Check if this slot is booked
+//         const isBooked = bookings.some(booking => {
+//             const bookedStart = moment(booking.start, "hh:mm A");
+//             const bookedEnd = moment(booking.end, "hh:mm A");
 
-            // If any part of this interval overlaps with a booking, mark unavailable
-            return (
-                (currentTime.isSameOrAfter(bookedStart) && currentTime.isBefore(bookedEnd)) ||
-                (slotEndTime.isAfter(bookedStart) && slotEndTime.isSameOrBefore(bookedEnd)) ||
-                (currentTime.isBefore(bookedStart) && slotEndTime.isAfter(bookedEnd))
-            );
-        });
+//             // If any part of this interval overlaps with a booking, mark unavailable
+//             return (
+//                 (currentTime.isSameOrAfter(bookedStart) && currentTime.isBefore(bookedEnd)) ||
+//                 (slotEndTime.isAfter(bookedStart) && slotEndTime.isSameOrBefore(bookedEnd)) ||
+//                 (currentTime.isBefore(bookedStart) && slotEndTime.isAfter(bookedEnd))
+//             );
+//         });
 
-        timeSlots.push({
-            start: currentTime.format("hh:mm A"),
-            end: slotEndTime.format("hh:mm A"),
-            available: !isBooked // Mark as unavailable if booked
-        });
+//         timeSlots.push({
+//             start: currentTime.format("hh:mm A"),
+//             end: slotEndTime.format("hh:mm A"),
+//             available: !isBooked // Mark as unavailable if booked
+//         });
 
-        currentTime.add(interval, "minutes");
-    }
+//         currentTime.add(interval, "minutes");
+//     }
 
-    return timeSlots;
-}
+//     return timeSlots;
+// }
 
-const availableslots = async (req, res) => {
-    try {
-        console.log(req.body);
-        const { startTime, endTime, interval, slotId } = req.body;
+// const availableslots = async (req, res) => {
+//     try {
+//         console.log(req.body);
+//         const { startTime, branchId, date, slotId } = req.body;
 
-        if (!startTime || !endTime || !interval) {
-            return res.status(400).json({ message: 'startTime, endTime, and interval are required.' });
-        }
+//         // if (!startTime || !endTime || !interval) {
+//         //     return res.status(400).json({ message: 'startTime, endTime, and interval are required.' });
+//         // }
 
-        // Fetch all booked slots from the database
-        const bookings = await ordermodel.find({
-            slotId: slotId
-        });
+//         // Fetch all booked slots from the database
+//         const bookings = await ordermodel.find({
+//             branchId: branchId,
+//             date: date,
+//             slotId: slotId
+//         });
 
-        // Generate time slots with bookings applied
-        let allSlots = generateTimeSlots(startTime, endTime, interval, bookings);
+//         // Generate time slots with bookings applied
+//         let allSlots = generateTimeSlots(startTime, "8:00 PM", 30, bookings);
 
-        res.json({ slots: allSlots });
-    } catch (error) {
-        console.error("Error fetching available slots:", error);
-        res.status(500).json({ message: "Internal Server Error" });
-    }
-};
+//         res.json({ slots: allSlots });
+//     } catch (error) {
+//         console.error("Error fetching available slots:", error);
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// };
+
+
+// function roundUpTime(time, interval) {
+//     const roundedMinutes = Math.ceil(time.minutes() / interval) * interval;
+//     return time.clone().minutes(roundedMinutes).seconds(0);
+// }
+
+// function generateTimeSlots(startTime, endTime, interval, bookings) {
+//     let timeSlots = [];
+//     let currentTime = moment(startTime, "hh:mm A");
+
+//     currentTime = roundUpTime(currentTime, interval);
+
+//     while (currentTime.isBefore(moment(endTime, "hh:mm A"))) {
+//         let slotEndTime = moment(currentTime).add(interval, "minutes");
+
+//         const isBooked = bookings.some(booking => {
+//             const bookedStart = moment(booking.slots.start, "hh:mm A");
+//             const bookedEnd = moment(booking.slots.end, "hh:mm A");
+//             return (
+//                 (currentTime.isSameOrAfter(bookedStart) && currentTime.isBefore(bookedEnd)) ||
+//                 (slotEndTime.isAfter(bookedStart) && slotEndTime.isSameOrBefore(bookedEnd)) ||
+//                 (currentTime.isBefore(bookedStart) && slotEndTime.isAfter(bookedEnd))
+//             );
+//         });
+
+//         timeSlots.push({
+//             start: currentTime.format("hh:mm A"),
+//             end: slotEndTime.format("hh:mm A"),
+//             available: !isBooked
+//         });
+
+//         currentTime.add(interval, "minutes");
+//     }
+//     return timeSlots;
+// }
+
+// const availableslots = async (req, res) => {
+//     try {
+//         const { branchId, date, slotId } = req.body;
+
+//         if (!branchId || !date || !slotId) {
+//             return res.status(400).json({ message: "Missing required fields." });
+//         }
+
+//         const currentTime = moment().format("hh:mm A");
+
+//         const bookings = await ordermodel.find({ branchId, date, slotId });
+
+//         let allSlots = generateTimeSlots(currentTime, "8:00 PM", 30, bookings);
+
+//         res.json({ slots: allSlots });
+//     } catch (error) {
+//         console.error("Error fetching available slots:", error);
+//         res.status(500).json({ message: "Internal Server Error" });
+//     }
+// };
 
 // const bookslot = async (req, res) => {
 //     const { start, end, userId, slotId } = req.body;
@@ -352,44 +413,414 @@ const availableslots = async (req, res) => {
 //         res.status(500).json({ message: 'Error booking slot.' });
 //     }
 // };
+
+// const bookslot = async (req, res) => {
+//     console.log("the payment data is the :: ", req.body)
+
+//     const { userId, slotId, branchId, slots, method, date, transaction } = req.body
+
+//     // Check if the slot is already booked
+//     const existingBooking = await ordermodel.findOne({
+//         slotId: slotId,
+//         date: date,
+//         branchId,
+//         slots
+//     });
+
+//     if (existingBooking) {
+//         return res.status(200).json({ message: 'Slot is already booked.' });
+//     }
+
+//     // Create a new booking
+//     const newBooking = new ordermodel({
+//         userId: userId,
+//         slotId: slotId,
+//         branchId: branchId,
+//         slots,
+//         method: method,
+//         date: date,
+//         transaction: transaction,
+//         price: calculatePrice(slots) + 0.5
+//     });
+
+//     try {
+//         const response = await newBooking.save();
+//         res.status(201).json({ message: 'Slot booked successfully!', success: true, booking: response });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(200).json({ message: 'Error booking slot.', success: false });
+//     }
+// };
+
+function roundUpTime(time, interval) {
+    const roundedMinutes = Math.ceil(time.minutes() / interval) * interval;
+    return time.clone().minutes(roundedMinutes).seconds(0);
+}
+
+function generateTimeSlots(startTime, endTime, interval, bookings) {
+    let timeSlots = [];
+    let currentTime = moment(startTime, "hh:mm A");
+
+    currentTime = roundUpTime(currentTime, interval);
+
+    while (currentTime.isBefore(moment(endTime, "hh:mm A"))) {
+        let slotEndTime = moment(currentTime).add(interval, "minutes");
+
+        const isBooked = bookings.some(booking => {
+            return booking.slots.some(bookedSlot => {
+                const bookedStart = moment(bookedSlot.start, "hh:mm A");
+                const bookedEnd = moment(bookedSlot.end, "hh:mm A");
+                return (
+                    (currentTime.isSameOrAfter(bookedStart) && currentTime.isBefore(bookedEnd)) ||
+                    (slotEndTime.isAfter(bookedStart) && slotEndTime.isSameOrBefore(bookedEnd)) ||
+                    (currentTime.isBefore(bookedStart) && slotEndTime.isAfter(bookedEnd))
+                );
+            });
+        });
+
+        timeSlots.push({
+            start: currentTime.format("hh:mm A"),
+            end: slotEndTime.format("hh:mm A"),
+            available: !isBooked
+        });
+
+        currentTime.add(interval, "minutes");
+    }
+    return timeSlots;
+}
+
+const availableslots = async (req, res) => {
+    try {
+        const { branchId, date, slotId } = req.body;
+
+        if (!branchId || !date || !slotId) {
+            return res.status(400).json({ message: "Missing required fields." });
+        }
+
+        const bookings = await ordermodel.find({ branchId, date, slotId });
+
+        let allSlots = generateTimeSlots("8:00 AM", "8:00 PM", 30, bookings);
+
+        res.json({ slots: allSlots });
+    } catch (error) {
+        console.error("Error fetching available slots:", error);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+// const calculatePrice = (selectedSlots) => {
+//     const pricePerSlot = 10;
+//     return selectedSlots.length * pricePerSlot;
+// };
+
+// const bookSlot = async (req, res) => {
+//     console.log("Received booking request:", req.body);
+
+//     const { userId, slotId, branchId, slots, method, date, transaction } = req.body;
+
+//     if (!slots || slots.length === 0) {
+//         return res.status(400).json({ message: 'Slots data is missing.', success: false });
+//     }
+
+//     // Ensure slots are formatted correctly
+//     const formattedSlots = slots.map(slot => ({
+//         start: slot.start,
+//         end: slot.end
+//     }));
+
+//     // Check if any of the selected slots are already booked
+//     const existingBooking = await OrderModel.findOne({
+//         slotId,
+//         date,
+//         branchId,
+//         slots: {
+//             $elemMatch: {
+//                 start: { $in: formattedSlots.map(slot => slot.start) },
+//                 end: { $in: formattedSlots.map(slot => slot.end) }
+//             }
+//         }
+//     });
+
+//     if (existingBooking) {
+//         return res.status(409).json({ message: 'Some slots are already booked.', success: false });
+//     }
+
+//     // Create a new booking
+//     const newBooking = new OrderModel({
+//         userId,
+//         slotId,
+//         branchId,
+//         slots: formattedSlots,
+//         method,
+//         date,
+//         transaction,
+//         price: calculatePrice(slots) + 0.5 // Adding a small fee
+//     });
+
+//     try {
+//         const response = await newBooking.save();
+//         res.status(201).json({ message: 'Slot booked successfully!', success: true, booking: response });
+//     } catch (error) {
+//         console.error("Booking error:", error);
+//         res.status(500).json({ message: 'Error booking slot.', success: false });
+//     }
+// };
+
+// const calculatePrice = (selectedSlots) => {
+//     const pricePerSlot = 10;
+//     return selectedSlots.length * pricePerSlot;
+// };
+
+// const bookslot = async (req, res) => {
+//     console.log("Received payment data:", req.body);
+
+//     const { userId, slotId, branchId, slots, method, date, transaction } = req.body;
+
+//     if (!slots || slots.length === 0) {
+//         return res.status(400).json({ message: 'Slots data is missing.', success: false });
+//     }
+
+//     // Ensure slots are properly formatted
+//     const formattedSlots = slots.map(slot => ({
+//         start: slot.start,
+//         end: slot.end
+//     }));
+
+//     // Check if any of the selected slots are already booked
+//     const existingBooking = await ordermodel.findOne({
+//         slotId,
+//         date,
+//         branchId,
+//         $or: formattedSlots.map(slot => ({
+//             "slots.start": { $lt: slot.end },
+//             "slots.end": { $gt: slot.start }
+//         }))
+//     });
+
+//     if (existingBooking) {
+//         return res.status(409).json({ message: 'Some slots are already booked.', success: false });
+//     }
+
+//     // Create a new booking
+//     const newBooking = new ordermodel({
+//         userId,
+//         slotId,
+//         branchId,
+//         slots: formattedSlots,
+//         method,
+//         date,
+//         transaction,
+//         price: (calculatePrice(slots) + 0.5).toFixed(2)
+//     });
+
+//     try {
+//         const response = await newBooking.save();
+//         res.status(201).json({ message: 'Slot booked successfully!', success: true, booking: response });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Error booking slot.', success: false });
+//     }
+// };
+
+
+
+// const bookslot = async (req, res) => {
+//     console.log("Received booking request:", req.body);
+
+//     const { userId, slotId, branchId, slots, method, date, transaction } = req.body;
+//     try {
+//         slots = JSON.parse(slots); // Convert slots back to array
+//     } catch (error) {
+//         return res.status(400).json({ message: "Invalid slots format.", success: false });
+//     }
+
+//     console.log("Received booking request:", req.body);
+//     console.log("Slots type:", typeof slots);
+//     console.log("Slots value:", slots);
+//     // Ensure slots is an array
+//     if (!Array.isArray(slots) || slots.length === 0) {
+//         return res.status(400).json({ message: 'Slots must be a valid array.', success: false });
+//     }
+
+//     const formattedSlots = slots.map(slot => ({
+//         start: slot.start,
+//         end: slot.end
+//     }));
+
+//     // Check if any of the selected slots are already booked
+//     const existingBooking = await ordermodel.findOne({
+//         slotId,
+//         date,
+//         branchId,
+//         $or: formattedSlots.map(slot => ({
+//             "slots.start": { $lt: slot.end },
+//             "slots.end": { $gt: slot.start }
+//         }))
+//     });
+
+//     if (existingBooking) {
+//         return res.status(409).json({ message: 'Some slots are already booked.', success: false });
+//     }
+
+//     // Create a new booking
+//     const newBooking = new ordermodel({
+//         userId,
+//         slotId,
+//         branchId,
+//         slots: formattedSlots,
+//         method,
+//         date,
+//         transaction,
+//         price: (formattedSlots.length * 10 + 0.5).toFixed(2) // Price calculation
+//     });
+
+//     try {
+//         const response = await newBooking.save();
+//         res.status(201).json({ message: 'Slot booked successfully!', success: true, booking: response });
+//     } catch (error) {
+//         console.error("Error saving booking:", error);
+//         res.status(500).json({ message: 'Error booking slot.', success: false });
+//     }
+// };
+
+// const bookslot = async (req, res) => {
+//     console.log("Raw request body:", req.body);
+
+//     let { userId, slotId, branchId, method, date, transaction, price, slots } = req.body;
+
+//     const updatedSlots = slots.map(slot => ({
+//         ...slot,
+//         start: slot.start.replace(":", "-"),
+//         end: slot.end.replace(":", "-")
+//     }));
+//     try {
+//         console.log("Slots before parsing:", updatedSlots);
+//         slots = JSON.parse(updatedSlots)
+//         console.log("Parsed slots:", updatedSlots);
+//     } catch (error) {
+//         console.error("Error parsing slots:", error);
+//         return res.status(400).json({ message: "Invalid slots format.", success: false });
+//     }
+
+//     if (!Array.isArray(updatedSlots)) {
+//         return res.status(400).json({ message: "Slots must be an array.", success: false });
+//     }
+
+//     const formattedSlots = updatedSlots                                 .map(slot => ({
+//         start: slot.start,
+//         end: slot.end
+//     }));
+
+//     console.log("Formatted slots for booking:", formattedSlots);
+
+//     const existingBooking = await ordermodel.findOne({
+//         slotId,
+//         date,
+//         branchId,
+//         $or: formattedSlots.map(slot => ({
+//             "slots.start": { $lt: slot.end },
+//             "slots.end": { $gt: slot.start }
+//         }))
+//     });
+
+//     if (existingBooking) {
+//         return res.status(409).json({ message: "Some slots are already booked.", success: false });
+//     }
+
+//     const newBooking = new ordermodel({
+//         userId,
+//         slotId,
+//         branchId,
+//         slots: formattedSlots,
+//         method,
+//         date,
+//         transaction,
+//         price
+//     });
+
+//     try {
+//         const response = await newBooking.save();
+//         res.status(201).json({ message: "Slot booked successfully!", success: true, booking: response });
+//     } catch (error) {
+//         console.error("Error saving booking:", error);
+//         res.status(500).json({ message: "Error booking slot.", success: false });
+//     }
+// };
+
 const bookslot = async (req, res) => {
-    console.log("the payment data is the :: ", req.body)
+    console.log("Raw request body:", req.body);
 
-    const { userId, slotId, date, time, duration, slotnumber, method, transaction } = req.body
+    let { userId, slotId, branchId, method, date, transaction, price, slots } = req.body;
 
-    const price = (duration / 30) * 10
-    // Check if the slot is already booked
+    console.log("Slots type:", typeof slots);
+    console.log("Slots value:", slots);
+
+    try {
+        if (typeof slots === "string") {
+            slots = JSON.parse(slots);
+        }
+    } catch (error) {
+        console.error("Error parsing slots JSON:", error);
+        return res.status(400).json({ message: "Invalid slots format.", success: false });
+    }
+
+    console.log("Slots type:", typeof slots);
+    console.log("Slots value:", slots);
+
+    // Convert ":" to "-" in start and end times
+    const updatedSlots = slots.map(slot => ({
+        ...slot,
+        start: slot.start.replace("-", ":"),
+        end: slot.end.replace("-", ":")
+    }));
+
+    console.log("Updated slots:", updatedSlots);
+
+    const formattedSlots = updatedSlots.map(slot => ({
+        start: slot.start,
+        end: slot.end
+    }));
+
+    console.log("Formatted slots for booking:", formattedSlots);
+
     const existingBooking = await ordermodel.findOne({
-        slotId: slotId,
-        date: date,
-        time: time,
-        duration: duration,
-        slotnumber: slotnumber
+        slotId,
+        date,
+        branchId,
+        $or: formattedSlots.map(slot => ({
+            "slots.start": { $lt: slot.end },
+            "slots.end": { $gt: slot.start }
+        }))
     });
 
     if (existingBooking) {
-        return res.status(200).json({ message: 'Slot is already booked.' });
+        return res.status(200).json({ message: "slots are already booked.", success: false });
     }
 
-    // Create a new booking
     const newBooking = new ordermodel({
-        userId: userId,
-        slotId: slotId,
-        method: method,
-        date: date,
-        time: time,
-        duration: duration,
-        slotnumber: slotnumber,
-        transaction: transaction,
-        price: price
+        userId,
+        slotId,
+        branchId,
+        slots: formattedSlots,
+        method,
+        date,
+        transaction,
+        price
     });
 
     try {
         const response = await newBooking.save();
-        res.status(201).json({ message: 'Slot booked successfully!', booking: response });
+
+        const populatedBooking = await ordermodel.findById(response._id).populate("userId", "email");
+
+        PaymentVerification(populatedBooking.userId.email, populatedBooking.orderId, populatedBooking.branchId, populatedBooking.date, populatedBooking.price, populatedBooking.method, populatedBooking.transaction, populatedBooking.slots)
+
+        // SendSMS(populatedBooking.userId.email, populatedBooking.transaction, populatedBooking.method, populatedBooking.slots)
+
+        res.status(201).json({ message: "Slot booked successfully!", success: true, booking: response });
     } catch (error) {
-        console.error(error);
-        res.status(200).json({ message: 'Error booking slot.' });
+        console.error("Error saving booking:", error);
+        res.status(500).json({ message: "Error booking slot.", success: false });
     }
 };
 

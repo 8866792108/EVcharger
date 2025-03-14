@@ -78,7 +78,7 @@ const IntroSlider = ({ onComplete }) => {
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute h-2 w-2 bg-white rounded-full"
+            className="absolute h-1 w-1 sm:h-2 sm:w-2 bg-white rounded-full"
             initial={{
               x: Math.random() * window.innerWidth,
               y: Math.random() * window.innerHeight,
@@ -106,32 +106,32 @@ const IntroSlider = ({ onComplete }) => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -50 }}
           transition={{ duration: 0.5 }}
-          className="relative z-10 flex flex-col items-center justify-center px-4 md:px-10 max-w-6xl mx-auto"
+          className="relative z-10 flex flex-col items-center justify-center px-4 sm:px-6 md:px-10 max-w-6xl mx-auto"
         >
           {/* Image Container */}
           <motion.div
-            className="relative mb-8 w-full max-w-4xl"
+            className="relative mb-4 sm:mb-6 md:mb-8 w-full max-w-4xl"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.3 }}
           >
             <img
               src={slides[currentSlide].image}
               alt={slides[currentSlide].title}
-              className="w-full h-[60vh] object-cover rounded-2xl shadow-2xl"
+              className="w-full h-[40vh] sm:h-[50vh] md:h-[60vh] object-cover rounded-xl sm:rounded-2xl shadow-2xl"
             />
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 to-transparent" />
+            <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-t from-black/50 to-transparent" />
             
             {/* Caption Badge */}
             <motion.div
-              className="absolute bottom-6 left-6 right-6 bg-black/60 backdrop-blur-sm px-6 py-4 rounded-xl"
+              className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 bg-black/60 backdrop-blur-sm px-4 sm:px-6 py-3 sm:py-4 rounded-lg sm:rounded-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg bg-gradient-to-r ${slides[currentSlide].color}`}>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className={`p-1.5 sm:p-2 rounded-lg bg-gradient-to-r ${slides[currentSlide].color}`}>
                   <svg 
-                    className="w-5 h-5 text-white" 
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-white" 
                     fill="none" 
                     stroke="currentColor" 
                     viewBox="0 0 24 24"
@@ -144,7 +144,7 @@ const IntroSlider = ({ onComplete }) => {
                     />
                   </svg>
                 </div>
-                <p className="text-lg md:text-xl text-white font-medium">
+                <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white font-medium">
                   {slides[currentSlide].caption}
                 </p>
               </div>
@@ -153,7 +153,7 @@ const IntroSlider = ({ onComplete }) => {
 
           {/* Text Content */}
           <motion.h2
-            className="text-5xl md:text-6xl font-bold mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-3 sm:mb-4 md:mb-6 text-center bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-300"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -162,7 +162,7 @@ const IntroSlider = ({ onComplete }) => {
           </motion.h2>
           
           <motion.p
-            className="text-xl md:text-2xl text-center max-w-2xl text-gray-300"
+            className="text-base sm:text-lg md:text-xl lg:text-2xl text-center max-w-2xl text-gray-300 px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
@@ -172,7 +172,7 @@ const IntroSlider = ({ onComplete }) => {
 
           {/* Features List */}
           <motion.div
-            className="mt-8 flex flex-wrap justify-center gap-4"
+            className="mt-4 sm:mt-6 md:mt-8 flex flex-wrap justify-center gap-2 sm:gap-3 md:gap-4 px-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -185,13 +185,13 @@ const IntroSlider = ({ onComplete }) => {
             ].map((feature, index) => (
               <motion.div
                 key={feature}
-                className="px-4 py-2 bg-white/10 rounded-full backdrop-blur-sm"
+                className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/10 rounded-full backdrop-blur-sm"
                 whileHover={{ scale: 1.05 }}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + index * 0.1 }}
               >
-                <span className="text-sm font-medium text-white">
+                <span className="text-xs sm:text-sm font-medium text-white">
                   {feature}
                 </span>
               </motion.div>
@@ -201,11 +201,11 @@ const IntroSlider = ({ onComplete }) => {
       </AnimatePresence>
 
       {/* Progress Indicators */}
-      <div className="absolute bottom-20 left-0 right-0 flex justify-center space-x-4">
+      <div className="absolute bottom-16 sm:bottom-20 left-0 right-0 flex justify-center space-x-2 sm:space-x-3 md:space-x-4">
         {slides.map((_, index) => (
           <motion.div
             key={index}
-            className={`w-3 h-3 rounded-full cursor-pointer ${
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full cursor-pointer ${
               index === currentSlide ? "bg-white" : "bg-gray-500"
             }`}
             whileHover={{ scale: 1.2 }}
@@ -226,6 +226,7 @@ const IntroSlider = ({ onComplete }) => {
             onClick={prevSlide}
             whileHover={{ scale: 1.05, x: -5 }}
             whileTap={{ scale: 0.95 }}
+            className="text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3"
           >
             Previous
           </NavButton>
@@ -234,7 +235,7 @@ const IntroSlider = ({ onComplete }) => {
           onClick={nextSlide}
           whileHover={{ scale: 1.05, x: 5 }}
           whileTap={{ scale: 0.95 }}
-          className={`bg-gradient-to-r ${slides[currentSlide].color}`}
+          className={`bg-gradient-to-r ${slides[currentSlide].color} text-sm sm:text-base px-4 sm:px-6 py-2 sm:py-3`}
         >
           {currentSlide === slides.length - 1 ? "Get Started" : "Next"}
         </NavButton>
@@ -242,7 +243,7 @@ const IntroSlider = ({ onComplete }) => {
 
       {/* Action Buttons */}
       <motion.div
-        className="absolute top-6 right-6 flex items-center gap-4"
+        className="absolute top-4 sm:top-6 right-4 sm:right-6 flex items-center gap-2 sm:gap-4"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
@@ -251,6 +252,7 @@ const IntroSlider = ({ onComplete }) => {
           onClick={completeIntro}
           whileHover={{ scale: 1.05, backgroundColor: "rgba(255, 255, 255, 0.1)" }}
           whileTap={{ scale: 0.95 }}
+          className="text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2"
         >
           Skip Intro
         </SkipButton>
@@ -258,7 +260,7 @@ const IntroSlider = ({ onComplete }) => {
           onClick={() => navigate("/login")}
           whileHover={{ scale: 1.05, y: -2 }}
           whileTap={{ scale: 0.95 }}
-          className={`bg-gradient-to-r ${slides[currentSlide].color}`}
+          className={`bg-gradient-to-r ${slides[currentSlide].color} text-xs sm:text-sm px-3 sm:px-4 py-1.5 sm:py-2`}
         >
           Login
         </LoginButton>
@@ -285,18 +287,24 @@ const SliderContainer = styled.div`
 
 const ButtonContainer = styled(motion.div)`
   position: absolute;
-  bottom: 10px;
+  bottom: 8px;
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 12px;
   width: 100%;
+  padding: 0 16px;
+  
+  @media (min-width: 640px) {
+    bottom: 10px;
+    gap: 20px;
+    padding: 0 24px;
+  }
 `
 
 const NavButton = styled(motion.button)`
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border: none;
-  padding: 12px 24px;
   border-radius: 50px;
   cursor: pointer;
   font-weight: bold;
@@ -309,7 +317,6 @@ const SkipButton = styled(motion.button)`
   background: transparent;
   color: white;
   border: 2px solid rgba(255, 255, 255, 0.5);
-  padding: 8px 16px;
   border-radius: 50px;
   cursor: pointer;
   font-weight: 500;
@@ -319,7 +326,6 @@ const SkipButton = styled(motion.button)`
 const LoginButton = styled(motion.button)`
   color: white;
   border: none;
-  padding: 8px 20px;
   border-radius: 50px;
   cursor: pointer;
   font-weight: bold;

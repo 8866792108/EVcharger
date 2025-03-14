@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 import {
   CreditCard, Wallet, QrCode, Globe, Gift,
@@ -66,8 +66,21 @@ const Payment = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null)
   const [selectedSubMethod, setSelectedSubMethod] = useState(null)
   const [showQR, setShowQR] = useState(false)
-  const { slotId, date, time, duration, slotnumber } = useParams()
   const [transaction, settransaction] = useState("")
+  const [slots, setSlots] = useState([])
+
+  const slot = location.state?.slots || [];
+  const branchId = location.state?.branchId;
+  const slotId = location.state?.slotId;
+  const date = location.state?.date;
+
+  useEffect(() => {
+
+
+    setSlots(slot)
+    console.log("slots are ::", slots)
+    console.log(slotId, date, branchId)
+  }, [slots])
 
   const paymentMethods = [
     {
@@ -123,6 +136,11 @@ const Payment = () => {
     }
   }
 
+  const calculatePrice = (selectedSlots) => {
+    const pricePerSlot = 50; // Example: ₹50 per 30-minute slot
+    return selectedSlots.length * pricePerSlot;
+  };
+
   const handlePayment = async (e) => {
 
     e.preventDefault()
@@ -131,24 +149,35 @@ const Payment = () => {
       return
     }
 
-    console.log(selectedSubMethod)
-    const formdate = new FormData()
-    formdate.append("userId", localStorage.getItem('userId'))
-    formdate.append("slotId", slotId)
-    formdate.append("date", date)
-    formdate.append("time", time)
-    formdate.append("duration", duration)
-    formdate.append("slotnumber", slotnumber)
-    formdate.append("method", selectedSubMethod)
-    formdate.append("transaction", transaction)
-    try {
-      const url = `http://localhost:8080/orders/api/book-slot`
+    if (transaction.length !== 12) {
+      return toast.error("Invalid Transaction ID.");
+    }
 
-      const response = await axios.post(url, formdate, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+    console.log(selectedSubMethod)
+    const updatedSlots = slots.map(slot => ({
+      ...slot,
+      start: slot.start.replace(":", "-"),
+      end: slot.end.replace(":", "-")
+    }));
+
+    console.log("updated slots are ::", updatedSlots)
+
+    try {
+      const formData = new FormData();
+      formData.append("userId", localStorage.getItem("userId"));
+      formData.append("slotId", slotId);
+      formData.append("branchId", branchId);
+      formData.append("slots", JSON.stringify(updatedSlots));
+      formData.append("method", selectedSubMethod);
+      formData.append("date", date);
+      formData.append("price", calculatePrice(slots));
+      formData.append("transaction", transaction);
+
+      const response = await axios.post(
+        "http://localhost:8080/orders/api/book-slot",
+        formData,
+        { headers: { "Content-Type": "application/json" } }
+      );
 
       const { message, success, error } = await response.data
 
@@ -158,7 +187,7 @@ const Payment = () => {
           autoClose: 2000,
         })
         setTimeout(() => {
-          navigate("/view-orders")
+          navigate("/orders")
         }, 1000)
       } else if (error) {
         const details = error?.details[0].message
@@ -189,6 +218,52 @@ const Payment = () => {
     //   toast.error("Payment failed. Please try again.")
     // }
   }
+
+  // const handlePayment = async (e) => {
+  //   e.preventDefault();
+
+  //   if (!selectedPaymentMethod) {
+  //     toast.error("Please select a payment method");
+  //     return;
+  //   }
+
+  //   if (transaction.length !== 12) {
+  //     return toast.error("Invalid Transaction ID.");
+  //   }
+
+  //   const payload = {
+  //     userId: localStorage.getItem("userId"),
+  //     slotId,
+  //     branchId,
+  //     slots, // ✅ Send array directly (No JSON.stringify)
+  //     method: selectedSubMethod,
+  //     date,
+  //     price: calculatePrice(slots),
+  //     transaction,
+  //   };
+
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:8080/orders/api/book-slot",
+  //       payload,  // ✅ Send as JSON object
+  //       { headers: { "Content-Type": "application/json" } }
+  //     );
+
+  //     const { message, success, error } = response.data;
+
+  //     if (success) {
+  //       toast.success(message, { position: "top-center", autoClose: 2000 });
+  //       setTimeout(() => navigate("/orders"), 1000);
+  //     } else {
+  //       toast.error(message || error, { position: "top-center", autoClose: 2000 });
+  //     }
+  //   } catch (error) {
+  //     toast.error("Something went wrong!", { position: "top-center", autoClose: 2000 });
+  //   }
+
+  //   setShowQR(false);
+  // };
+
 
   return (
     <div className="bg-black min-h-screen text-white flex flex-col">
@@ -267,7 +342,7 @@ const Payment = () => {
               <div className="space-y-4">
                 <div className="flex justify-between font-semibold">
                   <span>Sub Total</span>
-                  <span>₹{(duration / 30) * 10}</span>
+                  <span>₹{calculatePrice(slots)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Convenience Fee</span>
@@ -276,7 +351,7 @@ const Payment = () => {
                 <div className="border-t border-gray-700 my-3"></div>
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Amount Payable</span>
-                  <span className="text-blue-400">₹{(duration / 30) * 10 + 0.5}</span>
+                  <span className="text-blue-400">₹{calculatePrice(slots) + 0.5}</span>
                 </div>
 
                 <button
@@ -318,7 +393,7 @@ const Payment = () => {
 
             <div className="bg-black p-6 rounded-xl mb-6 flex justify-center">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${(duration / 30) * 10 + 0.5}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${calculatePrice(slots) + 0.5}`}
                 alt="Payment QR Code"
                 className="w-64 h-64 object-contain"
               />
@@ -327,14 +402,15 @@ const Payment = () => {
             <div className="text-center space-y-4">
               <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
                 <span className="text-gray-400">Amount:</span>
-                <span className="text-lg font-semibold">₹{(duration / 30) * 10 + 0.5}</span>
+                <span className="text-lg font-semibold">₹{calculatePrice(slots) + 0.5}</span>
               </div>
               <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
-                <input type="text" onChange={(e) => settransaction(e.target.value)} value={transaction} className="w-full h-[50px] bg-gray-800 outline-none text-white text-[22px]" placeholder="Transaction ID" />
+                <input type="text" min={12} max={12} onChange={(e) => settransaction(e.target.value)} value={transaction} className="w-full h-[50px] bg-gray-800 outline-none text-white text-[22px]" placeholder="Transaction ID" />
               </div>
               <div className="text-sm text-gray-400">
                 <p>Scan with any UPI app to pay</p>
                 <p className="mt-2 text-yellow-400">Amount will be shown in your UPI app</p>
+                <p className="text-center text-xs text-gray-400 mt-4">Note: Please save your Transaction ID for admin verification.</p>
               </div>
               <button
                 onClick={handlePayment}

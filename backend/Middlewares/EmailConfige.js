@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { AdminEmail } = require("../View/EmailAdmin");
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -9,21 +10,6 @@ const transporter = nodemailer.createTransport({
         pass: "qbatmvepdokkhret",
     },
 });
-
-// const SendEmail = async () => {
-//     try {
-//         const info = await transporter.sendMail({
-//             from: '"Maddison Foo Koch 👻" <sanjaychilgani119@gmail.com>', // sender address
-//             to: "damodarchilgani@gmail.com", // list of receivers
-//             subject: "Hello ✔", // Subject line
-//             text: "Hello world?", // plain text body
-//             html: "<b>Hello world?</b>", // html body
-//         });
-//         console.log("Email :: ",info)
-//     } catch (error) {
-//         console.log("email Error handling :: ",error)
-//     }
-// }
 
 
 const sendcode = (code) => {
@@ -126,9 +112,25 @@ const SendVerificationCode = async (email, VerificationCode) => {
     }
 }
 
+const PaymentVerification = async (email, orderId, branchId, date, amount, method, transaction, slots) => {
+    try {
+        const response = await transporter.sendMail({
+            from: '"Maddison Foo Koch 👻" <sanjaychilgani119@gmail.com>', // sender address
+            to: "sanjaychilgani119@gmail.com", // list of receivers
+            subject: "Verify Your Email", // Subject line
+            text: "Verify Your Email", // plain text body
+            html: AdminEmail(email, orderId, branchId, date, amount, method, transaction, slots), // html body
+        });
+        console.log("Email Send successfully", response);
+    } catch (error) {
+        console.log("email Error handling :: ", error)
+    }
+}
+
 
 module.exports = {
-    SendVerificationCode
+    SendVerificationCode,
+    PaymentVerification
 }
 
 // SendVerificationCode("sanjaychilgani119@gmail.com", Math.floor((Math.random() * 1000000) + 1))

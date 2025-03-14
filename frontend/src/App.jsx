@@ -18,24 +18,25 @@ import BookingPage from './component/BookingPage';
 import { GoogleOAuthProvider } from "@react-oauth/google"
 const App = () => {
 
-  useEffect(() => {
-    // Page load hone par ek flag set karein
-    sessionStorage.setItem("isPageActive", "true");
+  // useEffect(() => {
+  //   // Page load hone par ek flag set karein
+  //   sessionStorage.setItem("isPageActive", "true");
 
-    const handleTabClose = () => {
-      // Check karein ki browser close ho raha hai ya tab
-      if (!navigator.userActivation.isActive) {
-        localStorage.clear(); // Sirf tab close hone par localStorage clear hoga
-      }
-    };
+  //   const handleTabClose = () => {
+  //     // Check karein ki browser close ho raha hai ya tab
+  //     if (!navigator.userActivation.isActive) {
+  //       localStorage.clear(); // Sirf tab close hone par localStorage clear hoga
+  //     }
+  //   };
 
-    // Jab user page close kare to function chale
-    window.addEventListener("unload", handleTabClose);
+  //   // Jab user page close kare to function chale
+  //   window.addEventListener("unload", handleTabClose);
 
-    return () => {
-      window.removeEventListener("unload", handleTabClose);
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener("unload", handleTabClose);
+  //   };
+  // }, []);
+  
   const GoogleAuthWrapper = () => {
     return (
       <GoogleOAuthProvider clientId='811730725449-o0icrsqm2p4usbv981nb0q5eq19ei5e0.apps.googleusercontent.com'>
@@ -82,7 +83,7 @@ const App = () => {
         <Route path="/signup" element={<GoogleAuthWrapper />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/booking/:slotId" element={<BookingPage />} />
-        <Route path="/:slotId/:date/:time/:duration/:slotnumber/payment" element={<Payment />} />
+        <Route path="/:slotId/:date/:branchId/:slots/payment" element={<Payment />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/contact" element={<Contact />} />
       </Routes>

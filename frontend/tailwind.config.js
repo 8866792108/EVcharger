@@ -25,7 +25,7 @@ export default {
       gridTemplateColumns: {
         'header':'auto 350px',
         '350a':'350px auto',
-        'cards':'repeat(auto-fit,minmax(300px,1fr))'
+        'cards':'repeat(auto-fit,minmax(350px,1fr))'
       },
       fontFamily: {
         montserrat: ["Montserrat", "sans-serif"],

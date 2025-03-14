@@ -24,17 +24,6 @@ const AboutUs = () => {
     setFeedback((prev) => ({ ...prev, [name]: value }))
   }
 
-  // const handleFeedbackSubmit = async (e) => {
-  //   e.preventDefault()
-  //   // Here you would typically send the feedback to your server
-  //   console.log("Feedback submitted:", feedback)
-  //   toast.success("Thank you for your feedback!", {
-  //     position: "top-center",
-  //     autoClose: 3000,
-  //   })
-  //   setFeedback({ name: "", email: "", message: "" })
-  // }
-
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault()
 
@@ -43,8 +32,6 @@ const AboutUs = () => {
     formdata.append("email", feedback.email)
     formdata.append("message", feedback.message)
     formdata.append("userId", localStorage.getItem('userId'))
-
-    console.log(formdata)
 
     try {
       const url = "http://localhost:8080/user/feedback"
@@ -55,7 +42,6 @@ const AboutUs = () => {
         },
       })
 
-      console.log("this is the response data::: " + response.data)
       const { message, success, error } = await response.data
 
       if (success) {
@@ -67,7 +53,6 @@ const AboutUs = () => {
           navigate("/about")
         }, 1000)
       } else if (error) {
-        console.log(error)
         const details = error?.details[0].message
         toast.error(details, {
           position: "top-center",
@@ -111,17 +96,17 @@ const AboutUs = () => {
   return (
     <div className="bg-black min-h-screen text-white flex flex-col">
       {/* Navbar */}
-      <nav className="py-6 px-10 flex justify-between items-center border-b border-gray-800 z-[500]">
+      <nav className="py-4 sm:py-6 px-4 sm:px-6 md:px-10 flex justify-between items-center border-b border-gray-800 z-[500]">
         <Navbar />
       </nav>
 
       {/* Main Content */}
-      <main className="flex-grow p-4 md:p-10">
+      <main className="flex-grow p-4 sm:p-6 md:p-8 lg:p-10">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
-          <section className="text-center mb-16">
+          <section className="text-center mb-8 sm:mb-12 md:mb-16">
             <motion.h1
-              className="text-5xl font-bold mb-4"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4"
               initial={{ opacity: 0, y: -50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -129,7 +114,7 @@ const AboutUs = () => {
               Powering the Future of Mobility
             </motion.h1>
             <motion.p
-              className="text-xl text-gray-300 mb-8"
+              className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8"
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -141,9 +126,9 @@ const AboutUs = () => {
           </section>
 
           {/* Mission Statement */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-bold mb-4">Our Mission</h2>
-            <p className="text-lg text-gray-300">
+          <section className="mb-8 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Our Mission</h2>
+            <p className="text-base sm:text-lg text-gray-300">
               VOLTHUB is on a mission to transform urban mobility through innovative electric bike solutions. We believe
               in a world where clean, efficient transportation is accessible to everyone, reducing our carbon footprint
               while enhancing the joy of the journey.
@@ -151,13 +136,13 @@ const AboutUs = () => {
           </section>
 
           {/* Team Section */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Meet Our Team</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <section className="mb-8 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Meet Our Team</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {teamMembers.map((member, index) => (
                 <motion.div
                   key={member.name}
-                  className="bg-gray-900 p-6 rounded-lg text-center"
+                  className="bg-gray-900 p-4 sm:p-6 rounded-lg text-center"
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
@@ -165,44 +150,44 @@ const AboutUs = () => {
                   <img
                     src={member.image || "/placeholder.svg"}
                     alt={member.name}
-                    className="w-32 h-32 rounded-full mx-auto mb-4 bg-cover bg-center bg-no-repeat"
+                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 sm:mb-4 bg-cover bg-center bg-no-repeat"
                   />
-                  <h3 className="text-xl font-semibold">{member.name}</h3>
-                  <p className="text-blue-400">{member.role}</p>
+                  <h3 className="text-lg sm:text-xl font-semibold">{member.name}</h3>
+                  <p className="text-blue-400 text-sm sm:text-base">{member.role}</p>
                 </motion.div>
               ))}
             </div>
           </section>
 
           {/* Timeline Section */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">Our Journey</h2>
+          <section className="mb-8 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Our Journey</h2>
             <div className="relative">
               {timelineItems.map((item, index) => (
                 <motion.div
                   key={item.year}
-                  className={`flex items-center mb-8 ${index % 2 === 0 ? "justify-start" : "justify-end"}`}
+                  className={`flex items-center mb-4 sm:mb-6 md:mb-8 ${index % 2 === 0 ? "justify-start" : "justify-end"}`}
                   initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.2 }}
                 >
-                  <div className={`w-1/2 ${index % 2 === 0 ? "text-right pr-8" : "text-left pl-8"}`}>
-                    <h3 className="text-2xl font-bold text-blue-400">{item.year}</h3>
-                    <p className="text-gray-300">{item.event}</p>
+                  <div className={`w-full sm:w-1/2 ${index % 2 === 0 ? "text-right pr-4 sm:pr-8" : "text-left pl-4 sm:pl-8"}`}>
+                    <h3 className="text-xl sm:text-2xl font-bold text-blue-400">{item.year}</h3>
+                    <p className="text-sm sm:text-base text-gray-300">{item.event}</p>
                   </div>
                   <div
-                    className={`w-4 h-4 rounded-full ${index === activeTimelineItem ? "bg-blue-500" : "bg-gray-700"}`}
+                    className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${index === activeTimelineItem ? "bg-blue-500" : "bg-gray-700"}`}
                   ></div>
                 </motion.div>
               ))}
-              <div className="absolute top-0 bottom-0 left-1/2 w-1 bg-gray-700 -ml-0.5"></div>
+              <div className="absolute top-0 bottom-0 left-1/2 w-0.5 sm:w-1 bg-gray-700 -ml-0.5"></div>
             </div>
           </section>
 
           {/* Feedback Section */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-bold mb-8">We Value Your Feedback</h2>
-            <form onSubmit={handleFeedbackSubmit} className="bg-gray-900 p-8 rounded-lg">
+          <section className="mb-8 sm:mb-12 md:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">We Value Your Feedback</h2>
+            <form onSubmit={handleFeedbackSubmit} className="bg-gray-900 p-4 sm:p-6 md:p-8 rounded-lg">
               <div className="mb-4">
                 <label htmlFor="name" className="block text-sm font-medium mb-2">
                   Name
@@ -251,8 +236,8 @@ const AboutUs = () => {
       </main>
 
       {/* Footer */}
-      <footer className="py-6 px-10 border-t border-gray-800 text-center text-gray-500">
-        <p>© 2024 VOLTHUB. All rights reserved.</p>
+      <footer className="py-4 sm:py-6 px-4 sm:px-6 md:px-10 border-t border-gray-800 text-center text-gray-500">
+        <p className="text-sm sm:text-base">© 2024 VOLTHUB. All rights reserved.</p>
       </footer>
 
       <ToastContainer />

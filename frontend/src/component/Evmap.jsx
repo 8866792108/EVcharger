@@ -256,8 +256,6 @@ const Evmap = () => {
   const handleNavigateToMaps = (address, name) => {
     const NewAdd = address.replaceAll(" ", "+")
     const NewName = name.replaceAll(" ", "+")
-    console.log("new address :: " + NewName + NewAdd);
-
     const navigateUrl = `https://www.google.com/maps/dir/${userLocation.latitude},${userLocation.longitude}/${NewName},${NewAdd}`;
     window.open(navigateUrl, '_blank');
   }
@@ -289,6 +287,7 @@ const Evmap = () => {
       toast.error("Geolocation is not supported by your browser")
     }
   }, [])
+
   // Add this helper function to calculate distance
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
     const R = 6371 // Earth's radius in km
@@ -304,9 +303,9 @@ const Evmap = () => {
   return (
     <div className="bg-black min-h-screen text-white">
       <Navbar />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-4 sm:py-6 md:py-8">
         {/* Hero Section with Background Image */}
-        <div className="relative h-96 mb-16">
+        <div className="relative h-64 sm:h-80 md:h-96 mb-8 sm:mb-12 md:mb-16">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{
@@ -316,19 +315,19 @@ const Evmap = () => {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 to-black/30" />
           <div className="relative h-full flex flex-col items-center justify-center text-center px-4">
-            <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent">
               Find Charging Stations
             </h1>
-            <p className="text-xl text-gray-200 mb-8 max-w-2xl">
+            <p className="text-base sm:text-lg md:text-xl text-gray-200 mb-4 sm:mb-6 max-w-2xl">
               Locate and book charging stations for your electric vehicle with ease
             </p>
           </div>
         </div>
 
         {/* Search and Filter Section */}
-        <div className="max-w-6xl mx-auto mb-10 px-4">
-          <div className="bg-gray-900 rounded-xl p-6 shadow-lg">
-            <div className="flex flex-col md:flex-row gap-4 items-center">
+        <div className="max-w-6xl mx-auto mb-6 sm:mb-8 md:mb-10 px-4">
+          <div className="bg-gray-900 rounded-xl p-4 sm:p-6 shadow-lg">
+            <div className="flex flex-col sm:flex-row gap-4 items-center">
               {/* Search Input */}
               <div className="relative flex-1 w-full">
                 <FuturisticInput
@@ -342,7 +341,7 @@ const Evmap = () => {
               </div>
 
               {/* Vehicle Type Filter */}
-              <div className="flex gap-3 flex-wrap justify-center">
+              <div className="flex flex-wrap gap-2 sm:gap-3 justify-center w-full sm:w-auto">
                 {[
                   { label: 'All', value: 'all' },
                   { label: 'Bikes', value: 'bike' },
@@ -362,10 +361,11 @@ const Evmap = () => {
                         })
                       }
                     }}
-                    className={`px-4 py-2 rounded-full transition-all ${selectedVehicleType === type.value
-                      ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                      }`}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm transition-all ${
+                      selectedVehicleType === type.value
+                        ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white'
+                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    }`}
                   >
                     {type.label}
                   </button>
@@ -375,35 +375,37 @@ const Evmap = () => {
               {/* Near Me Button */}
               <button
                 onClick={handleFindNearMe}
-                className="flex items-center gap-2 px-6 py-2 bg-blue-500 hover:bg-blue-600 rounded-full transition-all"
+                className="flex items-center gap-2 px-4 sm:px-6 py-1.5 sm:py-2 bg-blue-500 hover:bg-blue-600 rounded-full transition-all text-sm"
               >
-                <MapIcon size={20} />
+                <MapIcon size={18} className="sm:w-5 sm:h-5" />
                 <span>Near Me</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Filter Section */}
-
         {/* Stations Grid */}
         <motion.div
-          className="bg-gray-900 rounded-xl shadow-lg p-8 mb-8"
+          className="bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 md:p-8 mb-6 sm:mb-8"
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0 }
+          }}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="flex items-center justify-center py-8 sm:py-12">
+              <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-500"></div>
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <p className="text-red-400 font-medium text-lg mb-2">Error Loading Stations</p>
-              <p className="text-gray-400">{error}</p>
+            <div className="text-center py-8 sm:py-12">
+              <p className="text-red-400 font-medium text-base sm:text-lg mb-2">Error Loading Stations</p>
+              <p className="text-gray-400 text-sm">{error}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-cards gap-4 sm:gap-6 md:gap-8">
               {filteredSlots.map((slot) => (
                 <StationCard
                   key={slot._id}
@@ -413,7 +415,7 @@ const Evmap = () => {
                   whileHover={{ y: -5 }}
                   className="w-full"
                 >
-                  <div className="relative overflow-hidden rounded-t-xl h-64">
+                  <div className="relative overflow-hidden rounded-t-xl h-48 sm:h-56 md:h-64">
                     <img
                       src={"http://localhost:8080/" + slot.image || "/placeholder.svg?height=200&width=400"}
                       alt={slot.name}
@@ -421,25 +423,25 @@ const Evmap = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-60"></div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-white mb-3">{slot.name}</h3>
-                    <p className="text-gray-300 flex items-center mb-2">
-                      <MapPin className="w-5 h-5 mr-2 text-blue-400" /> {slot.address}
+                  <div className="p-4 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2 sm:mb-3">{slot.name}</h3>
+                    <p className="text-sm text-gray-300 flex items-center mb-2">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-blue-400" /> {slot.address}
                     </p>
                     {isNearMeActive && slot.distance && (
-                      <p className="text-gray-300 flex items-center mb-2">
-                        <MapPin className="w-5 h-5 mr-2 text-blue-400" />
+                      <p className="text-sm text-gray-300 flex items-center mb-2">
+                        <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-blue-400" />
                         {slot.distance.toFixed(1)} km away
                       </p>
                     )}
-                    <p className="text-gray-300 flex items-center mb-4">
-                      <Clock className="w-5 h-5 mr-2 text-blue-400" /> 8:30 AM - 8:30 PM
+                    <p className="text-sm text-gray-300 flex items-center mb-4">
+                      <Clock className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-blue-400" /> 8:30 AM - 8:30 PM
                     </p>
 
                     {/* Action Buttons */}
-                    <div className="flex gap-3 mt-4">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
                       <FuturisticButton onClick={() => handleSlotSelect(slot)} className="flex-1">
-                        <Calendar className="w-4 h-4 mr-2" />
+                        <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         Book Slot
                       </FuturisticButton>
                       <FuturisticButton
@@ -447,7 +449,7 @@ const Evmap = () => {
                         className="flex-1"
                         $secondary
                       >
-                        <Navigation className="w-4 h-4 mr-2" />
+                        <Navigation className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                         Navigate
                       </FuturisticButton>
                     </div>
@@ -459,8 +461,8 @@ const Evmap = () => {
         </motion.div>
       </main>
 
-      <footer className="py-6 px-10 border-t border-gray-800 text-center text-gray-500">
-        <p>© 2024 VOLTHUB. All rights reserved.</p>
+      <footer className="py-4 sm:py-6 px-4 sm:px-6 md:px-10 border-t border-gray-800 text-center text-gray-500">
+        <p className="text-sm">© 2024 VOLTHUB. All rights reserved.</p>
       </footer>
 
       <ToastContainer />

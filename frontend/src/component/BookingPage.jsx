@@ -1,28 +1,36 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import { Calendar, MapPin } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const BookingPage = () => {
   const { slotId } = useParams();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [selectedDuration, setSelectedDuration] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
-  const [selectedSlotNumber, setSelectedSlotNumber] = useState(null);
+  const [selectedTimeSlots, setSelectedTimeSlots] = useState([]);
+  const [selectedBranch, setSelectedBranch] = useState(null);
   const [stationDetails, setStationDetails] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Duration options in minutes
-  const durationOptions = [
-    { label: "30 Minutes", value: 30 },
-    { label: "1 Hour", value: 60 },
-    { label: "2 Hours", value: 120 },
-    { label: "3 Hours", value: 180 },
+  useEffect(() => {
+    console.log(selectedBranch, selectedTimeSlots, selectedDate)
+  }, [selectedBranch, selectedTimeSlots, selectedDate])
+
+  // Define branches
+  const branches = [
+    { id: 'A1', label: 'Branch A1' },
+    { id: 'A2', label: 'Branch A2' },
+    { id: 'A3', label: 'Branch A3' },
+    { id: 'A4', label: 'Branch A4' },
+    { id: 'B1', label: 'Branch B1' },
+    { id: 'B2', label: 'Branch B2' },
+    { id: 'B3', label: 'Branch B3' },
+    { id: 'B4', label: 'Branch B4' },
   ];
 
   useEffect(() => {
@@ -41,14 +49,12 @@ const BookingPage = () => {
   }, [slotId]);
 
   const fetchAvailableSlots = async () => {
-    if (!selectedDate || !selectedTime || !selectedDuration) return;
+    if (!selectedDate || !selectedBranch) return;
 
     try {
       const response = await axios.post('http://localhost:8080/orders/api/available-slots', {
         slotId,
-        startTime: '06:00 AM', // Station opening time
-        endTime: '22:00 PM',   // Station closing time
-        interval: 30,          // 30-minute intervals
+        branchId: selectedBranch,
         date: selectedDate
       });
 
@@ -60,19 +66,64 @@ const BookingPage = () => {
   };
 
   useEffect(() => {
-    if (selectedDate && selectedTime && selectedDuration) {
+    if (selectedDate && selectedBranch) {
       fetchAvailableSlots();
     }
-  }, [selectedDate, selectedTime, selectedDuration]);
+  }, [selectedDate, selectedBranch]);
+
+  const handleTimeSlotClick = (slot) => {
+    if (!slot.available) return;
+
+    setSelectedTimeSlots(prev => {
+      const isSelected = prev.some(
+        selected => selected.start === slot.start && selected.end === slot.end
+      );
+
+      if (isSelected) {
+        return prev.filter(
+          selected => !(selected.start === slot.start && selected.end === slot.end)
+        );
+      } else {
+        return [...prev, slot];
+      }
+    });
+  };
+
+  const calculatePrice = (selectedSlots) => {
+    const pricePerSlot = 10;
+    return selectedSlots.length * pricePerSlot;
+  };
 
   const handleProceedToPayment = () => {
-    if (!selectedDate || !selectedTime || !selectedDuration || !selectedSlotNumber) {
-      toast.error('Please select all booking details');
+    if (!selectedDate || !selectedBranch || selectedTimeSlots.length === 0) {
+      toast.error('Please select date, branch, and at least one time slot');
       return;
     }
 
-    navigate(`/${slotId}/${selectedDate}/${selectedTime}/${selectedDuration}/${selectedSlotNumber}/payment`);
+    // Convert 12-hour format to 24-hour format for correct sorting
+    const convertTo24Hour = (time) => {
+      let [hours, minutes] = time.split(/[: ]/);
+      let period = time.slice(-2);
+
+      if (period === "PM" && hours !== "12") hours = String(+hours + 12);
+      if (period === "AM" && hours === "12") hours = "00";
+
+      return `${hours}:${minutes}`;
+    };
+
+    // Sort selected time slots by start time
+    const sortedSlots = [...selectedTimeSlots].sort((a, b) => {
+      return convertTo24Hour(a.start).localeCompare(convertTo24Hour(b.start));
+    });
+
+    navigate(`/slotId/date/branchId/slots/payment`, { state: { slots: sortedSlots, branchId: selectedBranch, date: selectedDate, slotId: slotId } });
   };
+
+  // Reset selected time slots when date or branch changes
+  useEffect(() => {
+    setSelectedTimeSlots([]);
+    setAvailableSlots([]);
+  }, [selectedDate, selectedBranch]);
 
   if (loading) {
     return (
@@ -88,23 +139,60 @@ const BookingPage = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-3 sm:py-4 md:py-6 lg:py-8">
         {/* Station Details */}
-        <div className="bg-gray-900 rounded-2xl p-6 mb-8 border border-gray-800">
-          <h1 className="text-3xl font-bold mb-4">{stationDetails?.name}</h1>
-          <p className="text-gray-400 flex items-center mb-2">
-            <MapPin className="w-5 h-5 mr-2" />
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gray-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 mb-3 sm:mb-4 md:mb-6 lg:mb-8 border border-gray-800"
+        >
+          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 sm:mb-3 md:mb-4">{stationDetails?.name}</h1>
+          <p className="text-gray-400 flex items-center text-sm">
+            <MapPin className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
             {stationDetails?.address}
           </p>
-        </div>
+        </motion.div>
 
-        {/* Booking Form */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        {/* Main Booking Area */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
+          {/* Left Side - Branch Selection */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="md:col-span-4 lg:col-span-3"
+          >
+            <div className="bg-gray-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-gray-800 md:sticky md:top-8">
+              <h2 className=" sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 md:mb-6">Select Branch</h2>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-1 gap-2 sm:gap-3">
+                {branches.map((branch) => (
+                  <motion.button
+                    key={branch.id}
+                    onClick={() => setSelectedBranch(branch.id)}
+                    className={`p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm  transition-all ${
+                      selectedBranch === branch.id
+                        ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
+                        : 'bg-gray-800 border border-gray-700 hover:border-blue-500'
+                    }`}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    {branch.label}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Side - Date and Time Slots */}
+          <div className="md:col-span-8 lg:col-span-9 space-y-3 sm:space-y-4 md:space-y-6">
             {/* Date Selection */}
-            <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Calendar className="w-5 h-5 mr-2" />
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="bg-gray-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-gray-800"
+            >
+              <h2 className=" sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 md:mb-4 flex items-center">
+                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Select Date
               </h2>
               <input
@@ -112,110 +200,121 @@ const BookingPage = () => {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 text-white"
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3 text-xs sm:text-sm  text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all"
               />
-            </div>
+            </motion.div>
 
-            {/* Time Selection */}
-            <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Clock className="w-5 h-5 mr-2" />
-                Select Time
-              </h2>
-              <input
-                type="time"
-                value={selectedTime}
-                onChange={(e) => setSelectedTime(e.target.value)}
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl p-3 text-white"
-              />
-            </div>
-
-            {/* Duration Selection */}
-            <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-              <h2 className="text-xl font-semibold mb-4">Select Duration</h2>
-              <div className="grid grid-cols-2 gap-3">
-                {durationOptions.map((option) => (
-                  <button
-                    key={option.value}
-                    onClick={() => setSelectedDuration(option.value)}
-                    className={`p-4 rounded-xl border transition-all ${
-                      selectedDuration === option.value
-                        ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
-                        : 'bg-gray-800 border-gray-700 hover:border-blue-500'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Available Slots */}
-          <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800">
-            <h2 className="text-xl font-semibold mb-4">Available Slots</h2>
-            {selectedDate && selectedTime && selectedDuration ? (
-              <div className="grid grid-cols-4 gap-3">
-                {availableSlots.map((slot, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setSelectedSlotNumber(slot.number)}
-                    disabled={!slot.available}
-                    className={`
-                      p-4 rounded-xl font-medium text-sm
-                      ${
-                        !slot.available
-                          ? 'bg-red-900/50 text-red-300 cursor-not-allowed'
-                          : slot.number === selectedSlotNumber
-                          ? 'bg-gradient-to-r from-blue-500 to-green-500'
-                          : 'bg-gray-800 hover:bg-gray-700'
+            {/* Available Time Slots */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`${selectedDate}-${selectedBranch}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="bg-gray-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-gray-800"
+              >
+                <h2 className=" sm:text-lg md:text-xl font-semibold mb-3 sm:mb-4 md:mb-6">Available Time Slots</h2>
+                {selectedDate && selectedBranch ? (
+                  <motion.div
+                    className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: {
+                        opacity: 1,
+                        transition: {
+                          staggerChildren: 0.05
+                        }
                       }
-                    `}
+                    }}
                   >
-                    {slot.number}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-400 text-center py-8">
-                Please select date, time, and duration to view available slots
-              </p>
-            )}
+                    {availableSlots.map((slot) => (
+                      <motion.button
+                        key={`${slot.start}-${slot.end}`}
+                        variants={{
+                          hidden: { opacity: 0, y: 20 },
+                          visible: { opacity: 1, y: 0 }
+                        }}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleTimeSlotClick(slot)}
+                        disabled={!slot.available}
+                        className={`
+                          p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm transition-all
+                          ${
+                            !slot.available
+                              ? 'bg-red-900/50 text-red-300 cursor-not-allowed'
+                              : selectedTimeSlots.some(
+                                  selected => selected.start === slot.start && selected.end === slot.end
+                                )
+                              ? 'bg-gradient-to-r from-blue-500 to-green-500'
+                              : 'bg-gray-800 hover:bg-gray-700'
+                          }
+                        `}
+                      >
+                        {slot.start} - {slot.end}
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                ) : (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-gray-400 text-center py-4 sm:py-6 md:py-8 text-xs sm:text-sm "
+                  >
+                    Please select date and branch to view available slots
+                  </motion.p>
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
 
         {/* Booking Summary */}
-        {selectedDate && selectedTime && selectedDuration && selectedSlotNumber && (
-          <div className="mt-8 bg-gray-900 rounded-2xl p-6 border border-gray-800">
-            <h2 className="text-xl font-semibold mb-4">Booking Summary</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              <div>
-                <p className="text-gray-400">Date</p>
-                <p className="font-medium">{selectedDate}</p>
+        <AnimatePresence>
+          {selectedDate && selectedBranch && selectedTimeSlots.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              className="mt-3 sm:mt-4 md:mt-6 lg:mt-8 bg-gray-900 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-6 border border-gray-800"
+            >
+              <h2 className=" sm:text-lg md:text-xl font-semibold mb-2 sm:mb-3 md:mb-4">Booking Summary</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                <div>
+                  <p className="text-gray-400 text-xs sm:text-sm mb-1">Date</p>
+                  <p className="font-medium text-xs sm:text-sm ">{selectedDate}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs sm:text-sm mb-1">Branch</p>
+                  <p className="font-medium text-xs sm:text-sm ">{selectedBranch}</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs sm:text-sm mb-1">Selected Slots</p>
+                  <p className="font-medium text-xs sm:text-sm ">{selectedTimeSlots.length} slots</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-xs sm:text-sm mb-1">Total Price</p>
+                  <p className="font-medium text-xs sm:text-sm ">₹{calculatePrice(selectedTimeSlots)}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-gray-400">Time</p>
-                <p className="font-medium">{selectedTime}</p>
-              </div>
-              <div>
-                <p className="text-gray-400">Duration</p>
-                <p className="font-medium">{selectedDuration} minutes</p>
-              </div>
-              <div>
-                <p className="text-gray-400">Slot Number</p>
-                <p className="font-medium">{selectedSlotNumber}</p>
-              </div>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <button
-                onClick={handleProceedToPayment}
-                className="bg-gradient-to-r from-blue-500 to-green-500 text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+              <motion.div
+                className="mt-3 sm:mt-4 md:mt-6 flex justify-end"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
-                Proceed to Payment
-              </button>
-            </div>
-          </div>
-        )}
+                <button
+                  onClick={handleProceedToPayment}
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-green-500 text-white px-4 sm:px-6 md:px-8 py-2 sm:py-2.5 md:py-3 rounded-lg sm:rounded-xl
+                    font-semibold text-xs sm:text-sm  hover:opacity-90 transition-opacity"
+                >
+                  Proceed to Payment
+                </button>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
