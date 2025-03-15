@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation, NavLink } from "react-router-dom"
+import { useNavigate, useLocation, NavLink, useParams } from "react-router-dom"
 import { MapPin, Clock, Calendar, Navigation, Search, X, MapIcon } from "lucide-react"
 import axios from "axios"
 import styled from "styled-components"
@@ -92,19 +92,10 @@ const Evmap = () => {
   const [startTime, setStartTime] = useState("")
   const [endTime, setEndTime] = useState("")
   const [selectedDate, setSelectedDate] = useState("")
-  const bookingDetails = location.state
-  const [availableSlots] = useState([
-    { id: 1, number: "A1", status: "available" },
-    { id: 2, number: "A2", status: "booked" },
-    { id: 3, number: "A3", status: "available" },
-    { id: 4, number: "A4", status: "booked" },
-    { id: 5, number: "B1", status: "available" },
-    { id: 6, number: "B2", status: "booked" },
-    { id: 7, number: "B3", status: "available" },
-    { id: 8, number: "B4", status: "booked" },
-  ])
+
+  const { category } = useParams()
   const [selectedSlotNumber, setSelectedSlotNumber] = useState(null)
-  const [selectedVehicleType, setSelectedVehicleType] = useState('all')
+  const [selectedVehicleType, setSelectedVehicleType] = useState(category || 'all')
   const [userLocation, setUserLocation] = useState(null)
   const [isNearMeActive, setIsNearMeActive] = useState(false)
 
@@ -149,8 +140,8 @@ const Evmap = () => {
       }
 
       const vehicleTypeMap = {
-        'bike': ['ola', 'ather', 'tvs', 'bajaj', 'hero', 'rorr'],
-        'car': ['smc'],
+        'Bikes': ['ola', 'ather', 'tvs', 'bajaj', 'hero', 'rorr'],
+        'Cars': ['smc'],
         'tesla': ['tesla']
       }
 
@@ -344,8 +335,8 @@ const Evmap = () => {
               <div className="flex flex-wrap gap-2 sm:gap-3 justify-center w-full sm:w-auto">
                 {[
                   { label: 'All', value: 'all' },
-                  { label: 'Bikes', value: 'bike' },
-                  { label: 'Cars', value: 'car' },
+                  { label: 'Bikes', value: 'Bikes' },
+                  { label: 'Cars', value: 'Cars' },
                   { label: 'Tesla', value: 'tesla' },
                   { label: 'Bicycle', value: 'bicycle' },
                   { label: 'Auto Rickshaw', value: 'autorickshaw' }
@@ -361,11 +352,10 @@ const Evmap = () => {
                         })
                       }
                     }}
-                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm transition-all ${
-                      selectedVehicleType === type.value
-                        ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white'
-                        : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                    }`}
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm transition-all ${selectedVehicleType === type.value
+                      ? 'bg-gradient-to-r from-blue-500 to-green-500 text-white'
+                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                      }`}
                   >
                     {type.label}
                   </button>

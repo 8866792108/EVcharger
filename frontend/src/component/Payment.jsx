@@ -137,11 +137,17 @@ const Payment = () => {
   }
 
   const calculatePrice = (selectedSlots) => {
-    const pricePerSlot = 50; // Example: ₹50 per 30-minute slot
+    const pricePerSlot = 50;
     return selectedSlots.length * pricePerSlot;
   };
 
   const handlePayment = async (e) => {
+    if (e.target.value  === "pay") {
+      return toast.success("Coming Soon of Paying", {
+        position: "top-center",
+        autoClose: 2000,
+      })
+    }
 
     e.preventDefault()
     if (!selectedPaymentMethod) {
@@ -163,6 +169,7 @@ const Payment = () => {
     console.log("updated slots are ::", updatedSlots)
 
     try {
+      const price = calculatePrice(slots) + (calculatePrice(slots) * 2 / 100)
       const formData = new FormData();
       formData.append("userId", localStorage.getItem("userId"));
       formData.append("slotId", slotId);
@@ -170,7 +177,7 @@ const Payment = () => {
       formData.append("slots", JSON.stringify(updatedSlots));
       formData.append("method", selectedSubMethod);
       formData.append("date", date);
-      formData.append("price", calculatePrice(slots));
+      formData.append("price", price);
       formData.append("transaction", transaction);
 
       const response = await axios.post(
@@ -346,21 +353,22 @@ const Payment = () => {
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Convenience Fee</span>
-                  <span>₹0.5</span>
+                  <span>₹{calculatePrice(slots) * 2 / 100}</span>
                 </div>
                 <div className="border-t border-gray-700 my-3"></div>
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Amount Payable</span>
-                  <span className="text-blue-400">₹{calculatePrice(slots) + 0.5}</span>
+                  <span className="text-blue-400">₹{calculatePrice(slots) + (calculatePrice(slots) * 2 / 100)}</span>
                 </div>
 
                 <button
                   onClick={handlePayment}
+                  value={"pay"}
                   disabled={!selectedPaymentMethod || ["netbanking", "quick-pay"].includes(selectedPaymentMethod)}
                   className="w-full mt-6 bg-gradient-to-r from-blue-500 to-green-500 text-white py-4 rounded-xl
                     font-semibold text-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Pay ₹{(bookingDetails?.price || 0) + 20}
+                  Pay ₹{calculatePrice(slots) + (calculatePrice(slots) * 2 / 100)}
                 </button>
 
                 <p className="text-center text-xs text-gray-400 mt-4">
@@ -393,7 +401,7 @@ const Payment = () => {
 
             <div className="bg-black p-6 rounded-xl mb-6 flex justify-center">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${calculatePrice(slots) + 0.5}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${calculatePrice(slots) * 2 / 100}`}
                 alt="Payment QR Code"
                 className="w-64 h-64 object-contain"
               />
@@ -402,7 +410,7 @@ const Payment = () => {
             <div className="text-center space-y-4">
               <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
                 <span className="text-gray-400">Amount:</span>
-                <span className="text-lg font-semibold">₹{calculatePrice(slots) + 0.5}</span>
+                <span className="text-lg font-semibold">₹{calculatePrice(slots) + (calculatePrice(slots) * 2 / 100)}</span>
               </div>
               <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
                 <input type="text" min={12} max={12} onChange={(e) => settransaction(e.target.value)} value={transaction} className="w-full h-[50px] bg-gray-800 outline-none text-white text-[22px]" placeholder="Transaction ID" />

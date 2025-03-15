@@ -90,7 +90,7 @@ const BookingPage = () => {
   };
 
   const calculatePrice = (selectedSlots) => {
-    const pricePerSlot = 10;
+    const pricePerSlot = 50; // Example: ₹50 per 30-minute slot
     return selectedSlots.length * pricePerSlot;
   };
 

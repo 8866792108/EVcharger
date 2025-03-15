@@ -752,8 +752,11 @@ const bookslot = async (req, res) => {
 
     let { userId, slotId, branchId, method, date, transaction, price, slots } = req.body;
 
-    console.log("Slots type:", typeof slots);
-    console.log("Slots value:", slots);
+    const existtransaction = await ordermodel.findOne({ transaction });
+
+    if (existtransaction) {
+        return res.status(200).json({ message: "inValid Transaction id. Already use the Transaction id", success: false });
+    }
 
     try {
         if (typeof slots === "string") {
@@ -813,9 +816,9 @@ const bookslot = async (req, res) => {
 
         const populatedBooking = await ordermodel.findById(response._id).populate("userId", "email");
 
-        PaymentVerification(populatedBooking.userId.email, populatedBooking.orderId, populatedBooking.branchId, populatedBooking.date, populatedBooking.price, populatedBooking.method, populatedBooking.transaction, populatedBooking.slots)
+        PaymentVerification(populatedBooking.userId.email, populatedBooking._id, populatedBooking.branchId, populatedBooking.date, populatedBooking.price, populatedBooking.method, populatedBooking.transaction, populatedBooking.slots)
 
-        // SendSMS(populatedBooking.userId.email, populatedBooking.transaction, populatedBooking.method, populatedBooking.slots)
+        SendSMS(populatedBooking.userId.email, populatedBooking.transaction, populatedBooking.method, populatedBooking.slots)
 
         res.status(201).json({ message: "Slot booked successfully!", success: true, booking: response });
     } catch (error) {

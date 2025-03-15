@@ -9,7 +9,8 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Calendar, Clock, CreditCard, MapPin, ChevronDown, ChevronUp, X, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
 import Navbar from "./Navbar"
 import axios from "axios"
-
+import { Template_Bill } from "./Bill"
+import html2pdf from "html2pdf.js"
 const Orders = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -68,6 +69,9 @@ const Orders = () => {
     if (filter === 'completed') {
       return order.status.toLowerCase() === 'completed' || order.status.toLowerCase() === 'accepted'
     }
+    if (filter === 'cancelled') {
+      return order.status.toLowerCase() === 'cancelled' || order.status.toLowerCase() === 'rejected'
+    }
     return order.status.toLowerCase() === filter.toLowerCase()
   })
 
@@ -81,34 +85,46 @@ const Orders = () => {
   }
 
   const handleDownloadBill = (order) => {
-    // Create bill content
-    const billContent = `
-      EV Charging Station Bill
-      ------------------------
-      Order ID: ${order._id}
-      Date: ${formatDate(order.date)}
-      Branch: ${order.branchId}
-      Status: ${getStatusText(order.status)}
-      Amount: ₹${order.price}
-      Payment Method: ${order.method}
-      
-      Time Slots:
-      ${order.slots.map(slot => `${slot.start} - ${slot.end}`).join('\n')}
-      
-      Thank you for choosing our service!
-    `
+    const data = Template_Bill(order._id, order.date, localStorage.getItem("name"), localStorage.getItem("email"), order.branchId, order.price, order.slots)
 
-    // Create blob and download
-    const blob = new Blob([billContent], { type: 'text/plain' })
-    const url = window.URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `bill-${order._id.slice(-6)}.txt`
-    document.body.appendChild(a)
-    a.click()
-    window.URL.revokeObjectURL(url)
-    document.body.removeChild(a)
+    console.log(data)
+    var opt = {
+      margin: 1,
+      filename: `${localStorage.getItem("name")}_${order.branchId}_${order.date}.pdf`,
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf(data, opt)
   }
+  // const handleDownloadBill = (order) => {
+  //   // Create bill content
+  //   const billContent = `
+  //     EV Charging Station Bill
+  //     ------------------------
+  //     Order ID: ${order._id}
+  //     Date: ${formatDate(order.date)}
+  //     Branch: ${order.branchId}
+  //     Status: ${getStatusText(order.status)}
+  //     Amount: ₹${order.price}
+  //     Payment Method: ${order.method}
+
+  //     Time Slots:
+  //     ${order.slots.map(slot => `${slot.start} - ${slot.end}`).join('\n')}
+
+  //     Thank you for choosing our service!
+  //   `
+
+  //   // Create blob and download
+  //   const blob = new Blob([billContent], { type: 'text/plain' })
+  //   const url = window.URL.createObjectURL(blob)
+  //   const a = document.createElement('a')
+  //   a.href = url
+  //   a.download = `bill-${order._id.slice(-6)}.txt`
+  //   document.body.appendChild(a)
+  //   a.click()
+  //   window.URL.revokeObjectURL(url)
+  //   document.body.removeChild(a)
+  // }
 
   if (loading) {
     return (
@@ -141,11 +157,10 @@ const Orders = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setFilter(status)}
-              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${
-                filter === status
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
+              className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all ${filter === status
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                }`}
             >
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </motion.button>

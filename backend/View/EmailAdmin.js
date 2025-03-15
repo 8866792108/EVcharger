@@ -1,4 +1,4 @@
-const AdminEmail = (email,orderId, branchId, date, amount, method, transaction, slots) => {
+const AdminEmail = (email, orderId, branchId, date, amount, method, transaction, slots) => {
 
     const dateObj = new Date(date);
 
@@ -214,7 +214,7 @@ h3 {
                 <div class="time-slots">
                     <h3>Selected Time Slots</h3>
                     <div class="slots-grid">
-                        ${slots.map(slot => `<div class="slot-item">${slot}</div>`).join('')}
+                        ${slots.map(slot => `<div class="slot-item">${slot.start + "-" + slot.end}</div>`).join('')}
                     </div>
                 </div>
             </div>
