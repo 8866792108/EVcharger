@@ -497,7 +497,13 @@ const availableslots = async (req, res) => {
             return res.status(400).json({ message: "Missing required fields." });
         }
 
-        const bookings = await ordermodel.find({ branchId, date, slotId });
+        // const bookings = await ordermodel.find({ branchId, date, slotId })
+        const bookings = await ordermodel.find({ 
+            branchId, 
+            date, 
+            slotId, 
+            status: { $in: ["Pending", "Accepted"] } 
+        });
 
         let allSlots = generateTimeSlots("8:00 AM", "8:00 PM", 30, bookings);
 

@@ -182,7 +182,7 @@ h3 {
                         </div>
                         <div class="detail-item">
                             <span class="label">Date:</span>
-                            <span class="value">${date}</span>
+                            <span class="value">${formattedDate}</span>
                         </div>
                     </div>
                 </div>
