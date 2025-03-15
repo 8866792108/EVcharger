@@ -1,5 +1,5 @@
-const accountSid = 'AC8faa24cdd80b938e119b56b399dd5ca3';
-const authToken = '81b6a446262e136e5e522d8a5ea25608';
+const accountSid = process.env.ACCOUNTID
+const authToken = process.env.AUTHTOKEN
 const client = require('twilio')(accountSid, authToken);
 
 const SendSMS = async (email, transaction, method, slots) => {
@@ -9,8 +9,8 @@ const SendSMS = async (email, transaction, method, slots) => {
 
         const message = await client.messages.create({
             body: smsBody,
-            from: '+16576082492', 
-            to: '+919173228399'   
+            from: '+16576082492',
+            to: '+919173228399'
         });
 
         console.log("Message Sent Successfully:", message.sid);
