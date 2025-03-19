@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Calendar, MapPin } from 'lucide-react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -94,10 +94,50 @@ const BookingPage = () => {
     return selectedSlots.length * pricePerSlot;
   };
 
+  function isPastDate(dateString) {
+    const givenDate = new Date(dateString);
+    const currentDate = new Date();
+
+    // Convert currentDate to "YYYY-MM-DD" format for accurate comparison
+    const formattedCurrentDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate()
+    );
+
+    // Convert givenDate to "YYYY-MM-DD" format for accurate comparison
+    const formattedGivenDate = new Date(
+      givenDate.getFullYear(),
+      givenDate.getMonth(),
+      givenDate.getDate()
+    );
+
+    return formattedGivenDate < formattedCurrentDate;
+  }
+
   const handleProceedToPayment = () => {
     if (!selectedDate || !selectedBranch || selectedTimeSlots.length === 0) {
       toast.error('Please select date, branch, and at least one time slot');
       return;
+    }
+
+    const ispast = isPastDate(selectedDate)
+
+    if (ispast) {
+      return toast.error("Not Select to the Past Date", {
+        position: "top-center",
+        autoClose: 2000,
+      })
+    }
+
+    if (!localStorage.getItem("token")) {
+      setTimeout(() => {
+        toast.error("Please log in first to book a slot. ", {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }, 500);
+      return navigate("/login")
     }
 
     // Convert 12-hour format to 24-hour format for correct sorting
@@ -168,11 +208,10 @@ const BookingPage = () => {
                   <motion.button
                     key={branch.id}
                     onClick={() => setSelectedBranch(branch.id)}
-                    className={`p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm  transition-all ${
-                      selectedBranch === branch.id
-                        ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
-                        : 'bg-gray-800 border border-gray-700 hover:border-blue-500'
-                    }`}
+                    className={`p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm  transition-all ${selectedBranch === branch.id
+                      ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
+                      : 'bg-gray-800 border border-gray-700 hover:border-blue-500'
+                      }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -242,12 +281,11 @@ const BookingPage = () => {
                         disabled={!slot.available}
                         className={`
                           p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl font-medium text-xs sm:text-sm transition-all
-                          ${
-                            !slot.available
-                              ? 'bg-red-900/50 text-red-300 cursor-not-allowed'
-                              : selectedTimeSlots.some(
-                                  selected => selected.start === slot.start && selected.end === slot.end
-                                )
+                          ${!slot.available
+                            ? 'bg-red-900/50 text-red-300 cursor-not-allowed'
+                            : selectedTimeSlots.some(
+                              selected => selected.start === slot.start && selected.end === slot.end
+                            )
                               ? 'bg-gradient-to-r from-blue-500 to-green-500'
                               : 'bg-gray-800 hover:bg-gray-700'
                           }
@@ -316,6 +354,7 @@ const BookingPage = () => {
           )}
         </AnimatePresence>
       </div>
+      <ToastContainer />
     </div>
   );
 };

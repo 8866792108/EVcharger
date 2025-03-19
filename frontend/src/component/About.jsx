@@ -14,7 +14,7 @@ const AboutUs = () => {
   const [feedback, setFeedback] = useState(
     {
       name: localStorage.getItem('name') || "",
-      email: localStorage.getItem('email') ||"",
+      email: localStorage.getItem('email') || "",
       message: ""
     })
   const [activeTimelineItem, setActiveTimelineItem] = useState(0)
@@ -26,6 +26,16 @@ const AboutUs = () => {
 
   const handleFeedbackSubmit = async (e) => {
     e.preventDefault()
+
+    if (!localStorage.getItem("token")) {
+      setTimeout(() => {
+        toast.error("You need to log in before submitting feedback.", {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }, 500);
+      return navigate("/login")
+    }
 
     const formdata = new FormData()
     formdata.append("name", feedback.name)
@@ -198,6 +208,7 @@ const AboutUs = () => {
                   name="name"
                   value={feedback.name}
                   onChange={handleFeedbackChange}
+                  disabled={localStorage.getItem("name")}
                   placeholder="Your Name"
                   required
                 />
@@ -212,6 +223,7 @@ const AboutUs = () => {
                   name="email"
                   value={feedback.email}
                   onChange={handleFeedbackChange}
+                  disabled={localStorage.getItem("email")}
                   placeholder="Your Email"
                   required
                 />

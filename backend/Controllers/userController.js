@@ -186,76 +186,6 @@ const ForgetPassword = async (req, res) => {
         });
     }
 }
-// const VerifyOTP = async (req, res) => {
-//     try {
-//         const { email, otp } = req.body
-
-//         // SendVerificationCode("sanjaychilgani119@gmail.com", Math.floor((Math.random() * 1000000) + 1))
-//         const randomotp = Math.floor((Math.random() * 1000000) + 1)
-//         const result = await otpModel.findOne({
-//             email: email,
-//             otp: otp
-//         })
-
-//         if (!result) {
-//             return res.status(200).json({
-//                 message: "Invalid OTP",
-//                 success: false,
-//             });
-//         }
-
-//         result.isVerified = true
-
-//         await result.save()
-
-//         return res.status(200).json({
-//             message: "OTP Verified SuccessFully",
-//             success: true,
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             message: "Server error: " + error.message,
-//             success: false,
-//         });
-//     }
-// }
-
-// const VerifyOTP = async (req, res) => {
-//     try {
-//         const { email, otp } = req.body;
-
-//         const result = await otpModel.findOne({ email, otp });
-
-//         if (result.expiresAt && result.expiresAt < new Date()) {
-//             await otpModel.deleteOne({ _id: result._id }); // Remove expired OTP
-//             return res.status(400).json({
-//                 message: "OTP expired. Please request a new one.",
-//                 success: false,
-//             });
-//         }
-
-//         if (!result) {
-//             return res.status(400).json({
-//                 message: "Invalid OTP",
-//                 success: false,
-//             });
-//         }
-
-
-//         result.isVerified = true;
-//         await result.save();
-
-//         return res.status(200).json({
-//             message: "OTP Verified Successfully",
-//             success: true,
-//         });
-//     } catch (error) {
-//         res.status(500).json({
-//             message: "Server error: " + error.message,
-//             success: false,
-//         });
-//     }
-// };
 
 const VerifyOTP = async (req, res) => {
     try {
@@ -334,6 +264,10 @@ const updatePassword = async (req, res) => {
 };
 
 
+const message = (req, res) => {
+    console.log("req : ", req.body)
+}
+
 module.exports = {
     signup,
     login,
@@ -341,5 +275,6 @@ module.exports = {
     feedback,
     ForgetPassword,
     VerifyOTP,
-    updatePassword
+    updatePassword,
+    message
 }

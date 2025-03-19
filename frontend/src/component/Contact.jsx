@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Send, Plus, BatteryCharging, MapPinned, Building2 } from 'lucide-react'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import { useNavigate } from 'react-router-dom'
+import axios from "axios"
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +13,8 @@ const Contact = () => {
     email: localStorage.getItem('email') || "",
     message: ''
   })
+
+  const navigate = useNavigate()
 
   const [joinFormData, setJoinFormData] = useState({
     ownerName: '',
@@ -23,25 +27,35 @@ const Contact = () => {
     additionalInfo: ''
   })
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    toast.success('Message sent successfully!')
-    setFormData({ name: '', email: '', message: '' })
+    if (!localStorage.getItem("token")) {
+      setTimeout(() => {
+        toast.error("Please log in to send us a message.", {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }, 500);
+      return navigate("/login")
+    }
+    try {
+      const response = await axios.post("")
+    } catch (error) {
+      console.log("Error of the send a message :: ", error)
+    }
   }
 
   const handleJoinSubmit = (e) => {
     e.preventDefault()
-    toast.success('Application submitted successfully! We will contact you soon.')
-    setJoinFormData({
-      ownerName: '',
-      businessName: '',
-      stationLocation: '',
-      contactNumber: '',
-      email: '',
-      stationType: 'car',
-      numberOfPorts: '1',
-      additionalInfo: ''
-    })
+    if (!localStorage.getItem("token")) {
+      setTimeout(() => {
+        toast.error("Please log in to request to join us.", {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }, 500);
+      return navigate("/login")
+    }
   }
 
   const handleChange = (e) => {

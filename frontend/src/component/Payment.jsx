@@ -129,6 +129,18 @@ const Payment = () => {
     }
   ]
 
+  useEffect(() => {
+    if (!localStorage.getItem("token")) {
+      setTimeout(() => {
+        toast.error("Please log in first to proceed with the payment.", {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }, 1500);
+      return navigate("/login")
+    }
+  }, [])
+
   const handleSubMethodClick = (methodId) => {
     setSelectedSubMethod(methodId)
     if (['gpay', 'phonepe', 'paytm', 'bhim', 'amazon', 'mobikwik'].includes(methodId)) {
@@ -142,7 +154,7 @@ const Payment = () => {
   };
 
   const handlePayment = async (e) => {
-    if (e.target.value  === "pay") {
+    if (e.target.value === "pay") {
       return toast.success("Coming Soon of Paying", {
         position: "top-center",
         autoClose: 2000,
@@ -216,14 +228,6 @@ const Payment = () => {
     }
 
     setShowQR(false)
-    // try {
-    //   toast.success("Payment successful! Booking confirmed.")
-    //   setTimeout(() => {
-    //     navigate("/stations")
-    //   }, 2000)
-    // } catch (error) {
-    //   toast.error("Payment failed. Please try again.")
-    // }
   }
 
   // const handlePayment = async (e) => {
@@ -401,7 +405,7 @@ const Payment = () => {
 
             <div className="bg-black p-6 rounded-xl mb-6 flex justify-center">
               <img
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${calculatePrice(slots) * 2 / 100}`}
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${calculatePrice(slots) + (calculatePrice(slots) * 2 / 100)}`}
                 alt="Payment QR Code"
                 className="w-64 h-64 object-contain"
               />
