@@ -4,6 +4,8 @@ const cors = require("cors");
 const Authroute = require("./Routes/Authroute");
 const Evlocation = require("./Routes/Evlocation")
 const Orderroute = require("./Routes/Orderroute")
+const Msgroute = require("./Routes/Msgroute")
+const JoinUsroute = require("./Routes/JoinUsroute")
 
 const { signupValidation } = require("./Middlewares/AuthValidate");
 const { signup } = require("./Controllers/userController");
@@ -34,6 +36,8 @@ app.use("/user", Authroute)
 app.use("/slots", Evlocation)
 app.use("/orders", Orderroute)
 app.use("/auth", Authroute)
+app.use("/message", Msgroute)
+app.use("/JoinWithUs", JoinUsroute)
 
 
 app.get("/", (req, res) => {

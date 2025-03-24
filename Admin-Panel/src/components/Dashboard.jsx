@@ -51,6 +51,14 @@ const DEMO_DATA = {
       isOnline: true,
     },
     {
+      id: 1,
+      user: 'John Doe',
+      message: 'Great service! Very convenient charging locations.',
+      rating: 5,
+      date: '2024-03-15',
+      isOnline: true,
+    },
+    {
       id: 2,
       user: 'Jane Smith',
       message: 'Good service but waiting time could be improved.',

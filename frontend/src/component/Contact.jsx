@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from './Navbar'
 import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Send, Plus, BatteryCharging, MapPinned, Building2 } from 'lucide-react'
@@ -22,8 +22,8 @@ const Contact = () => {
     stationLocation: '',
     contactNumber: '',
     email: '',
-    stationType: 'car',
-    numberOfPorts: '1',
+    stationType: '',
+    numberOfPorts: '',
     additionalInfo: ''
   })
 
@@ -39,13 +39,40 @@ const Contact = () => {
       return navigate("/login")
     }
     try {
-      const response = await axios.post("")
+      const response = await axios.post("http://localhost:8080/message/addmsg", formData, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      const { message, success, error } = await response.data
+
+      if (success) {
+        toast.success(message, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+        setTimeout(() => {
+          navigate("/contact")
+        }, 1000)
+      } else if (error) {
+        toast.error(error, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      } else {
+        toast.error(message, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }
+
     } catch (error) {
       console.log("Error of the send a message :: ", error)
     }
   }
 
-  const handleJoinSubmit = (e) => {
+  const handleJoinSubmit = async (e) => {
     e.preventDefault()
     if (!localStorage.getItem("token")) {
       setTimeout(() => {
@@ -55,6 +82,39 @@ const Contact = () => {
         })
       }, 500);
       return navigate("/login")
+    }
+    console.log(joinFormData)
+    try {
+      const response = await axios.post("http://localhost:8080/JoinWithUs/ReqJoinUs", joinFormData, {
+        headers: {
+          "Content-Type": "application/json"
+        }
+      })
+
+      const { message, success, error } = await response.data
+
+      if (success) {
+        toast.success(message, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+        setTimeout(() => {
+          navigate("/contact")
+        }, 1000)
+      } else if (error) {
+        const details = error?.details[0].message
+        toast.error(details, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      } else {
+        toast.error(message, {
+          position: "top-center",
+          autoClose: 2000,
+        })
+      }
+    } catch (error) {
+      console.log("Error of the send a message :: ", error)
     }
   }
 
@@ -152,10 +212,10 @@ const Contact = () => {
                       type="text"
                       name="name"
                       value={formData.name}
+                      disabled={localStorage.getItem("name")}
                       onChange={handleChange}
                       className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                       placeholder="John Doe"
-                      required
                     />
                   </div>
                   <div>
@@ -164,10 +224,10 @@ const Contact = () => {
                       type="email"
                       name="email"
                       value={formData.email}
+                      disabled={localStorage.getItem("email")}
                       onChange={handleChange}
                       className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                       placeholder="john@example.com"
-                      required
                     />
                   </div>
                 </div>
@@ -180,7 +240,6 @@ const Contact = () => {
                     rows="4 sm:rows-6"
                     className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
                     placeholder="Your message here..."
-                    required
                   ></textarea>
                 </div>
                 <motion.button
@@ -287,9 +346,12 @@ const Contact = () => {
                       onChange={(e) => setJoinFormData({ ...joinFormData, stationType: e.target.value })}
                       className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                     >
-                      <option value="car">Car Charging</option>
-                      <option value="bike">Bike Charging</option>
-                      <option value="both">Both</option>
+                      <option value="">Select Station Type</option>
+                      <option value="Cars">Car Charging</option>
+                      <option value="Bikes">Bike Charging</option>
+                      <option value="Bicycle">Bicycle Charging</option>
+                      <option value="Auto Rickshaw">Auto Rickshaw Charging</option>
+                      <option value="Telsa">Telsa Charging</option>
                     </select>
                   </div>
                   <div>
@@ -300,6 +362,7 @@ const Contact = () => {
                       onChange={(e) => setJoinFormData({ ...joinFormData, numberOfPorts: e.target.value })}
                       className="w-full px-3 sm:px-4 py-2 sm:py-3 bg-gray-800/50 rounded-lg border border-gray-700 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300"
                     >
+                      <option value="">Select Number of Ports</option>
                       {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                         <option key={num} value={num}>{num}</option>
                       ))}

@@ -6,6 +6,7 @@ const axios = require('axios');
 const feedbackmodel = require("../Models/feedback");
 const otpModel = require("../Models/otp");
 const { SendVerificationCode } = require("../Middlewares/EmailConfige");
+const messagemodel = require("../Models/message");
 
 const signup = async (req, res) => {
 
@@ -264,9 +265,6 @@ const updatePassword = async (req, res) => {
 };
 
 
-const message = (req, res) => {
-    console.log("req : ", req.body)
-}
 
 module.exports = {
     signup,
@@ -275,6 +273,5 @@ module.exports = {
     feedback,
     ForgetPassword,
     VerifyOTP,
-    updatePassword,
-    message
+    updatePassword
 }
