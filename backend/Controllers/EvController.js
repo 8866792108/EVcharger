@@ -43,7 +43,7 @@ const setitems = async (req, res) => {
 
         await newslot.save()
 
-        return res.status(200).json({ message: "SuccessFully Added", success: true })
+        return res.status(200).json({ message: "Added SuccessFully", success: true })
 
     } catch (error) {
         res.status(201)
@@ -51,6 +51,38 @@ const setitems = async (req, res) => {
     }
 
 
+}
+const updateitems = async (req, res) => {
+    console.log("set items", req.file);
+    console.log("Body::", req.body);
+
+    try {
+        const { id } = req.params
+        const { name, address, latitude, longitude } = req.body;
+
+        // Find the existing slot by ID
+        const existingSlot = await slotmodel.findById(id);
+        if (!existingSlot) {
+            return res.status(404).json({ message: "Slot not found", success: false });
+        }
+
+        // Update image only if a new one is provided, otherwise keep the existing image
+        const updatedData = {
+            name: name || existingSlot.name,
+            address: address || existingSlot.address,
+            latitude: latitude || existingSlot.latitude,
+            longitude: longitude || existingSlot.longitude,
+            image: req.file ? req.file.filename : existingSlot.image
+        };
+
+        // Update the slot
+        await slotmodel.findByIdAndUpdate(id, updatedData, { new: true });
+
+        return res.status(200).json({ message: "Updated Successfully", success: true });
+    } catch (error) {
+        console.error("Server Error:", error);
+        res.status(500).json({ message: "Server Error: " + error, success: false });
+    }
 }
 
 
@@ -60,7 +92,7 @@ const findById = async (req, res) => {
 
         const slot = await slotmodel.findById(id)
 
-        console.log("The removed Slots are :: ",slot)
+        console.log("The removed Slots are :: ", slot)
         if (!slot) {
             return res.status(404).json({ message: "Slot Not Found" });
         }
@@ -94,5 +126,6 @@ module.exports = {
     getitems,
     setitems,
     removeitems,
-    findById
+    findById,
+    updateitems
 }

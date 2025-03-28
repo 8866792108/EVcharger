@@ -23,6 +23,7 @@ import PaymentManagement from "./components/payments/PaymentManagement"
 import Dashboard from "./components/Dashboard"
 import axios from "axios"
 import Sidebar from "./components/Sidebar"
+import JoinWithUs from "./components/JoinWithUs"
 
 function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -186,7 +187,7 @@ function App() {
         />
 
         {/* Main content area */}
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col flex-1 h-[100vh] overflow-scroll">
           <main className="flex-1 p-4">
             <Routes>
               <Route path="/" element={<Navigate to={'/dashboard'} />} />
@@ -194,6 +195,7 @@ function App() {
               <Route path='/addmap' element={<MapAdd />} />
               <Route path='/Managemaps' element={<Displaymap />} />
               <Route path='/payments' element={<PaymentManagement />} />
+              <Route path='/joinus' element={<JoinWithUs />} />
               <Route path='/edit-map/:id' element={<Updatemap />}
                 loader={async ({ params }) => {
                   console.log(params)

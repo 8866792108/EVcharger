@@ -8,7 +8,8 @@ const JoinWithUsSchema = new mongoose.Schema({
   email: { type: String, required: true },
   stationType: { type: String, required: true, enum: ['Cars', 'Bikes', 'Tesla', 'Bicycle', 'Auto Rickshaw'] },
   numberOfPorts: { type: Number, required: true },
-  additionalInfo: { type: String }
+  additionalInfo: { type: String },
+  status: { type: String, default: "Pending" }
 }, { timestamps: true });
 
 const JoinWithUsModel = mongoose.model('JoinWithUs', JoinWithUsSchema);

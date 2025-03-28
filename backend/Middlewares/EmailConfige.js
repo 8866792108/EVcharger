@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { AdminEmail } = require("../View/EmailAdmin");
+const { AdminEmail, AcceptedPayment, RejectedPayment, RequestAccept, RequestReject } = require("../View/EmailAdmin");
 
 const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
@@ -100,7 +100,7 @@ const sendcode = (code) => {
 const SendVerificationCode = async (email, VerificationCode) => {
     try {
         const response = await transporter.sendMail({
-            from: '"Maddison Foo Koch 👻" <sanjaychilgani119@gmail.com>', // sender address
+            from: '"EV Charging Services" <sanjaychilgani119@gmail.com>', // sender address
             to: email, // list of receivers
             subject: "Verify Your Email", // Subject line
             text: "Verify Your Email", // plain text body
@@ -115,7 +115,7 @@ const SendVerificationCode = async (email, VerificationCode) => {
 const PaymentVerification = async (email, orderId, branchId, date, amount, method, transaction, slots) => {
     try {
         const response = await transporter.sendMail({
-            from: '"Maddison Foo Koch 👻" <sanjaychilgani119@gmail.com>', // sender address
+            from: '"Welcome To VoltHub" <sanjaychilgani119@gmail.com>', // sender address
             to: "sanjaychilgani119@gmail.com", // list of receivers
             subject: "Verify Your Email", // Subject line
             text: "Verify Your Email", // plain text body
@@ -126,11 +126,41 @@ const PaymentVerification = async (email, orderId, branchId, date, amount, metho
         console.log("email Error handling :: ", error)
     }
 }
+const SendAcceptedPayment = async (order, email, action) => {
+    try {
+        const response = await transporter.sendMail({
+            from: '"Welcome To VoltHub" <sanjaychilgani119@gmail.com>', // sender address
+            to: email, // list of receivers
+            subject: "Verify Your Email",
+            text: "Verify Your Email",
+            html: action === "Accepted" && AcceptedPayment(order) || action === "Rejected" && RejectedPayment(order),
+        });
+        console.log("Email Send successfully", response);
+    } catch (error) {
+        console.log("email Error handling :: ", error)
+    }
+}
+const SendRequestJoinWithUs = async (Request, email, action) => {
+    try {
+        const response = await transporter.sendMail({
+            from: '"Welcome To VoltHub" <sanjaychilgani119@gmail.com>', // sender address
+            to: email, // list of receivers
+            subject: "Verify Your Email",
+            text: "Verify Your Email",
+            html: action === "Accepted" && RequestAccept(Request) || action === "Rejected" && RequestReject(Request),
+        });
+        console.log("Email Send successfully", response);
+    } catch (error) {
+        console.log("email Error handling :: ", error)
+    }
+}
 
 
 module.exports = {
     SendVerificationCode,
-    PaymentVerification
+    PaymentVerification,
+    SendAcceptedPayment,
+    SendRequestJoinWithUs
 }
 
 // SendVerificationCode("sanjaychilgani119@gmail.com", Math.floor((Math.random() * 1000000) + 1))

@@ -1,6 +1,6 @@
 const router = require("express").Router()
 const Joi = require("joi")
-const { signup, login, googlelogin, feedback, ForgetPassword, VerifyOTP, updatePassword } = require("../Controllers/userController")
+const { signup, login, googlelogin, ForgetPassword, VerifyOTP, updatePassword } = require("../Controllers/userController")
 const { signupValidation, loginValidation } = require("../Middlewares/AuthValidate")
 
 router.post("/login", loginValidation, login)
@@ -10,7 +10,7 @@ router.post("/signup", signupValidation, signup)
 
 router.get('/google', googlelogin)
 
-router.post("/feedback", feedback)
+
 
 //forget password routes
 

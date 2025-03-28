@@ -8,6 +8,7 @@ import styled from "styled-components"
 import { motion } from "framer-motion"
 import axios from "axios"
 import Navbar from "./Navbar"
+import ReactStars from "react-rating-stars-component"
 
 const AboutUs = () => {
   const navigate = useNavigate()
@@ -15,13 +16,18 @@ const AboutUs = () => {
     {
       name: localStorage.getItem('name') || "",
       email: localStorage.getItem('email') || "",
-      message: ""
+      message: "",
+      rating: 0
     })
   const [activeTimelineItem, setActiveTimelineItem] = useState(0)
 
   const handleFeedbackChange = (e) => {
     const { name, value } = e.target
     setFeedback((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleRatingChange = (newRating) => {
+    setFeedback((prev) => ({ ...prev, rating: newRating }))
   }
 
   const handleFeedbackSubmit = async (e) => {
@@ -41,10 +47,11 @@ const AboutUs = () => {
     formdata.append("name", feedback.name)
     formdata.append("email", feedback.email)
     formdata.append("message", feedback.message)
+    formdata.append("rating", feedback.rating)
     formdata.append("userId", localStorage.getItem('userId'))
 
     try {
-      const url = "http://localhost:8080/user/feedback"
+      const url = "http://localhost:8080/feedback/add"
 
       const response = await axios.post(url, formdata, {
         headers: {
@@ -60,8 +67,8 @@ const AboutUs = () => {
           autoClose: 2000,
         })
         setTimeout(() => {
-          navigate("/about")
-        }, 1000)
+          window.location.reload()
+        }, 2000)
       } else if (error) {
         const details = error?.details[0].message
         toast.error(details, {
@@ -80,7 +87,7 @@ const AboutUs = () => {
         autoClose: 2000,
       })
     }
-    setFeedback({ name: "", email: "", message: "" })
+    setFeedback({ name: "", email: "", message: "", rating: 0 })
   }
 
   useEffect(() => {
@@ -226,6 +233,20 @@ const AboutUs = () => {
                   disabled={localStorage.getItem("email")}
                   placeholder="Your Email"
                   required
+                />
+              </div>
+              <div className="mb-4">
+                <label className="block text-sm font-medium mb-2">
+                  Rating
+                </label>
+                <ReactStars
+                  count={5}
+                  onChange={handleRatingChange}
+                  size={30}
+                  activeColor="#ffd700"
+                  value={feedback.rating}
+                  isHalf={false}
+                  classNames="mb-2 hover:cursor-pointer hover:scale-110 transition-all duration-300 hover:text-blue-500"
                 />
               </div>
               <div className="mb-4">

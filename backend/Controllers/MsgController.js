@@ -62,8 +62,41 @@ const latestMsg = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 }
+const AllMsg = async (req, res) => {
+    try {
+        // Fetch all unseen messages sorted by newest first
+        const messages = await messagemodel.find({}).sort({ createdAt: -1 });
+
+        if (messages.length === 0) {
+            return res.status(200).json({ message: "No new messages", data: [] });
+        }
+        await messagemodel.updateMany({ seen: false }, { $set: { seen: true } });
+
+        res.status(200).json({ message: "All messages", data: messages });
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+const DeleteByIdMsg = async (req, res) => {
+    try {
+        const { id } = req.params
+        // Fetch all unseen messages sorted by newest first
+        const messages = await messagemodel.findByIdAndDelete(id)
+        console.log(messages);
+
+        res.status(200).json({ message: "Deleted SuccessFully", success: true });
+    } catch (error) {
+        console.error("Error fetching messages:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+
 
 module.exports = {
     message,
-    latestMsg
+    latestMsg,
+    AllMsg,
+    DeleteByIdMsg
 }

@@ -1,6 +1,7 @@
 import { Upload, User } from 'lucide-react'
 import React, { useState } from 'react'
 import axios from 'axios'
+import { toast, ToastContainer } from 'react-toastify'
 
 const MapAdd = () => {
   const [mapinfo, setmapinfo] = useState({
@@ -63,14 +64,18 @@ const MapAdd = () => {
         }
       })
       if (response.data.success) {
-        console.log("done");
-        setmapinfo({
-          name:'',
-          address:'',
-          latitude:'',
-          longitude:''
+        toast.success(response.data.message || "Added SuccessFully", {
+          position: "top-center",
+          autoClose: 2000,
         })
-        
+        setmapinfo({
+          name: '',
+          address: '',
+          latitude: '',
+          longitude: ''
+        })
+        setImage({ previewurl: null, file: null });
+
       }
     } catch (error) {
       console.log("ERROR HANDLED :: ", error);
@@ -147,6 +152,7 @@ const MapAdd = () => {
         <button className="rounded border-0 bg-indigo-500 py-2 px-6 text-lg text-white hover:bg-indigo-600 focus:outline-none">Send</button>
 
       </form>
+      <ToastContainer />
     </div>
   )
 }

@@ -1,7 +1,8 @@
-const { PaymentVerification } = require("../Middlewares/EmailConfige");
+const { PaymentVerification, SendAcceptedPayment } = require("../Middlewares/EmailConfige");
 const { SendSMS } = require("../Middlewares/SMSConfigue");
 const ordermodel = require("../Models/order");
-const moment = require("moment")
+const moment = require("moment");
+const userModel = require("../Models/user");
 
 const add = async (req, res) => {
     try {
@@ -125,11 +126,11 @@ const availableslots = async (req, res) => {
         }
 
         // const bookings = await ordermodel.find({ branchId, date, slotId })
-        const bookings = await ordermodel.find({ 
-            branchId, 
-            date, 
-            slotId, 
-            status: { $in: ["Pending", "Accepted"] } 
+        const bookings = await ordermodel.find({
+            branchId,
+            date,
+            slotId,
+            status: { $in: ["Pending", "Accepted"] }
         });
 
         console.log(bookings)
@@ -225,11 +226,80 @@ const bookslot = async (req, res) => {
 };
 
 
+const getMostBookedStations = async (req, res) => {
+    try {
+        // Aggregate bookings by branchId to get total bookings and slots
+        const mostBookedStations = await ordermodel.aggregate([
+            {
+                $group: {
+                    _id: '$branchId',
+                    totalBookings: { $sum: 1 },
+                    totalSlots: { $sum: { $size: '$slots' } }
+                }
+            },
+            {
+                $sort: { totalBookings: -1 }
+            },
+            {
+                $limit: 2
+            }
+        ]);
+
+        res.json({
+            success: true,
+            data: mostBookedStations
+        });
+    } catch (error) {
+        console.error('Error fetching most booked stations:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching most booked stations',
+            error: error.message
+        });
+    }
+};
+
+const changepayment = async (req, res) => {
+    const { id, action } = req.params
+    try {
+
+        const changestatus = await ordermodel.findByIdAndUpdate(
+            id,
+            { status: action },
+            { new: true }
+        );
+
+        if (!changestatus) {
+            return res.status(200).json({ success: false, message: "Order not found" });
+        }
+
+        // Fetch the user's email using userId from the order
+        const user = await userModel.findById(changestatus.userId);
+        if (!user) {
+            return res.status(200).json({ success: false, message: "User not found" });
+        }
+
+        if (action !== "Pending") {
+            SendAcceptedPayment(changestatus, user.email, action)
+        }
+        res.status(201).json({ message: `Payment ${action} Successfully!`, success: true });
+    } catch (error) {
+        console.error('Error fetching most booked stations:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error fetching most booked stations',
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     add,
     remove,
     findById,
     bookslot,
     availableslots,
-    findByOrderId
+    findByOrderId,
+    getMostBookedStations,
+    changepayment
 }

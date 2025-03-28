@@ -21,14 +21,6 @@ const slotschema = new mongoose.Schema({
     longitude: {
         type: Number,
         required: true
-    },
-    start: {
-        type: String,
-        required: true
-    },
-    end: {
-        type: String,
-        required: true
     }
 })
 
