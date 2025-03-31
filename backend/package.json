@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "node index.js",
-    "install": "npm install && npm rebuild bcrypt --build-from-source"
+    "install": "npm rebuild bcrypt --build-from-source"
   },
   "keywords": [],
   "author": "",
