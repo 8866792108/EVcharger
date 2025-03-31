@@ -1,7 +1,8 @@
 import axios from "axios";
+import { backendurls } from "../assets/utility";
 
 const api = axios.create({
-    baseURL:'http://localhost:8080/auth'
+    baseURL:`${backendurls}/auth`
 })
 
 export const googleAuth = (code) => api.get(`/google?code=${code}`)

@@ -159,7 +159,7 @@ const Navbar = () => {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute right-0 mt-2 w-48 py-2 bg-gray-800 rounded-xl shadow-xl z-50"
+                    className="absolute right-0 mt-2 w-55 py-2 bg-gray-800 rounded-xl shadow-xl z-50"
                   >
                     {/* <Link
                       to="/profile"
@@ -171,7 +171,7 @@ const Navbar = () => {
                       <div className="flex items-center gap-3">
                         
                         <div>
-                          <p className="font-medium text-gray-300 hover:text-gray-700">
+                          <p className="font-medium text-gray-300">
                             {localStorage.getItem("name") || "User"}
                           </p>
                           <p className="text-sm text-gray-500 truncate">
