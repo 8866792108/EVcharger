@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../Models/user");
-const bcrypt = require("bcrypt");
+const bcrypt = require('bcryptjs');
 const { oauth2client } = require("../utils/googleConfig");
 const axios = require('axios');
 const feedbackmodel = require("../Models/feedback");
