@@ -10,7 +10,7 @@ import axios from "axios"
 import Navbar from "./Navbar"
 import ReactStars from "react-rating-stars-component"
 
-const AboutUs = () => {
+const AboutUs = ({ url }) => {
   const navigate = useNavigate()
   const [feedback, setFeedback] = useState(
     {
@@ -51,9 +51,8 @@ const AboutUs = () => {
     formdata.append("userId", localStorage.getItem('userId'))
 
     try {
-      const url = "http://localhost:8080/feedback/add"
 
-      const response = await axios.post(url, formdata, {
+      const response = await axios.post(`${url}/feedback/add`, formdata, {
         headers: {
           "Content-Type": "application/json",
         },

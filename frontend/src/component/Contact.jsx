@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css'
 import { useNavigate } from 'react-router-dom'
 import axios from "axios"
 
-const Contact = () => {
+const Contact = ({ url }) => {
   const [formData, setFormData] = useState({
     name: localStorage.getItem('name') || "",
     email: localStorage.getItem('email') || "",
@@ -39,7 +39,7 @@ const Contact = () => {
       return navigate("/login")
     }
     try {
-      const response = await axios.post("http://localhost:8080/message/addmsg", formData, {
+      const response = await axios.post(`${url}/message/addmsg`, formData, {
         headers: {
           "Content-Type": "application/json"
         }
@@ -85,7 +85,7 @@ const Contact = () => {
     }
     console.log(joinFormData)
     try {
-      const response = await axios.post("http://localhost:8080/JoinWithUs/ReqJoinUs", joinFormData, {
+      const response = await axios.post(`${url}/JoinWithUs/ReqJoinUs`, joinFormData, {
         headers: {
           "Content-Type": "application/json"
         }

@@ -78,7 +78,7 @@ const FuturisticButton = styled.button`
   }
 `
 
-const Evmap = () => {
+const Evmap = ({ url }) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [slots, setSlots] = useState([])
@@ -104,7 +104,7 @@ const Evmap = () => {
       try {
         setError(null)
         setLoading(true)
-        const response = await axios.get("http://localhost:8080/slots/getitems")
+        const response = await axios.get(`${url}/slots/getitems`)
         if (response.data.success) {
           setSlots(response.data.data)
           setFilteredSlots(response.data.data)
@@ -114,7 +114,7 @@ const Evmap = () => {
       } catch (error) {
         console.error("Error fetching slots:", error)
         setError(
-          "Unable to load charging stations. Please ensure the backend server is running at http://localhost:8080",
+          `Unable to load charging stations. Please ensure the backend server is running at ${url}`,
         )
       } finally {
         setLoading(false)
@@ -407,7 +407,7 @@ const Evmap = () => {
                 >
                   <div className="relative overflow-hidden rounded-t-xl h-48 sm:h-56 md:h-64">
                     <img
-                      src={"http://localhost:8080/" + slot.image || "/placeholder.svg?height=200&width=400"}
+                      src={`${url}/` + slot.image || "/placeholder.svg?height=200&width=400"}
                       alt={slot.name}
                       className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
                     />

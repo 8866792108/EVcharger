@@ -50,35 +50,70 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-        const user = await userModel.findOne({ email })
 
+        // Ensure JWT secret is defined
+        if (!process.env.JWT_TOKEN) {
+            throw new Error("Missing JWT_SECRET in environment variables");
+        }
+
+        // Admin Login
+        if (process.env.ADMIN_EMAIL === email && process.env.ADMIN_PASSWORD === password) {
+            const jwttoken = jwt.sign(
+                { email: process.env.ADMIN_EMAIL, name: "VoltHub Sanjay" },
+                process.env.JWT_TOKEN,
+                { expiresIn: "1h" }
+            );
+
+            return res.status(200).json({
+                message: "Login successful",
+                Admin: true,
+                jwttoken,
+                email: process.env.ADMIN_EMAIL,
+                name: "VoltHub Sanjay",
+                AdminUrl: process.env.ADMIN_URL
+            });
+        }
+
+        // User Login
+        const user = await userModel.findOne({ email });
         if (!user) {
-            return res.status(403)
-                .json({ message: "Auth failed user is not exist", success: false })
+            return res.status(403).json({
+                message: "Authentication failed: User does not exist",
+                success: false
+            });
         }
 
-        const result = await bcrypt.compare(password, user.password)
+        const result = await bcrypt.compare(password, user.password);
         if (!result) {
-            return res.status(403)
-                .json({ message: "Auth failed password is wrong", success: false })
+            return res.status(403).json({
+                message: "Authentication failed: Incorrect password",
+                success: false
+            });
         }
 
+        // Generate User JWT Token
         const jwttoken = jwt.sign(
             { email: user.email, _id: user._id },
-            process.env.JWT_TOKEN
-        )
+            process.env.JWT_TOKEN,
+            { expiresIn: "1h" }
+        );
 
-
-        res.status(201)
-            .json({ message: "login successfully", success: true, jwttoken, email, name: user.name, _id: user._id })
-
+        return res.status(200).json({
+            message: "Login successful",
+            success: true,
+            jwttoken,
+            email: user.email,
+            name: user.name,
+            _id: user._id
+        });
 
     } catch (error) {
-        res.status(408)
-            .json({ message: "Server error" + error, success: false })
+        return res.status(500).json({
+            message: error.message || "Internal server error",
+            success: false
+        });
     }
-}
-
+};
 
 const googlelogin = async (req, res) => {
     try {

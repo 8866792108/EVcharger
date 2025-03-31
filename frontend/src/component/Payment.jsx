@@ -11,55 +11,8 @@ import Navbar from "./Navbar"
 import paymentQR from '../assets/img/payment.jpeg'
 import axios from "axios"
 
-// QR Modal Component
-// const QRModal = ({ amount, onClose }) => {
-//   return (
-//     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-//       <motion.div
-//         initial={{ opacity: 0, scale: 0.9 }}
-//         animate={{ opacity: 1, scale: 1 }}
-//         className="bg-gray-900 p-8 rounded-2xl border border-gray-800 max-w-sm w-full mx-4"
-//       >
-//         <div className="flex justify-between items-center mb-6">
-//           <h3 className="text-xl font-bold">Scan & Pay</h3>
-//           <button onClick={onClose} className="text-gray-400 hover:text-white">
-//             <X size={24} />
-//           </button>
-//         </div>
 
-//         <div className="bg-black p-6 rounded-xl mb-6 flex justify-center">
-//           <img
-//             src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=damodarchilgani-1@okhdfcbank%26am=${amount}`}
-//             alt="Payment QR Code"
-//             className="w-64 h-64 object-contain"
-//           />
-//         </div>
-
-//         <div className="text-center space-y-4">
-//           <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
-//             <span className="text-gray-400">Amount:</span>
-//             <span className="text-lg font-semibold">₹{amount}</span>
-//           </div>
-//           <div className="flex justify-between items-center px-4 py-3 bg-gray-800 rounded-lg">
-//             <input type="text" onChange={(e) => settransaction(e.target.value)} value={transaction} className="w-full h-[50px] bg-gray-800 outline-none text-white text-[22px]" placeholder="Transaction ID" />
-//           </div>
-//           <div className="text-sm text-gray-400">
-//             <p>Scan with any UPI app to pay</p>
-//             <p className="mt-2 text-yellow-400">Amount will be shown in your UPI app</p>
-//           </div>
-//           <button
-//             onClick={onClose}
-//             className="w-full mt-4 py-2 px-4 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm"
-//           >
-//             Done
-//           </button>
-//         </div>
-//       </motion.div>
-//     </div>
-//   )
-// }
-
-const Payment = () => {
+const Payment = ({ url }) => {
   const location = useLocation()
   const navigate = useNavigate()
   const bookingDetails = location.state
@@ -193,7 +146,7 @@ const Payment = () => {
       formData.append("transaction", transaction);
 
       const response = await axios.post(
-        "http://localhost:8080/orders/api/book-slot",
+        `${url}/orders/api/book-slot`,
         formData,
         { headers: { "Content-Type": "application/json" } }
       );
@@ -229,52 +182,6 @@ const Payment = () => {
 
     setShowQR(false)
   }
-
-  // const handlePayment = async (e) => {
-  //   e.preventDefault();
-
-  //   if (!selectedPaymentMethod) {
-  //     toast.error("Please select a payment method");
-  //     return;
-  //   }
-
-  //   if (transaction.length !== 12) {
-  //     return toast.error("Invalid Transaction ID.");
-  //   }
-
-  //   const payload = {
-  //     userId: localStorage.getItem("userId"),
-  //     slotId,
-  //     branchId,
-  //     slots, // ✅ Send array directly (No JSON.stringify)
-  //     method: selectedSubMethod,
-  //     date,
-  //     price: calculatePrice(slots),
-  //     transaction,
-  //   };
-
-  //   try {
-  //     const response = await axios.post(
-  //       "http://localhost:8080/orders/api/book-slot",
-  //       payload,  // ✅ Send as JSON object
-  //       { headers: { "Content-Type": "application/json" } }
-  //     );
-
-  //     const { message, success, error } = response.data;
-
-  //     if (success) {
-  //       toast.success(message, { position: "top-center", autoClose: 2000 });
-  //       setTimeout(() => navigate("/orders"), 1000);
-  //     } else {
-  //       toast.error(message || error, { position: "top-center", autoClose: 2000 });
-  //     }
-  //   } catch (error) {
-  //     toast.error("Something went wrong!", { position: "top-center", autoClose: 2000 });
-  //   }
-
-  //   setShowQR(false);
-  // };
-
 
   return (
     <div className="bg-black min-h-screen text-white flex flex-col">

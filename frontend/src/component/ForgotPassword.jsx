@@ -8,7 +8,7 @@ import styled from "styled-components"
 import Navbar from "./Navbar"
 import axios from "axios"
 
-const ForgotPassword = () => {
+const ForgotPassword = ({ url }) => {
   const navigate = useNavigate()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showOtpField, setShowOtpField] = useState(false)
@@ -65,7 +65,6 @@ const ForgotPassword = () => {
 
     setIsSubmitting(true)
     try {
-      const url = "http://localhost:8080/user/forgot-password"
       // const response = await fetch(url, {
       //   method: "POST",
       //   headers: {
@@ -74,7 +73,7 @@ const ForgotPassword = () => {
       //   body: JSON.stringify({ email }),
       // })
 
-      const response = await axios.post(url, {
+      const response = await axios.post(`${url}/user/forgot-password`, {
         "email": datainfo.email
       }, {
         headers: {
@@ -117,8 +116,7 @@ const ForgotPassword = () => {
 
     try {
       const { email, otp } = datainfo
-      const url = "http://localhost:8080/user/verify-otp"
-      const response = await fetch(url, {
+      const response = await fetch(`${url}/user/verify-otp`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -171,8 +169,7 @@ const ForgotPassword = () => {
 
     try {
       const { email, password } = datainfo
-      const url = "http://localhost:8080/user/reset-password"
-      const response = await fetch(url, {
+      const response = await fetch(`${url}/user/reset-password`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -315,7 +312,7 @@ const ForgotPassword = () => {
                     <p className="text-sm text-red-500 mt-2">
                       {isExpired ? "OTP Expired! Request a new one." : `Time left: ${formatTime(timeLeft)}`}
                     </p>
-                    {showResend  && (
+                    {showResend && (
                       <FuturisticButton
                         type="button"
                         onClick={(e) => {

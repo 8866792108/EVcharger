@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
-import { 
-  Check, 
-  X, 
-  AlertCircle, 
-  Clock, 
-  Search, 
+import {
+  Check,
+  X,
+  AlertCircle,
+  Clock,
+  Search,
   Filter,
   Loader2,
   ChevronDown,
@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-const PaymentManagement = () => {
+const PaymentManagement = ({ url }) => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +30,7 @@ const PaymentManagement = () => {
   // Fetch payments
   const fetchPayments = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/orders/api/find/67bf33c91efcee6b632c86a7");
+      const response = await axios.get(`${url}/orders/api/find/67bf33c91efcee6b632c86a7`);
       setPayments(response.data.orders);
       setLoading(false);
     } catch (err) {
@@ -47,7 +47,7 @@ const PaymentManagement = () => {
   const updatePaymentStatus = async (paymentId, newStatus) => {
     try {
       setLoadingStates(prev => ({ ...prev, [paymentId]: true }));
-      const response = await axios.get(`http://localhost:8080/orders/api/book-slot/${paymentId}/${newStatus}`);
+      const response = await axios.get(`${url}/orders/api/book-slot/${paymentId}/${newStatus}`);
 
       if (response.data.status) {
         toast.success(response.data.message || "Status Updated Successfully", {
@@ -91,7 +91,7 @@ const PaymentManagement = () => {
     const badge = badges[status] || badges.Pending;
 
     return (
-      <motion.span 
+      <motion.span
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium ${badge.bg} ${badge.text}`}
@@ -103,12 +103,12 @@ const PaymentManagement = () => {
   };
 
   const filteredPayments = payments.filter(payment => {
-    const matchesSearch = 
+    const matchesSearch =
       payment.transaction?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       payment._id?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesFilter = 
-      filterStatus === 'all' || 
+    const matchesFilter =
+      filterStatus === 'all' ||
       payment.status === filterStatus;
 
     return matchesSearch && matchesFilter;
@@ -124,7 +124,7 @@ const PaymentManagement = () => {
 
   const sortedPayments = [...filteredPayments].sort((a, b) => {
     if (!sortConfig.key) return 0;
-    
+
     if (sortConfig.direction === 'asc') {
       return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
     }
@@ -192,9 +192,8 @@ const PaymentManagement = () => {
           value={payment.status}
           onChange={(e) => updatePaymentStatus(payment._id, e.target.value)}
           disabled={loadingStates[payment._id]}
-          className={`px-3 py-2 text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 ${
-            loadingStates[payment._id] ? 'opacity-75 cursor-not-allowed' : ''
-          }`}
+          className={`px-3 py-2 text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 ${loadingStates[payment._id] ? 'opacity-75 cursor-not-allowed' : ''
+            }`}
         >
           {loadingStates[payment._id] ? (
             <Loader2 className="animate-spin" size={16} />
@@ -212,18 +211,18 @@ const PaymentManagement = () => {
 
   if (loading) {
     return (
-      <motion.div 
+      <motion.div
         className="flex items-center justify-center h-full"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
         <motion.div
-          animate={{ 
+          animate={{
             rotate: 360,
             scale: [1, 1.2, 1]
           }}
-          transition={{ 
+          transition={{
             duration: 1.5,
             repeat: Infinity,
             ease: "easeInOut"
@@ -238,7 +237,7 @@ const PaymentManagement = () => {
 
   if (error) {
     return (
-      <motion.div 
+      <motion.div
         className="flex items-center justify-center h-full text-red-600"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -250,7 +249,7 @@ const PaymentManagement = () => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="p-4 md:p-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -271,9 +270,9 @@ const PaymentManagement = () => {
       <div className="hidden md:block mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Payment Management</h1>
       </div>
-      
+
       {/* Search and Filter Section */}
-      <motion.div 
+      <motion.div
         className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:block mb-6`}
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -291,7 +290,7 @@ const PaymentManagement = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          <motion.div 
+          <motion.div
             className="relative"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
@@ -313,7 +312,7 @@ const PaymentManagement = () => {
 
       {/* Desktop Table View */}
       <div className="hidden md:block">
-        <motion.div 
+        <motion.div
           className="bg-white rounded-xl shadow-lg overflow-hidden"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -322,7 +321,7 @@ const PaymentManagement = () => {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th 
+                  <th
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
                     onClick={() => handleSort('transaction')}
                   >
@@ -353,7 +352,7 @@ const PaymentManagement = () => {
               <tbody className={`bg-white divide-y divide-gray-200 ${sortedPayments.length === 0 ? 'flex items-center justify-center h-full' : ''}`}>
                 <AnimatePresence>
                   {sortedPayments.map((payment, index) => (
-                    <motion.tr 
+                    <motion.tr
                       key={payment._id}
                       variants={itemVariants}
                       initial="hidden"
@@ -398,9 +397,8 @@ const PaymentManagement = () => {
                           value={payment.status}
                           onChange={(e) => updatePaymentStatus(payment._id, e.target.value)}
                           disabled={loadingStates[payment._id]}
-                          className={`block w-full px-3 py-2 text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 ${
-                            loadingStates[payment._id] ? 'opacity-75 cursor-not-allowed' : ''
-                          }`}
+                          className={`block w-full px-3 py-2 text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 ${loadingStates[payment._id] ? 'opacity-75 cursor-not-allowed' : ''
+                            }`}
                         >
                           {loadingStates[payment._id] ? (
                             <Loader2 className="animate-spin" size={16} />
@@ -489,9 +487,8 @@ const PaymentManagement = () => {
                   value={selectedPayment.status}
                   onChange={(e) => updatePaymentStatus(selectedPayment._id, e.target.value)}
                   disabled={loadingStates[selectedPayment._id]}
-                  className={`px-3 py-2 text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 ${
-                    loadingStates[selectedPayment._id] ? 'opacity-75 cursor-not-allowed' : ''
-                  }`}
+                  className={`px-3 py-2 text-sm rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all duration-200 ${loadingStates[selectedPayment._id] ? 'opacity-75 cursor-not-allowed' : ''
+                    }`}
                 >
                   {loadingStates[selectedPayment._id] ? (
                     <Loader2 className="animate-spin" size={16} />

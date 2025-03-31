@@ -10,7 +10,7 @@ import VolthubMission from "./VolthubMission";
 import IntroSlider from "./IntroSlider";
 import { FaBolt, FaChargingStation, FaClock, FaMapMarkedAlt } from "react-icons/fa";
 
-const Home = () => {
+const Home = ({ url }) => {
   const [showIntro, setShowIntro] = useState(false);
   const navigate = useNavigate();
   const futuristicSectionRef = useRef(null);
@@ -63,7 +63,7 @@ const Home = () => {
       {/* Features Section */}
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gradient-to-b from-black via-gray-900 to-black">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-8 sm:mb-12 md:mb-16"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -115,7 +115,7 @@ const Home = () => {
       {/* CTA Section */}
       <section className="py-12 sm:py-16 md:py-20 px-4 sm:px-6 md:px-8 bg-gradient-to-b from-gray-900 to-black relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-green-500/10" />
-        <motion.div 
+        <motion.div
           className="max-w-4xl mx-auto text-center relative z-10"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -148,17 +148,17 @@ const Home = () => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
       >
-        <svg 
-          className="w-4 h-4 sm:w-5 sm:h-5" 
-          fill="none" 
-          stroke="currentColor" 
+        <svg
+          className="w-4 h-4 sm:w-5 sm:h-5"
+          fill="none"
+          stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z" 
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"
           />
         </svg>
         Show Intro

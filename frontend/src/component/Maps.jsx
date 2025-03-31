@@ -9,7 +9,7 @@ import Navbar from './Navbar'
 // import map from "https://cdn-icons-png.flaticon.com/512/684/684908.png"
 
 
-const Maps = () => {
+const Maps = ({ url }) => {
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [current, setcurrent] = useState()
   const [stops, setStops] = useState([]);
@@ -32,7 +32,7 @@ const Maps = () => {
 
   const fetchStops = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/slots/getitems")
+      const response = await axios.get(`${url}/slots/getitems`)
       console.log(response.data.data[0].name);
       const data = await response.data
       console.log(data)
@@ -124,7 +124,7 @@ const Maps = () => {
                 >
                   <Popup>
                     <div className="w-[300px] flex flex-col justify-center items-center">
-                      <img src={"http://localhost:8080/" + stops.image} alt="" className=' w- mb-7' />
+                      <img src={`${url}/` + stops.image} alt="" className=' w- mb-7' />
                       <h3 className="font-semibold">{stops.name}</h3>
                       <p>
                         Address: {stops.address}

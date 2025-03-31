@@ -9,7 +9,7 @@ import { googleAuth } from "./api"
 import styled from "styled-components"
 import Navbar from "./Navbar"
 
-const LoginPage = () => {
+const LoginPage = ({ url }) => {
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
 
@@ -71,8 +71,7 @@ const LoginPage = () => {
     }
 
     try {
-      const url = "http://localhost:8080/user/login"
-      const response = await fetch(url, {
+      const response = await fetch(`${url}/user/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,6 +80,14 @@ const LoginPage = () => {
       })
 
       const result = await response.json()
+      if (result.Admin) {
+        const { name, email, jwttoken, AdminUrl } = result
+        localStorage.setItem("name", name)
+        localStorage.setItem("email", email)
+        localStorage.setItem("token", jwttoken)
+        localStorage.setItem("isAdmin", "true")
+        navigate(AdminUrl || "/Admin")
+      }
       const { message, success, jwttoken, name, email, _id, error } = result
       console.log("The logged user data :: " + result)
       if (success) {

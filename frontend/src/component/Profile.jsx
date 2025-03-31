@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { FaUser, FaCar, FaCreditCard, FaHistory, FaBell, FaShieldAlt, FaQuestionCircle } from 'react-icons/fa'
 import Navbar from './Navbar'
 
-const Profile = () => {
+const Profile = ({ url }) => {
   const [islogin, setislogin] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [userData, setUserData] = useState({
@@ -134,7 +134,7 @@ const Profile = () => {
   return (
     <div className="min-h-screen bg-black text-white">
       <Navbar />
-      
+
       <div className="max-w-7xl mx-auto px-3 sm:px-4 py-12 sm:py-16 md:py-20">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
           {/* Sidebar */}
@@ -146,8 +146,8 @@ const Profile = () => {
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center space-x-3 px-3 sm:px-4 py-2 sm:py-3 rounded-lg transition-all duration-300 text-sm sm:text-md
-                      ${activeTab === tab.id 
-                        ? 'bg-gradient-to-r from-blue-500/20 to-green-500/20 text-white' 
+                      ${activeTab === tab.id
+                        ? 'bg-gradient-to-r from-blue-500/20 to-green-500/20 text-white'
                         : 'text-gray-400 hover:bg-gray-800'}`}
                     whileHover={{ x: 4 }}
                   >

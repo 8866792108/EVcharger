@@ -109,3 +109,5 @@ export const stations = [
         price: 0.32
     }
 ]
+
+export const backendurls = "http://localhost:8080"

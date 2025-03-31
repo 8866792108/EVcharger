@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar';
 
-const PaymentPage = () => {
+const PaymentPage = ({ url }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -63,7 +63,7 @@ const PaymentPage = () => {
         status: 'Pending'
       };
 
-      const response = await axios.post('http://localhost:8080/orders/api/create', orderData);
+      const response = await axios.post(`${url}/orders/api/create`, orderData);
 
       if (response.status === 201) {
         toast.success('Booking successful!');
@@ -108,11 +108,10 @@ const PaymentPage = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setSelectedMethod('gpay')}
-                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all ${
-                    selectedMethod === 'gpay'
-                      ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
-                      : 'bg-gray-800 border-gray-700 hover:border-blue-500'
-                  }`}
+                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all ${selectedMethod === 'gpay'
+                    ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
+                    : 'bg-gray-800 border-gray-700 hover:border-blue-500'
+                    }`}
                 >
                   <div className="flex items-center justify-center gap-2">
                     <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -124,11 +123,10 @@ const PaymentPage = () => {
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setSelectedMethod('card')}
-                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all ${
-                    selectedMethod === 'card'
-                      ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
-                      : 'bg-gray-800 border-gray-700 hover:border-blue-500'
-                  }`}
+                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border transition-all ${selectedMethod === 'card'
+                    ? 'bg-gradient-to-r from-blue-500 to-green-500 border-transparent'
+                    : 'bg-gray-800 border-gray-700 hover:border-blue-500'
+                    }`}
                 >
                   <div className="flex items-center justify-center gap-2">
                     <CreditCard className="w-4 h-4 sm:w-5 sm:h-5" />

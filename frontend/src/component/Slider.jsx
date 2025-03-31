@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import slides from "../assets/img/imgdata"; // Import images
 import "./Slider.css";
 
-export default function CarSlider({ scrollToSection }) {  // Accept scroll function as prop
+export default function CarSlider({ scrollToSection, url }) {  // Accept scroll function as prop
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
 
@@ -119,9 +119,8 @@ export default function CarSlider({ scrollToSection }) {  // Accept scroll funct
           <motion.button
             key={index}
             onClick={() => setCurrent(index)}
-            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors duration-300 ${
-              index === current ? "bg-white" : "bg-white/50"
-            }`}
+            className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-colors duration-300 ${index === current ? "bg-white" : "bg-white/50"
+              }`}
             whileHover={{ scale: 1.2 }}
             whileTap={{ scale: 0.9 }}
           />

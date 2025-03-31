@@ -18,18 +18,39 @@ import {
   XCircle,
   Send,
   Loader2,
-  Filter
+  Filter,
+  ChevronDown,
+  ChevronUp,
+  Menu,
+  Users,
+  Calendar,
+  TrendingUp,
+  TrendingDown,
+  MessageCircle,
+  Building2,
+  Briefcase,
+  GraduationCap,
+  BriefcaseIcon,
+  Building2 as Building2Icon
 } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const JoinWithUs = () => {
+const JoinWithUs = ({ url }) => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [loadingStates, setLoadingStates] = useState({});
+  const [stats, setStats] = useState({
+    total: 0,
+    pending: 0,
+    accepted: 0,
+    rejected: 0
+  });
 
   useEffect(() => {
     fetchRequests();
@@ -38,12 +59,13 @@ const JoinWithUs = () => {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/JoinWithUs/getJoinUs");
+      const response = await axios.get(`${url}/JoinWithUs/getJoinUs`);
       const requestsWithStatus = response.data.data.map(request => ({
         ...request,
         status: request.status || 'pending'
       }));
       setRequests(requestsWithStatus);
+      calculateStats(requestsWithStatus);
     } catch (error) {
       console.error("Error fetching requests:", error);
       toast.error("Failed to fetch requests");
@@ -53,10 +75,24 @@ const JoinWithUs = () => {
     }
   };
 
+  const calculateStats = (data) => {
+    const total = data.length;
+    const pending = data.filter(r => r.status === 'Pending').length;
+    const accepted = data.filter(r => r.status === 'Accepted').length;
+    const rejected = data.filter(r => r.status === 'Rejected').length;
+
+    setStats({
+      total,
+      pending,
+      accepted,
+      rejected
+    });
+  };
+
   const handleAcceptRequest = async (id) => {
     try {
       setLoadingStates(prev => ({ ...prev, [id]: true }));
-      const response = await axios.post(`http://localhost:8080/JoinWithUs/accept/${id}`, {
+      const response = await axios.post(`${url}/JoinWithUs/accept/${id}`, {
         status: 'Accepted'
       });
 
@@ -74,7 +110,7 @@ const JoinWithUs = () => {
   const handleRejectRequest = async (id) => {
     try {
       setLoadingStates(prev => ({ ...prev, [id]: true }));
-      const response = await axios.post(`http://localhost:8080/JoinWithUs/reject/${id}`, {
+      const response = await axios.post(`${url}/JoinWithUs/reject/${id}`, {
         status: 'Rejected'
       });
 
@@ -89,16 +125,75 @@ const JoinWithUs = () => {
     }
   };
 
+  const getStatusBadge = (status) => {
+    const badges = {
+      'Accepted': {
+        bg: 'bg-green-100',
+        text: 'text-green-800',
+        icon: <CheckCircle2 className="w-4 h-4 text-green-600" />
+      },
+      'Rejected': {
+        bg: 'bg-red-100',
+        text: 'text-red-800',
+        icon: <XCircle className="w-4 h-4 text-red-600" />
+      },
+      'Pending': {
+        bg: 'bg-yellow-100',
+        text: 'text-yellow-800',
+        icon: <AlertCircle className="w-4 h-4 text-yellow-600" />
+      }
+    };
+
+    const badge = badges[status] || badges.Pending;
+
+    return (
+      <motion.span
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full font-medium ${badge.bg} ${badge.text}`}
+      >
+        {badge.icon}
+        {status}
+      </motion.span>
+    );
+  };
+
+  const getTypeIcon = (type) => {
+    const icons = {
+      'Job': <BriefcaseIcon className="w-5 h-5 text-blue-500" />,
+      'Internship': <GraduationCapIcon className="w-5 h-5 text-purple-500" />,
+      'Partnership': <Building2Icon className="w-5 h-5 text-green-500" />
+    };
+    return icons[type] || <Building className="w-5 h-5 text-gray-500" />;
+  };
+
   const filteredRequests = requests.filter(request => {
     const matchesSearch =
       (request?.businessName || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (request?.ownerName || '').toLowerCase().includes(searchTerm.toLowerCase());
 
-    const matchesFilter =
+    const matchesStatus =
       filterStatus === 'all' ||
       (request?.status || 'pending') === filterStatus;
 
-    return matchesSearch && matchesFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const sortedRequests = [...filteredRequests].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    if (sortConfig.direction === 'asc') {
+      return a[sortConfig.key] > b[sortConfig.key] ? 1 : -1;
+    }
+    return a[sortConfig.key] < b[sortConfig.key] ? 1 : -1;
   });
 
   const containerVariants = {
@@ -127,16 +222,16 @@ const JoinWithUs = () => {
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: 0.3,
         ease: "easeOut"
       }
     },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       y: -20,
       transition: {
         duration: 0.2
@@ -165,7 +260,7 @@ const JoinWithUs = () => {
         className="max-w-7xl mx-auto"
       >
         {/* Header Section */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-xl shadow-lg p-6 mb-8 backdrop-blur-sm bg-opacity-90"
@@ -190,59 +285,136 @@ const JoinWithUs = () => {
             </div>
           </div>
 
-          {/* Enhanced Search and Filter Section */}
-          <motion.div 
-            className="flex flex-col md:flex-row gap-4"
-            variants={filterVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <motion.input
-                whileFocus={{ scale: 1.01 }}
-                type="text"
-                placeholder="Search by business or owner name..."
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-all duration-200"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-            <motion.div 
-              className="relative"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+          {/* Stats Cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-lg shadow-md p-4"
             >
-              <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-              <select
-                className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 min-w-[150px] appearance-none cursor-pointer transition-all duration-200"
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Requests</option>
-                <option value="Pending">Pending</option>
-                <option value="Accepted">Accepted</option>
-                <option value="Rejected">Rejected</option>
-              </select>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Total Requests</p>
+                  <h3 className="text-2xl font-bold text-gray-900">{stats.total}</h3>
+                </div>
+                <Users className="w-8 h-8 text-blue-500" />
+              </div>
             </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white rounded-lg shadow-md p-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Pending Requests</p>
+                  <h3 className="text-2xl font-bold text-gray-900">{stats.pending}</h3>
+                </div>
+                <Clock className="w-8 h-8 text-yellow-500" />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white rounded-lg shadow-md p-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Accepted Requests</p>
+                  <h3 className="text-2xl font-bold text-gray-900">{stats.accepted}</h3>
+                </div>
+                <TrendingUp className="w-8 h-8 text-green-500" />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="bg-white rounded-lg shadow-md p-4"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-500">Rejected Requests</p>
+                  <h3 className="text-2xl font-bold text-gray-900">{stats.rejected}</h3>
+                </div>
+                <TrendingDown className="w-8 h-8 text-red-500" />
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Mobile Filter Toggle Button */}
+          <div className="md:hidden flex justify-end mb-4">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            >
+              <Filter size={20} />
+              <span>Filters</span>
+              {isMobileMenuOpen ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+            </motion.button>
+          </div>
+
+          {/* Enhanced Search and Filter Section */}
+          <motion.div
+            className={`${isMobileMenuOpen ? 'block' : 'hidden'} md:block mb-6`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <motion.input
+                  whileFocus={{ scale: 1.01 }}
+                  type="text"
+                  placeholder="Search by business or owner name..."
+                  className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50 transition-all duration-200"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
+              </div>
+              <motion.div
+                className="relative"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <select
+                  className="w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 bg-gray-50 min-w-[150px] appearance-none cursor-pointer transition-all duration-200"
+                  value={filterStatus}
+                  onChange={(e) => setFilterStatus(e.target.value)}
+                >
+                  <option value="all">All Requests</option>
+                  <option value="Pending">Pending</option>
+                  <option value="Accepted">Accepted</option>
+                  <option value="Rejected">Rejected</option>
+                </select>
+              </motion.div>
+            </div>
           </motion.div>
         </motion.div>
 
         {/* Loading State with Enhanced Animation */}
         {loading ? (
-          <motion.div 
+          <motion.div
             className="flex justify-center items-center min-h-[400px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              animate={{ 
+              animate={{
                 rotate: 360,
                 scale: [1, 1.2, 1]
               }}
-              transition={{ 
+              transition={{
                 duration: 1.5,
                 repeat: Infinity,
                 ease: "easeInOut"
@@ -263,7 +435,7 @@ const JoinWithUs = () => {
               animate="visible"
               exit="exit"
             >
-              {filteredRequests.map((request, index) => (
+              {sortedRequests.map((request, index) => (
                 <motion.div
                   key={request._id}
                   layout
@@ -276,35 +448,24 @@ const JoinWithUs = () => {
                   transition={{ delay: index * 0.1 }}
                   className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
                 >
-                  <motion.div 
-                    className={`p-6 border-l-4 ${
-                      request?.status === 'Accepted' ? 'border-green-500 bg-green-50' :
+                  <motion.div
+                    className={`p-6 border-l-4 ${request?.status === 'Accepted' ? 'border-green-500 bg-green-50' :
                       request?.status === 'Rejected' ? 'border-red-500 bg-red-50' :
-                      'border-blue-500 bg-blue-50'
-                    }`}
+                        'border-blue-500 bg-blue-50'
+                      }`}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.3 }}
                   >
                     {/* Status Badge with Enhanced Animation */}
-                    <motion.div 
+                    <motion.div
                       className="flex justify-between items-start mb-4"
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
                     >
-                      <motion.span 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${
-                          request?.status === 'Accepted' ? 'bg-green-100 text-green-800' :
-                          request?.status === 'Rejected' ? 'bg-red-100 text-red-800' :
-                          'bg-blue-100 text-blue-800'
-                        }`}
-                      >
-                        {(request?.status || 'pending').charAt(0).toUpperCase() + (request?.status || 'pending').slice(1)}
-                      </motion.span>
-                      <motion.span 
+                      {getStatusBadge(request?.status || 'pending')}
+                      <motion.span
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         className="text-sm text-gray-500"
@@ -314,20 +475,20 @@ const JoinWithUs = () => {
                     </motion.div>
 
                     {/* Business Info with Staggered Animation */}
-                    <motion.div 
+                    <motion.div
                       className="mb-4"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.3 }}
                     >
-                      <motion.h3 
+                      <motion.h3
                         className="text-xl font-semibold text-gray-800 mb-2"
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                       >
                         {request?.businessName || 'Unnamed Business'}
                       </motion.h3>
-                      <motion.div 
+                      <motion.div
                         className="space-y-2"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -349,7 +510,7 @@ const JoinWithUs = () => {
                     </motion.div>
 
                     {/* Action Buttons with Enhanced Animations */}
-                    <motion.div 
+                    <motion.div
                       className="flex justify-between items-center mt-6"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
@@ -372,9 +533,8 @@ const JoinWithUs = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleAcceptRequest(request._id)}
                             disabled={loadingStates[request._id]}
-                            className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform flex items-center gap-2 ${
-                              loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
-                            }`}
+                            className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform flex items-center gap-2 ${loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
+                              }`}
                           >
                             {loadingStates[request._id] ? (
                               <Loader2 className="animate-spin" size={16} />
@@ -388,9 +548,8 @@ const JoinWithUs = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleRejectRequest(request._id)}
                             disabled={loadingStates[request._id]}
-                            className={`px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all transform flex items-center gap-2 ${
-                              loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
-                            }`}
+                            className={`px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all transform flex items-center gap-2 ${loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
+                              }`}
                           >
                             {loadingStates[request._id] ? (
                               <Loader2 className="animate-spin" size={16} />
@@ -409,9 +568,8 @@ const JoinWithUs = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleRejectRequest(request._id)}
                             disabled={loadingStates[request._id]}
-                            className={`px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all transform flex items-center gap-2 ${
-                              loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
-                            }`}
+                            className={`px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all transform flex items-center gap-2 ${loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
+                              }`}
                           >
                             {loadingStates[request._id] ? (
                               <Loader2 className="animate-spin" size={16} />
@@ -430,9 +588,8 @@ const JoinWithUs = () => {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleAcceptRequest(request._id)}
                             disabled={loadingStates[request._id]}
-                            className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform flex items-center gap-2 ${
-                              loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
-                            }`}
+                            className={`px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all transform flex items-center gap-2 ${loadingStates[request._id] ? 'opacity-75 cursor-not-allowed' : ''
+                              }`}
                           >
                             {loadingStates[request._id] ? (
                               <Loader2 className="animate-spin" size={16} />
@@ -597,7 +754,7 @@ const JoinWithUs = () => {
           )}
         </AnimatePresence>
 
-        <ToastContainer 
+        <ToastContainer
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}

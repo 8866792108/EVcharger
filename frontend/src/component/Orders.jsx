@@ -11,7 +11,7 @@ import Navbar from "./Navbar"
 import axios from "axios"
 import { Template_Bill } from "./Bill"
 import html2pdf from "html2pdf.js"
-const Orders = () => {
+const Orders = ({ url }) => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [expandedOrder, setExpandedOrder] = useState(null)
@@ -30,7 +30,7 @@ const Orders = () => {
         return
       }
 
-      const response = await axios.get(`http://localhost:8080/orders/api/find/${userId}`)
+      const response = await axios.get(`${url}/orders/api/find/${userId}`)
       console.log(response.data)
       setOrders(response.data.orders || [])
     } catch (error) {

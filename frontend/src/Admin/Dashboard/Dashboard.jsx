@@ -18,12 +18,16 @@ import {
   CreditCard,
   Trash2,
   AlertCircle,
-  Eye
+  Eye,
+  MessageCircle
 } from 'lucide-react';
 import axios from 'axios';
 import '../styles/dashboard.css';
 import { toast, ToastContainer } from 'react-toastify';
 import TravelMap3D from './TravelMap3D';
+import { Link, NavLink } from 'react-router-dom';
+import Feedback from '../Messages/Feedback';
+import { motion } from 'framer-motion';
 
 // Custom/Demo data for testing and fallback
 const DEMO_DATA = {
@@ -47,7 +51,7 @@ const DEMO_DATA = {
   feedback: [],
 };
 
-const Dashboard = () => {
+const Dashboard = ({ url }) => {
   const [data, setData] = useState(DEMO_DATA);
   const [loading, setLoading] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState('');
@@ -64,6 +68,13 @@ const Dashboard = () => {
   const [joinwithus, setjoinwithus] = useState([])
   const [selectedStation, setSelectedStation] = useState(null);
   const [mostBookedStations, setMostBookedStations] = useState([]);
+
+  //admin setup
+  useEffect(() => {
+    localStorage.setItem("name", "Volthub Vehicle");
+    localStorage.setItem("email", "volthub237@gmail.com");
+    localStorage.setItem("token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZvbHRodWIyMzdAZ21haWwuY29tIiwibmFtZSI6IlZvbHRIdWIgU2FuamF5IiwiaWF0IjoxNzQzMzQ4ODA2LCJleHAiOjE3NDMzNTI0MDZ9.CPkFxa7uI_uLUhFz7u-q-TouGQsSGHUQ1Vz7ZraChRM");
+  }, []);
 
   useEffect(() => {
     // Simulate data fetching
@@ -95,7 +106,7 @@ const Dashboard = () => {
 
   const fetchallTotal = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/TotalAll")
+      const response = await axios.get(`${url}/TotalAll`)
       setorders(response.data.totalOrders)
       setusers(response.data.totalusers)
       setstations(response.data.totalslots)
@@ -107,7 +118,7 @@ const Dashboard = () => {
   };
   const fetchMostBookedStations = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/orders/most-booked-stations")
+      const response = await axios.get(`${url}/orders/most-booked-stations`)
       setMostBookedStations(response.data.data || []);
     } catch (error) {
       console.error('Error fetching most booked stations:', error);
@@ -116,7 +127,7 @@ const Dashboard = () => {
 
   const getjoinwithus = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/JoinWithUs/getJoinUs")
+      const response = await axios.get(`${url}/JoinWithUs/getJoinUs`)
       console.log(response.data)
       setjoinwithus(response.data.data)
     } catch (error) {
@@ -125,7 +136,7 @@ const Dashboard = () => {
   }
   const getfeedback = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/feedback/getfeedback")
+      const response = await axios.get(`${url}/feedback/getfeedback`)
       console.log(response.data)
       setfeedback(response.data.data)
     } catch (error) {
@@ -136,7 +147,7 @@ const Dashboard = () => {
   const handleDeleteFeedback = async (id) => {
     // In a real application, you would make an API call here
     try {
-      const response = await axios.get(`http://localhost:8080/feedback/deletebyid/${id}`)
+      const response = await axios.get(`${url}/feedback/deletebyid/${id}`)
 
       if (response.data.success) {
         setTimeout(() => {
@@ -155,7 +166,7 @@ const Dashboard = () => {
   const handleDeleteJoinUs = async (id) => {
     // In a real application, you would make an API call here
     try {
-      const response = await axios.get(`http://localhost:8080/JoinWithUs/deletebyid/${id}`)
+      const response = await axios.get(`${url}/JoinWithUs/deletebyid/${id}`)
 
       if (response.data.success) {
         setTimeout(() => {
@@ -251,12 +262,12 @@ const Dashboard = () => {
                     <span className="text-sm text-gray-500">
                       {feedback.length} Total Feedback
                     </span>
-                    <button className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
+                    <NavLink to="/Admin/feedback" className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
                       View All
-                    </button>
+                    </NavLink>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-4 lg:h-[590px] overflow-scroll">
+                <div className="grid grid-cols-1 gap-4 lg:h-[590px] overflow-y-scroll">
                   {feedback.map((item, index) => (
                     <div key={index} className="bg-white p-4 rounded-lg shadow-lg card-hover animate-fade-in-up delay-300 relative group">
                       {/* Delete Button */}
@@ -341,12 +352,12 @@ const Dashboard = () => {
                     <span className="text-sm text-gray-500">
                       {joinwithus.length} Total JoinWithUs Requestes
                     </span>
-                    <button className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
+                    <NavLink to="/Admin/Join-requests" className="px-3 py-1 text-sm bg-blue-50 text-blue-600 rounded-md hover:bg-blue-100 transition-colors">
                       View All
-                    </button>
+                    </NavLink>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-4 lg:h-[590px] overflow-scroll">
+                <div className="grid grid-cols-1 gap-4 lg:h-[590px] overflow-y-scroll">
                   {joinwithus.map((item, index) => (
                     <div key={index} className="bg-white p-4 rounded-lg shadow-lg card-hover animate-fade-in-up delay-300 relative group">
                       {/* Delete Button */}
@@ -412,7 +423,7 @@ const Dashboard = () => {
             vehiclesCharging={Math.floor(activeorders * 0.8)}
           />
 
-          <div className="space-y-4 h-[300px] overflow-scroll">
+          <div className="space-y-4 h-[300px] overflow-y-scroll">
             <h3 className="text-lg font-semibold">Most Booked Stations</h3>
             {mostBookedStations.map((station, index) => (
               <StationCard

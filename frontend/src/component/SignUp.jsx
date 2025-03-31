@@ -10,7 +10,7 @@ import { googleAuth } from "./api"
 import styled from "styled-components"
 import Navbar from "./Navbar"
 
-const SignUp = () => {
+const SignUp = ({ url }) => {
   const [signupinfo, setsignupinfo] = useState({
     name: "",
     email: "",
@@ -83,9 +83,8 @@ const SignUp = () => {
     console.log(formdata)
 
     try {
-      const url = "http://localhost:8080/user/signup"
 
-      const response = await axios.post(url, formdata, {
+      const response = await axios.post(`${url}/user/signup`, formdata, {
         headers: {
           "Content-Type": "application/json",
         },

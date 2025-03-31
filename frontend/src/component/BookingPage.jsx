@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const BookingPage = () => {
+const BookingPage = ({ url }) => {
   const { slotId } = useParams();
   const navigate = useNavigate();
   const [selectedDate, setSelectedDate] = useState('');
@@ -36,7 +36,7 @@ const BookingPage = () => {
   useEffect(() => {
     const fetchStationDetails = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/slots/find/${slotId}`);
+        const response = await axios.get(`${url}/slots/find/${slotId}`);
         setStationDetails(response.data);
         setLoading(false);
       } catch (error) {
@@ -52,7 +52,7 @@ const BookingPage = () => {
     if (!selectedDate || !selectedBranch) return;
 
     try {
-      const response = await axios.post('http://localhost:8080/orders/api/available-slots', {
+      const response = await axios.post(`${url}/orders/api/available-slots`, {
         slotId,
         branchId: selectedBranch,
         date: selectedDate
