@@ -72,6 +72,20 @@ const findByOrderId = async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 };
+const findOrders = async (req, res) => {
+    try {
+
+        const orders = await ordermodel.find({})
+
+        if (!orders || orders.length === 0) {
+            return res.status(404).json({ message: "No orders found for this user" });
+        }
+
+        res.status(200).json({ orders });
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+};
 
 
 function roundToNearest30(time) {
@@ -301,5 +315,6 @@ module.exports = {
     availableslots,
     findByOrderId,
     getMostBookedStations,
-    changepayment
+    changepayment,
+    findOrders
 }

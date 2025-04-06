@@ -6,6 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './Navbar';
 import { motion, AnimatePresence } from 'framer-motion';
+import { slotmoney } from '../assets/utility';
 
 const BookingPage = ({ url }) => {
   const { slotId } = useParams();
@@ -90,7 +91,7 @@ const BookingPage = ({ url }) => {
   };
 
   const calculatePrice = (selectedSlots) => {
-    const pricePerSlot = 50; // Example: ₹50 per 30-minute slot
+    const pricePerSlot = slotmoney
     return selectedSlots.length * pricePerSlot;
   };
 
@@ -239,7 +240,7 @@ const BookingPage = ({ url }) => {
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
                 min={new Date().toISOString().split('T')[0]}
-                className="w-full bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3 text-xs sm:text-sm  text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-full date-icon bg-gray-800 border border-gray-700 rounded-lg sm:rounded-xl p-2 sm:p-3 text-xs sm:text-sm  text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500 transition-all"
               />
             </motion.div>
 

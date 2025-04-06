@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import Home from './component/Home';
 import Profile from './component/Profile';
 import DashboardTasks from './component/DashboardTasks';
@@ -64,6 +64,14 @@ const App = () => {
       </GoogleOAuthProvider>
     )
   }
+
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (localStorage.getItem("isAdmin") === "true" && localStorage.getItem("email") === "volthub237@gmail.com") {
+      navigate("/Admin")
+    }
+  }, [])
   return (
     <div>
       {/* The routes will render the corresponding component based on the URL */}

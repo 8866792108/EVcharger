@@ -47,3 +47,7 @@ body {
   background: linear-gradient(210deg, #ff0000 59.36%, #ff0000 81.49%), #d9d9d9;
   filter: blur(75px);
 }
+
+.date-icon::-webkit-calendar-picker-indicator {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(180deg);
+}

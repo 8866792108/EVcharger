@@ -10,6 +10,9 @@ import { motion } from "framer-motion"
 import Navbar from "./Navbar"
 import paymentQR from '../assets/img/payment.jpeg'
 import axios from "axios"
+import { SiHdfcbank, SiIcicibank } from 'react-icons/si';
+import { FaUniversity } from 'react-icons/fa';
+import { slotmoney } from "../assets/utility"
 
 
 const Payment = ({ url }) => {
@@ -62,10 +65,10 @@ const Payment = ({ url }) => {
       icon: <Building className="w-6 h-6 text-blue-400" />,
       description: 'All Indian banks',
       subMethods: [
-        { id: 'hdfc', name: 'HDFC Bank' },
-        { id: 'icici', name: 'ICICI Bank' },
-        { id: 'axis', name: 'Axis Bank' },
-        { id: 'sbi', name: 'State Bank of India' },
+        { id: 'hdfc', name: 'HDFC Bank', icon: <SiHdfcbank className="h-8 w-8 mb-2 text-gray-300 object-contain rounded-lg" /> },
+        { id: 'icici', name: 'ICICI Bank', icon: <SiIcicibank className="h-8 w-8 mb-2 text-gray-300 object-contain rounded-lg" /> },
+        { id: 'axis', name: 'Axis Bank', icon: <FaUniversity className="h-8 w-8 mb-2 text-gray-300 object-contain rounded-lg" /> },
+        { id: 'sbi', name: 'State Bank of India', icon: <FaUniversity className="h-8 w-8 mb-2 text-gray-300 object-contain rounded-lg" /> },
       ]
     },
     {
@@ -98,11 +101,16 @@ const Payment = ({ url }) => {
     setSelectedSubMethod(methodId)
     if (['gpay', 'phonepe', 'paytm', 'bhim', 'amazon', 'mobikwik'].includes(methodId)) {
       setShowQR(true)
+    } else {
+      toast.success("Coming Soon of Paying", {
+        position: "top-center",
+        autoClose: 2000,
+      })
     }
   }
 
   const calculatePrice = (selectedSlots) => {
-    const pricePerSlot = 50;
+    const pricePerSlot = slotmoney
     return selectedSlots.length * pricePerSlot;
   };
 
@@ -222,7 +230,29 @@ const Payment = ({ url }) => {
                     </PaymentOption>
 
                     {/* Sub-methods (for UPI and Net Banking) */}
-                    {selectedPaymentMethod === method.id && method.subMethods && (
+                    {selectedPaymentMethod === method.id && method.subMethods && method.id === "netbanking" && (
+                      <div className="mt-4 ml-12 grid grid-cols-3 gap-4">
+                        {method.subMethods.map((subMethod) => (
+                          <button
+                            key={subMethod.id}
+                            onClick={() => handleSubMethodClick(subMethod.id)}
+                            className={`p-4 rounded-xl border ${selectedSubMethod === subMethod.id
+                              ? 'border-blue-500 bg-blue-500/10'
+                              : 'border-gray-700 hover:border-gray-600'
+                              } transition-all duration-300 flex flex-col items-center justify-center`}
+                          >
+                            {/* <img
+                              src={subMethod.icon}
+                              alt={subMethod.name}
+                              className="h-12 w-12 mb-2 object-contain rounded-lg"
+                            /> */}
+                            {subMethod.icon}
+                            <span className="text-sm text-center">{subMethod.name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {selectedPaymentMethod === method.id && method.subMethods && method.id === "quick-pay" && (
                       <div className="mt-4 ml-12 grid grid-cols-3 gap-4">
                         {method.subMethods.map((subMethod) => (
                           <button

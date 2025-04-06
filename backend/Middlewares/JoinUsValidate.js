@@ -3,8 +3,8 @@ const Joi = require("joi");
 const JoinWithUsValidation = (req, res, next) => {
 
     const Schema = Joi.object({
-        ownerName: Joi.string().min(4).max(20).required(),
-        businessName: Joi.string().min(4).max(20).required(),
+        ownerName: Joi.string().min(4).max(30).required(),
+        businessName: Joi.string().min(4).max(50).required(),
         stationLocation: Joi.string().min(4).max(100).required(),
         contactNumber: Joi.number().required(),
         email: Joi.string().email().required(),

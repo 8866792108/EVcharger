@@ -16,6 +16,7 @@ const Orders = ({ url }) => {
   const [loading, setLoading] = useState(true)
   const [expandedOrder, setExpandedOrder] = useState(null)
   const [filter, setFilter] = useState('all')
+  const [selectedBill, setSelectedBill] = useState(null)
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -84,47 +85,151 @@ const Orders = ({ url }) => {
     })
   }
 
-  const handleDownloadBill = (order) => {
-    const data = Template_Bill(order._id, order.date, localStorage.getItem("name"), localStorage.getItem("email"), order.branchId, order.price, order.slots)
+  const handleViewBill = (order) => {
+    setSelectedBill(order)
+  }
 
-    console.log(data)
+  const handleDownloadBill = (order) => {
+    const data = Template_Bill(order._id, order.date, localStorage.getItem("name"), localStorage.getItem("email"), order.branchId, order.price, order.slots,false)
     var opt = {
-      margin: 1,
+      margin: 0.3,
       filename: `${localStorage.getItem("name")}_${order.branchId}_${order.date}.pdf`,
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: true,
+        imageTimeout: 0,
+        onclone: function (clonedDoc) {
+          // Ensure images are loaded in the cloned document
+          const images = clonedDoc.getElementsByTagName('img');
+          for (let i = 0; i < images.length; i++) {
+            images[i].style.display = 'block';
+            images[i].style.visibility = 'visible';
+            images[i].style.opacity = '1';
+            images[i].style.zIndex = '1000';
+          }
+
+          // Generate barcode in the cloned document
+          const barcodeId = `barcode-${order._id.replace(/[^a-zA-Z0-9]/g, '')}`;
+          const barcodeCanvas = clonedDoc.getElementById(barcodeId);
+          if (barcodeCanvas) {
+            try {
+              // @ts-ignore
+              window.JsBarcode(barcodeCanvas, order._id, {
+                format: "CODE128",
+                width: 2,
+                height: 100,
+                displayValue: true,
+                fontSize: 14,
+                margin: 10,
+                background: "#ffffff",
+                lineColor: "#000000",
+                font: "monospace"
+              });
+            } catch (e) {
+              console.error("Barcode generation error in clone:", e);
+              // If JsBarcode fails, show the fallback image
+              const barcodeImage = clonedDoc.querySelector('.barcode-image');
+              if (barcodeImage) {
+                barcodeImage.style.display = 'block';
+                // barcodeCanvas.style.display = 'none';
+              }
+            }
+          } else {
+            // If canvas not found, ensure the fallback image is visible
+            const barcodeImage = clonedDoc.querySelector('.barcode-image');
+            if (barcodeImage) {
+              barcodeImage.style.display = 'block';
+            }
+          }
+        }
+      },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+      pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
     };
+  
     html2pdf(data, opt)
   }
-  // const handleDownloadBill = (order) => {
-  //   // Create bill content
-  //   const billContent = `
-  //     EV Charging Station Bill
-  //     ------------------------
-  //     Order ID: ${order._id}
-  //     Date: ${formatDate(order.date)}
-  //     Branch: ${order.branchId}
-  //     Status: ${getStatusText(order.status)}
-  //     Amount: ₹${order.price}
-  //     Payment Method: ${order.method}
 
-  //     Time Slots:
-  //     ${order.slots.map(slot => `${slot.start} - ${slot.end}`).join('\n')}
+  const getBillPreview = (order) => {
+    if (!order) return null;
+    const billHtml = Template_Bill(order._id, order.date, localStorage.getItem("name"), localStorage.getItem("email"), order.branchId, order.price, order.slots);
 
-  //     Thank you for choosing our service!
-  //   `
-
-  //   // Create blob and download
-  //   const blob = new Blob([billContent], { type: 'text/plain' })
-  //   const url = window.URL.createObjectURL(blob)
-  //   const a = document.createElement('a')
-  //   a.href = url
-  //   a.download = `bill-${order._id.slice(-6)}.txt`
-  //   document.body.appendChild(a)
-  //   a.click()
-  //   window.URL.revokeObjectURL(url)
-  //   document.body.removeChild(a)
-  // }
+    // Add a style override to ensure text is visible in preview
+    return billHtml.replace('<style>', `<style>
+      body { 
+        color: #333 !important; 
+        background-color: #f9f9f9 !important; 
+      }
+      .bill-container { 
+        background: white !important; 
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important; 
+        border-radius: 8px !important; 
+      }
+      .bill-header h1 { 
+        color: #2c3e50 !important; 
+        font-size: 32px !important; 
+        text-transform: uppercase !important; 
+        letter-spacing: 1px !important; 
+      }
+      .bill-header p {
+        color: #7f8c8d !important;
+      }
+      .total-amount { 
+        color: #27ae60 !important; 
+        font-size: 22px !important; 
+      }
+      .bill-details .row span { 
+        color: #333 !important; 
+      }
+      .bill-details .row span:first-child {
+        font-weight: 600 !important;
+        color: #34495e !important;
+      }
+      .booked-slots { 
+        background: #f8f9fa !important; 
+        color: #333 !important; 
+        border-left: 4px solid #3498db !important; 
+      }
+      .booked-slots h2 { 
+        color: #2c3e50 !important; 
+        font-size: 18px !important; 
+      }
+      .booked-slots li { 
+        color: #333 !important; 
+      }
+      .bill-footer { 
+        color: #7f8c8d !important; 
+      }
+      .bill-footer p { 
+        color: #7f8c8d !important; 
+      }
+      .barcode-text { 
+        color: #7f8c8d !important; 
+        font-style: italic !important; 
+      }
+      .barcode-container {
+        border: 1px dashed #3498db !important;
+        background-color: #f8f9fa !important;
+      }
+      .barcode-canvas, .barcode-image {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        max-width: 100% !important;
+        height: auto !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        border: 1px solid #ddd !important;
+        padding: 10px !important;
+        background-color: white !important;
+      }
+      .barcode-image {
+        display: block !important;
+      }
+    `);
+  }
 
   if (loading) {
     return (
@@ -190,13 +295,14 @@ const Orders = ({ url }) => {
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleDownloadBill(order)}
+                        onClick={() => handleViewBill(order)}
                         className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-blue-500/10 text-blue-500 border border-blue-500/20 hover:bg-blue-500/20 transition-colors text-xs sm:text-sm flex items-center gap-1.5"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" className="w-3 h-3 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        Download Bill
+                        View Bill
                       </motion.button>
                     )}
                     <motion.button
@@ -272,6 +378,49 @@ const Orders = ({ url }) => {
         </div>
       </div>
       <ToastContainer />
+
+      {/* Bill View Modal */}
+      {selectedBill && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-gray-900 rounded-2xl border border-gray-800 max-w-4xl w-full p-6"
+          >
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold">Bill Preview</h3>
+              <button onClick={() => setSelectedBill(null)} className="text-gray-400 hover:text-white">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Bill Preview */}
+              <div className="bg-white rounded-lg overflow-hidden shadow-lg">
+                <div
+                  id="bill-preview"
+                  className="p-4 max-h-[500px] overflow-y-auto"
+                  dangerouslySetInnerHTML={{ __html: getBillPreview(selectedBill) }}
+                />
+              </div>
+
+              <div className="flex justify-end gap-4 mt-6">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleDownloadBill(selectedBill)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  Download Bill
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   )
 }
