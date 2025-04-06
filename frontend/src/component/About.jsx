@@ -9,6 +9,7 @@ import { motion } from "framer-motion"
 import axios from "axios"
 import Navbar from "./Navbar"
 import ReactStars from "react-rating-stars-component"
+import { backendurls } from "../assets/utility"
 
 const AboutUs = ({ url }) => {
   const navigate = useNavigate()
@@ -97,8 +98,8 @@ const AboutUs = ({ url }) => {
   }, [])
 
   const teamMembers = [
-    { name: "Sanjay Madta", role: "CEO & Founder", image: "../src/assets/about/ceo.jpg" },
-    { name: "Head of the DepartMent", role: "CTO", image: "./placeholder.svg?height=200&width=200" },
+    { name: "Sanjay Madta", role: "CEO & Founder", image: `${backendurls}/ceo.jpg` },
+    { name: "Aditya Sagarbhai", role: "CTO", image: `${backendurls}/cto.jpg` },
   ]
 
   const timelineItems = [
@@ -169,7 +170,7 @@ const AboutUs = ({ url }) => {
                     className="w-24 h-24 sm:w-32 sm:h-32 rounded-full mx-auto mb-3 sm:mb-4 bg-cover bg-center bg-no-repeat"
                   />
                   <h3 className="text-lg sm:text-xl font-semibold">{member.name}</h3>
-                  <p className="text-blue-400 text-sm sm:text-base">{member.role}</p>
+                  <p className="text-blue-400 text-sm">{member.role}</p>
                 </motion.div>
               ))}
             </div>
