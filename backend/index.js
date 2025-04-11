@@ -43,20 +43,28 @@ app.use("/auth", Authroute)
 app.use("/message", Msgroute)
 app.use("/JoinWithUs", JoinUsroute)
 app.use("/feedback", FeedbackRoute)
-app.get("/TotalAll", async (req, res) => {
+app.get("/TotalAll", async (req, res) => { 
     try {
-        const totalusers = await userModel.countDocuments()
+        const totalusers = await userModel.countDocuments();
         const totalOrders = await ordermodel.countDocuments();
-        const totalslots = await slotmodel.countDocuments()
-        const activeorders = await ordermodel.find({ status: "Accepted" }).countDocuments()
+        const totalslots = await slotmodel.countDocuments();
+        const activeorders = await ordermodel.find({ status: "Accepted" }).countDocuments();
         console.log(activeorders);
-        
 
         const totalRevenueResult = await ordermodel.aggregate([
             {
                 $group: {
                     _id: null,
-                    totalRevenue: { $sum: { $toInt: "$price" } } // Convert price string to integer
+                    totalRevenue: {
+                        $sum: {
+                            $convert: {
+                                input: "$price",
+                                to: "double",
+                                onError: 0,
+                                onNull: 0
+                            }
+                        }
+                    }
                 }
             }
         ]);
@@ -73,7 +81,7 @@ app.get("/TotalAll", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: "Error fetching order stats", error });
     }
-})
+});
 
 
 app.get("/", (req, res) => {
