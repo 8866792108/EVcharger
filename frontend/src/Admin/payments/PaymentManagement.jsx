@@ -148,8 +148,8 @@ const PaymentManagement = ({ url }) => {
       console.log(`Updating payment ${paymentId} to status: ${newStatus}`);
       
       // Make sure the status value matches what the API expects
-      const apiStatus = newStatus === 'Accepted' ? 'Accept' : 
-                        newStatus === 'Rejected' ? 'Reject' : 
+      const apiStatus = newStatus === 'Accepted' ? 'Accepted' : 
+                        newStatus === 'Rejected' ? 'Rejected' : 
                         newStatus;
       
       const response = await axios.get(`${url}/orders/api/book-slot/${paymentId}/${apiStatus}`);
@@ -614,8 +614,8 @@ const PaymentManagement = ({ url }) => {
     
     const statusOptions = [
       { value: 'Pending', label: 'Pending', icon: <Clock className="w-4 h-4 text-yellow-600" /> },
-      { value: 'Accepted', label: 'Accept', icon: <Check className="w-4 h-4 text-green-600" /> },
-      { value: 'Rejected', label: 'Reject', icon: <X className="w-4 h-4 text-red-600" /> }
+      { value: 'Accepted', label: 'Accepted', icon: <Check className="w-4 h-4 text-green-600" /> },
+      { value: 'Rejected', label: 'Rejected', icon: <X className="w-4 h-4 text-red-600" /> }
     ];
     
     const currentStatus = statusOptions.find(opt => opt.value === payment.status) || statusOptions[0];

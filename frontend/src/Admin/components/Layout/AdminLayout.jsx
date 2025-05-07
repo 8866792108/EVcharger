@@ -60,17 +60,28 @@ const AdminLayout = ({ url }) => {
   // Fetch pending orders
   const fetchPendingOrders = async () => {
     try {
-      const response = await axios.get(`${url}/orders/api/find/67bf33c91efcee6b632c86a7`)
+      const response = await axios.get(`${url}/orders/api/find`)
       const orders = response.data.orders
       const pending = orders.filter(order => order.status === "Pending")
       setPendingOrders(pending)
 
       if (pending.length > 0) {
-        const pendingDetails = pending.map(order => `
-          • Slot ${order.slotnumber} - ${order.date} at ${order.time}
-          Amount: $${order.price} (${order.method})
-        `).join('\n')
+        // const pendingDetails = pending.map(order => `
+        //   • Slot ${order.slotnumber} - ${order.date} at ${order.time}
+        //   Amount: $${order.price} (${order.method})
+        // `).join('\n')
 
+        const pendingDetails = pending.map(order => {
+          const date = order.date ?? 'N/A';
+          const slotCount = order.slots?.length || 0;
+          const branch = order.branchId ?? '—';
+          const price = order.price ? `₹${Number(order.price).toFixed(2)}` : '₹0.00';
+          const method = order.method?.toUpperCase() ?? 'N/A';
+        
+          return `🔔 [${date}] • ${slotCount} slot${slotCount > 1 ? 's' : ''} • Branch: ${branch} \n💰 ${price} via ( ${method} )`;
+        }).join('\n\n');
+
+        
         showNotification(
           `${pending.length} Pending Payment${pending.length > 1 ? 's' : ''}`,
           pendingDetails,

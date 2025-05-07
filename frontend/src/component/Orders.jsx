@@ -285,7 +285,7 @@ const Orders = ({ url }) => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className={`px-2 sm:px-3 py-1 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium border ${getStatusColor(order.status)}`}>
-                      {getStatusText(order.status)}
+                      {order.status}
                     </div>
                     <span className="text-xs sm:text-sm text-gray-400">Order #{order._id.slice(-6)}</span>
                   </div>

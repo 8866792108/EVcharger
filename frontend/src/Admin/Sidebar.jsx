@@ -94,7 +94,7 @@ const Sidebar = ({
     localStorage.removeItem("email");
     localStorage.removeItem("token");
     localStorage.removeItem("isAdmin");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return (

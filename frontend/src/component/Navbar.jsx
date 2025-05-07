@@ -49,7 +49,7 @@ const Navbar = () => {
     localStorage.removeItem('image')
     localStorage.removeItem('token')
     localStorage.removeItem('hasSeenIntro')
-    navigate('/login');
+    navigate('/');
   };
 
   return (
